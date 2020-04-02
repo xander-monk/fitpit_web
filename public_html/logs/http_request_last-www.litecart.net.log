@@ -1,0 +1,204 @@
+## [2020-04-02 23:47:14] Request #######################################
+
+GET /feeds/discussions.rss HTTP/1.1
+Host: www.litecart.net
+User-Agent: LiteCart/2.2.2
+Content-Length: 0
+Connection: Close
+
+
+
+## [2020-04-02 23:47:15] Response — 9132 bytes transferred in 0.395 s ##
+
+HTTP/1.1 200 OK
+Date: Thu, 02 Apr 2020 20:47:15 GMT
+Content-Type: application/rss+xml; charset=utf-8
+Transfer-Encoding: chunked
+Connection: close
+Set-Cookie: __cfduid=d1c35cb41f110d405e1c742e850acf01d1585860434; expires=Sat, 02-May-20 20:47:14 GMT; path=/; domain=.litecart.net; HttpOnly; SameSite=Lax
+Cache-Control: no-store, no-cache, must-revalidate
+Cf-Railgun: direct (starting new WAN connection)
+Content-Language: en
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Pragma: no-cache
+Set-Cookie: LCSESSID=97cb58b95bb4d4afe128658284200baa; path=/; secure
+Vary: Accept-Encoding
+X-Powered-By: LiteCart.net
+X-Turbo-Charged-By: LiteSpeed
+CF-Cache-Status: DYNAMIC
+Expect-CT: max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+Server: cloudflare
+CF-RAY: 57dd67651c873f04-KBP
+alt-svc: h3-27=":443"; ma=86400, h3-25=":443"; ma=86400, h3-24=":443"; ma=86400, h3-23=":443"; ma=86400
+
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>LiteCart Forum Discussions</title>
+    <link>https://www.litecart.net/forums/index</link>
+    <description>The most recent forum activity.</description>
+    <language>en</language>
+    <item>
+      <category><![CDATA[Add-ons]]></category>
+      <title><![CDATA[Prepare translation for add-on]]></title>
+      <link>https://www.litecart.net/en/forums/7/add-ons/11613/prepare-translation-for-add-on</link>
+      <description></description>
+      <author><![CDATA[insanebear]]></author>
+      <pubDate>Thu, 02 Apr 2020 18:41:56 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[General Discussions]]></category>
+      <title><![CDATA[How to check shipping method during the checkout?]]></title>
+      <link>https://www.litecart.net/en/forums/2/general-discussions/11733/how-to-check-shipping-method-during-the-checkout</link>
+      <description></description>
+      <author><![CDATA[skoruppa]]></author>
+      <pubDate>Thu, 02 Apr 2020 14:47:11 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[Errors and Troubleshooting]]></category>
+      <title><![CDATA[I have disabled my admin access]]></title>
+      <link>https://www.litecart.net/en/forums/15/errors-and-troubleshooting/11754/i-have-disabled-my-admin-access</link>
+      <description></description>
+      <author><![CDATA[kimogahandmade]]></author>
+      <pubDate>Thu, 02 Apr 2020 12:59:02 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[General Discussions]]></category>
+      <title><![CDATA[Custom fields on checkout page  + + + SOLVED + + +]]></title>
+      <link>https://www.litecart.net/en/forums/2/general-discussions/11582/custom-fields-on-checkout-page-solved</link>
+      <description></description>
+      <author><![CDATA[bysystem]]></author>
+      <pubDate>Thu, 02 Apr 2020 11:35:56 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[This Website]]></category>
+      <title><![CDATA[e mail template]]></title>
+      <link>https://www.litecart.net/en/forums/1/this-website/11712/e-mail-template</link>
+      <description></description>
+      <author><![CDATA[webchambers1961]]></author>
+      <pubDate>Thu, 02 Apr 2020 08:01:37 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[Feature Requests and New Ideas]]></category>
+      <title><![CDATA[How do I add an add-to-cart button in listing?]]></title>
+      <link>https://www.litecart.net/en/forums/5/feature-requests-and-new-ideas/1900/how-do-i-add-an-add-to-cart-button-in-listing</link>
+      <description></description>
+      <author><![CDATA[kirana]]></author>
+      <pubDate>Thu, 02 Apr 2020 00:25:50 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[General Discussions]]></category>
+      <title><![CDATA[Images in options or attrubutes?]]></title>
+      <link>https://www.litecart.net/en/forums/2/general-discussions/11717/images-in-options-or-attrubutes</link>
+      <description></description>
+      <author><![CDATA[cshacked87]]></author>
+      <pubDate>Wed, 01 Apr 2020 16:15:21 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[General Discussions]]></category>
+      <title><![CDATA[Free shipping if more than subtotal?]]></title>
+      <link>https://www.litecart.net/en/forums/2/general-discussions/6821/free-shipping-if-more-than-subtotal</link>
+      <description></description>
+      <author><![CDATA[qualitasse]]></author>
+      <pubDate>Wed, 01 Apr 2020 12:43:34 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[Errors and Troubleshooting]]></category>
+      <title><![CDATA[Different content for 404]]></title>
+      <link>https://www.litecart.net/en/forums/15/errors-and-troubleshooting/11738/different-content-for-404</link>
+      <description></description>
+      <author><![CDATA[developer_cz]]></author>
+      <pubDate>Wed, 01 Apr 2020 12:42:18 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[Templates and CSS]]></category>
+      <title><![CDATA[Print Copy]]></title>
+      <link>https://www.litecart.net/en/forums/12/templates-and-css/11715/print-copy</link>
+      <description></description>
+      <author><![CDATA[webchambers1961]]></author>
+      <pubDate>Tue, 31 Mar 2020 17:10:21 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[Errors and Troubleshooting]]></category>
+      <title><![CDATA[The admin panel doesn't work]]></title>
+      <link>https://www.litecart.net/en/forums/15/errors-and-troubleshooting/11719/the-admin-panel-doesnt-work</link>
+      <description></description>
+      <author><![CDATA[sadosadoushko]]></author>
+      <pubDate>Mon, 30 Mar 2020 23:27:14 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[Templates and CSS]]></category>
+      <title><![CDATA[Where is the registration email template?]]></title>
+      <link>https://www.litecart.net/en/forums/12/templates-and-css/11713/where-is-the-registration-email-template</link>
+      <description></description>
+      <author><![CDATA[webchambers1961]]></author>
+      <pubDate>Mon, 30 Mar 2020 08:51:27 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[This Website]]></category>
+      <title><![CDATA[Litecart is very easy to use]]></title>
+      <link>https://www.litecart.net/en/forums/1/this-website/11640/litecart-is-very-easy-to-use</link>
+      <description></description>
+      <author><![CDATA[nevzatgurbuz]]></author>
+      <pubDate>Mon, 30 Mar 2020 06:55:37 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[General Discussions]]></category>
+      <title><![CDATA[How to get abandoned cart?]]></title>
+      <link>https://www.litecart.net/en/forums/2/general-discussions/9247/how-to-get-abandoned-cart</link>
+      <description></description>
+      <author><![CDATA[arshidkv12]]></author>
+      <pubDate>Sun, 29 Mar 2020 01:42:29 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[Feature Requests and New Ideas]]></category>
+      <title><![CDATA[Sold Out Label for Catalog]]></title>
+      <link>https://www.litecart.net/en/forums/5/feature-requests-and-new-ideas/11706/sold-out-label-for-catalog</link>
+      <description></description>
+      <author><![CDATA[nbretailer]]></author>
+      <pubDate>Sat, 28 Mar 2020 16:31:05 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[General Discussions]]></category>
+      <title><![CDATA[Problem with CSV]]></title>
+      <link>https://www.litecart.net/en/forums/2/general-discussions/11703/problem-with-csv</link>
+      <description></description>
+      <author><![CDATA[tuttoled]]></author>
+      <pubDate>Sat, 28 Mar 2020 16:19:45 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[Add-ons]]></category>
+      <title><![CDATA[Is lead box compatible with 2.2?]]></title>
+      <link>https://www.litecart.net/en/forums/7/add-ons/11661/is-lead-box-compatible-with-2-2</link>
+      <description></description>
+      <author><![CDATA[tuttoled]]></author>
+      <pubDate>Sat, 28 Mar 2020 08:03:32 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[Add-ons]]></category>
+      <title><![CDATA[updating to the last version, paypal add on]]></title>
+      <link>https://www.litecart.net/en/forums/7/add-ons/11698/updating-to-the-last-version-paypal-add-on</link>
+      <description></description>
+      <author><![CDATA[ash]]></author>
+      <pubDate>Fri, 27 Mar 2020 21:13:26 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[Installation and Configuration]]></category>
+      <title><![CDATA[Upgrade from version 2.1.3 to 2.2.2]]></title>
+      <link>https://www.litecart.net/en/forums/3/installation-and-configuration/11696/upgrade-from-version-2-1-3-to-2-2-2</link>
+      <description></description>
+      <author><![CDATA[ash]]></author>
+      <pubDate>Fri, 27 Mar 2020 20:50:29 +0000</pubDate>
+    </item>
+    <item>
+      <category><![CDATA[Add-ons]]></category>
+      <title><![CDATA[Infinite scroll for 2.2.x]]></title>
+      <link>https://www.litecart.net/en/forums/7/add-ons/11689/infinite-scroll-for-2-2-x</link>
+      <description></description>
+      <author><![CDATA[tuttoled]]></author>
+      <pubDate>Fri, 27 Mar 2020 07:56:03 +0000</pubDate>
+    </item>
+  </channel>
+</rss>
+
+
