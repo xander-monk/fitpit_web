@@ -30,7 +30,12 @@
     }
   }
 
-// Load routes
+  file_get_contents('https://new.fitpit.com.ua/handlers/less-scss-compiler-manual.php?file=/includes/templates/default.catalog/css/framework.min.css');
+  file_get_contents('https://new.fitpit.com.ua/handlers/less-scss-compiler-manual.php?file=/includes/templates/default.catalog/css/app.min.css');
+
+  file_get_contents('https://new.fitpit.com.ua/handlers/js-compressor-manual.php?file=/includes/templates/default.catalog/js/app.min.js');
+
+  // Load routes
   route::load(FS_DIR_APP . 'includes/routes/url_*.inc.php');
 
 // Append default route

@@ -47,6 +47,10 @@ ErrorDocument 500 "Internal Server Error"
   # Web path to catalog root
   RewriteBase /
 
+  # Developer Kit
+	RewriteRule \.css$ handlers/less-scss-compiler.php [L]
+	RewriteRule \.js$ handlers/js-compressor.php [L]
+
   # No rewrite logic for physical files
   RewriteCond %{REQUEST_FILENAME} -d [OR]
   RewriteCond %{REQUEST_FILENAME} -f [OR]
