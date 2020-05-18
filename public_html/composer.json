@@ -1,0 +1,19 @@
+{
+    "type": "project",
+    "name": "FitPit",
+    "description": "My online store using LiteCart",
+    "keywords": ["litecart", "ecommerce"],
+    "license": "CCBYND-4.0",
+    "authors": [
+        {
+            "name": "LiteCart Dev Team",
+            "email": "info@litecart.net"
+        }
+    ],
+    "require": {
+        "php": ">=7.2"
+    },
+    "config": {
+        "vendor-dir": "./vendor/"
+    }
+}

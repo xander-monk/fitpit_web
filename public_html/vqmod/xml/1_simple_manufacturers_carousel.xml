@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+  <id>Mobile Optimizations</id>
+  <version>1.0</version>
+  <vqmver required="true">2.4.0</vqmver>
+  <author>Nicolas Molinari</author>
+  <file name="pages/product.inc.php">
+    <operation error="log">
+      <search position="replace" offset="3"><![CDATA[
+    "update ". DB_TABLE_PRODUCTS ."
+      ]]></search>
+      <add><![CDATA[
+    "update ". DB_TABLE_PRODUCTS ." p, ". DB_TABLE_MANUFACTURERS ." m
+    set p.views = p.views + 1, m.views = m.views + 1
+    where p.id = ". (int)$_GET['product_id'] ." and m.id = p.manufacturer_id;"
+      ]]></add>
+    </operation>
+  </file>
+  <file name="includes/boxes/box_manufacturer_logotypes.inc.php">
+    <operation error="log">
+      <search position="replace"><![CDATA[
+      order by rand();"
+      ]]></search>
+      <add><![CDATA[
+      order by views desc, name asc limit 14;"
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace" offset="1"><![CDATA[
+            'thumbnail' => functions::image_thumbnail(FS_DIR_APP . 'images/' . $manufacturer['image'], 0, 30, 'FIT'),
+      ]]></search>
+      <add><![CDATA[
+            'thumbnail' => functions::image_thumbnail(FS_DIR_APP . 'images/' . $manufacturer['image'], 0, 64, 'FIT'),
+            'thumbnail_2x' => functions::image_thumbnail(FS_DIR_APP . 'images/' . $manufacturer['image'], 0, 128, 'FIT'),
+      ]]></add>
+    </operation>
+  </file>
+  <file name="includes/templates/*.catalog/views/box_manufacturer_logotypes.inc.php">
+    <operation error="log">
+      <search position="replace" offset="11"><![CDATA[
+<section id="box-manufacturer-logotypes" class="box hidden-xs hidden-sm">
+      ]]></search>
+    <add><![CDATA[
+<style>
+  @keyframes lt-scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-700px);
+    }
+  }
+  .lt-slider {
+    background: white;
+    height: 100px;
+    margin: auto;
+    overflow: hidden;
+    position: relative;
+    width: 960px;
+  }
+  .lt-slider::before, .lt-slider::after {
+    background: linear-gradient(to right, white 0%, rgba(255, 255, 255, 0) 100%);
+    content: "";
+    height: 100px;
+    position: absolute;
+    width: 200px;
+    z-index: 2;
+  }
+  .lt-slider::after {
+    right: 0;
+    top: 0;
+    transform: rotateZ(180deg);
+  }
+  .lt-slider::before {
+    left: 0;
+    top: 0;
+  }
+  .lt-slide-track {
+    animation: lt-scroll linear infinite;
+    animation-duration: 40s;
+    display: flex;
+    width: 1400px;
+  }
+  .lt-slide {
+    height: 100px;
+    width: 100px;
+    text-align: center;
+  }
+</style>
+<section id="box-manufacturer-logotypes" class="lt-slider hidden-xs hidden-sm">
+  <div class="lt-slide-track">
+    <?php foreach ($logotypes as $logotype) { ?>
+      <div class="lt-slide">
+        <a href="<?php echo htmlspecialchars($logotype['link']); ?>">
+
+          <img src="<?php echo document::href_link(WS_DIR_APP . $logotype['image']['thumbnail']); ?>" srcset="<?php echo document::href_link(WS_DIR_APP . $logotype['image']['thumbnail']); ?> 1x, <?php echo document::href_link(WS_DIR_APP . $logotype['image']['thumbnail_2x']); ?> 2x" alt="" title="<?php echo htmlspecialchars($logotype['title']); ?>"><br/>
+          <?php echo $logotype['title'] ?>
+
+        </a>
+      </div>
+    <?php } ?>
+  </div>
+</section>
+<script>
+  var lt_timer;
+  $(".lt-slider").on({
+    'mouseenter' : function(){
+      $(this).children('.lt-slide-track').css('animation-play-state', 'paused');
+    },
+    'mouseleave': function() {
+      $(this).children('.lt-slide-track').css('animation-play-state', 'running');
+    }
+  });
+</script>
+      ]]></add>
+  </operation>
+  </file>
+</modification>

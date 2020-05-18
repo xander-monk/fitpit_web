@@ -1,0 +1,1907 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+	<!--
+	* BASE: Litecart 2.16
+	*
+	*==============
+	* MYSQL
+	*==============
+	*
+
+	ALTER TABLE `lc_option_groups` ADD `product_id` INT NOT NULL DEFAULT '0' AFTER `id`;
+	ALTER TABLE `lc_option_values` ADD `product_id` INT NOT NULL DEFAULT '0' AFTER `id`;
+	ALTER TABLE `lc_products_options` ADD `filter` BOOLEAN NOT NULL DEFAULT FALSE AFTER `priority`;
+
+	*==============
+	* Modified JS files
+	*==============
+	*
+	* - - - - - - - - - - - -
+	* /includes/templates/*.admin/js/app.js.inc.php
+	* - - - - - - - - - - - -
+	*
+	* At almost the very end, line 122, replace:
+
+	$(this).find('input:checkbox').trigger('click');
+
+	* by:
+
+	$(this).find('input:checkbox').not('.no-toggle').trigger('click');
+
+	*==============
+	* Modified CSS files
+	*==============
+	*
+	* - - - - - - - - - - - -
+	* /includes/templates/*.admin/css/framework.css
+	* - - - - - - - - - - - -
+	*
+	* Override definitions:
+	*
+
+	a.disabled * {
+	color: #aaa !important;
+	}
+
+	.form-control option[value="-999999999"] {
+	font-weight: bold;
+	font-style: italic;
+	}
+	.checkbox,
+	.radio {
+	white-space: nowrap;
+	}
+	.table > * > tr > td,
+	.table > * > tr > th {
+	padding: 6px 3px;
+	}
+	.table > thead > tr > th {
+	padding: 6px 3px;
+	}
+	.table > tfoot {
+	padding: 6px 3px;
+	}
+	tr.section {
+	background-color: #e2e2e2 !important;
+	}
+
+	* - - - - - - - - - - - -
+	* /includes/templates/*.admin/css/app.css
+	* - - - - - - - - - - - -
+	*
+	* Override definitions:
+	*
+
+	#box-apps-menu ul li {
+	margin: 2px 0px;
+	}
+
+	*
+	*==============
+	* New files
+	*==============
+	*
+	* - - - - - - - - - - - -
+	* /pages/ajax/option_groups_json.inc.php
+	* - - - - - - - - - - - -
+	*
+	<?php
+	header('Content-type: application/json; charset='. language::$selected['charset']);
+
+	$json = functions::form_draw_option_groups_list('', '', '', '', array('json' => true, 'product_id' => !empty($_GET['product_id']) ? $_GET['product_id'] : 0, 'category_id' => !empty($_GET['category_id']) ? $_GET['category_id'] : 0));
+
+	language::convert_characters($json, language::$selected['charset'], 'UTF-8');
+	$json = json_encode($json);
+
+	language::convert_characters($json, 'UTF-8', language::$selected['charset']);
+	echo $json;
+
+	exit;
+
+	?>
+	*
+	* - - - - - - - - - - - -
+	* /pages/ajax/option_values_json.inc.php
+	* - - - - - - - - - - - -
+	*
+	<?php
+	header('Content-type: application/json; charset='. language::$selected['charset']);
+
+	$json = functions::form_draw_option_values_list($_GET['option_group_id'], '', '', '', '', array('json' => true, 'product_id' =>!empty($_GET['product_id']) ? $_GET['product_id'] : 0));
+
+	language::convert_characters($json, language::$selected['charset'], 'UTF-8');
+	$json = json_encode($json);
+
+	language::convert_characters($json, 'UTF-8', language::$selected['charset']);
+	echo $json;
+
+	exit;
+
+	*
+	*
+	*==============
+	* New texts to be translated
+	*==============
+	*
+	* Please use the litecart translation module to search the new added text, maybe I forgot some:
+	*
+	* BACK-END:
+	*
+	text_applies_to
+	text_this_product
+	text_more_info_bellow
+
+	*
+	* FRONT-END:
+	*
+
+	text_more_info_bellow
+
+
+	-->
+	<id>Better Attributes Management</id>
+	<version>1.0</version>
+	<vqmver required="true">2.4.0</vqmver>
+	<author>Nicolas Molinari</author>
+	<file name="admin/catalog.app/config.inc.php">
+		<operation error="log">
+			<search position="replace" offset="5"><![CDATA[
+				'title' => language::translate('title_product_groups', 'Product Groups'),
+			]]></search>
+			<add><![CDATA[
+				'title' => language::translate('title_attributes', 'Attributes'),
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="1"><![CDATA[
+			'product_groups' => 'product_groups.inc.php',
+			]]></search>
+			<add><![CDATA[//***REMOVE***]]></add>
+		</operation>
+	</file>
+	<file name="admin/catalog.app/edit_option_group.inc.php">
+		<operation error="log">
+			<search position="replace" offset="290" index="1"><![CDATA[
+	if (!empty($_GET['option_group_id'])) {
+			]]></search>
+			<add><![CDATA[
+	$called_by_product_id = isset($_GET['product_id']) ? (int)$_GET['product_id'] : (document::$ajax ? 0 : NULL);
+
+	if(empty($_GET['category_id']) && !empty($_GET['product_id'])) {
+		$_GET['category_id'] = functions::catalog_get_default($_GET['product_id']);
+	}
+
+	if (!empty($_GET['option_group_id'])) {
+		$option_group = new ctrl_option_group($_GET['option_group_id'], $called_by_product_id);
+	} else {
+		$option_group = new ctrl_option_group();
+		$_GET['option_group_id'] = 0;
+	}
+
+	if (empty($_POST)) {
+		foreach ($option_group->data as $key => $value) {
+			$_POST[$key] = $value;
+		}
+	}
+
+	breadcrumbs::add(!empty($option_group->data['id']) ? language::translate('title_edit_attribute', 'Edit Attribute') : language::translate('title_create_new_attribute', 'Create New Atribute'));
+
+	if (isset($_POST['save'])) {
+
+		try {
+			if (empty($_POST['required'])) $_POST['required'] = 0;
+			if (empty($_POST['values'])) $_POST['values'] = array();
+
+			$fields = array(
+				'product_id',
+				'function',
+				'required',
+				'sort',
+				'name',
+				'description',
+				'values'
+			);
+
+			foreach ($fields as $field) {
+				if (isset($_POST[$field])) $option_group->data[$field] = $_POST[$field];
+			}
+
+			$new_ids = $option_group->save();
+
+			if(document::$ajax) {
+				$json[] = array('new_option_group_id' => $new_ids['option_group_id'], 'new_option_value_id' => $new_ids['option_value_id']);
+				$json = json_encode($json);
+				echo $json;
+			} else {
+				notices::add('success', language::translate('success_changes_saved', 'Changes saved successfully'));
+				header('Location: '. document::link('', array('doc' => 'option_groups'), array('app')));
+			}
+			exit;
+
+		} catch (Exception $e) {
+			notices::add('errors', $e->getMessage());
+		}
+	}
+
+	if (isset($_POST['delete'])) {
+
+		try {
+			if (empty($option_group->data['id'])) throw new Exception(language::translate('error_must_provide_attribute', 'You must provide an attribute'));
+
+			$option_group->delete();
+
+			if(document::$ajax) {
+				$json[] = array('new_option_group_id' => 0, 'new_option_value_id' => 0);
+				$json = json_encode($json);
+				echo $json;
+			} else {
+				notices::add('success', language::translate('success_changes_saved', 'Changes saved successfully'));
+				header('Location: '. document::link('', array('doc' => 'option_groups'), array('app')));
+			}
+			exit;
+
+		} catch (Exception $e) {
+			notices::add('errors', $e->getMessage());
+		}
+	}
+
+
+	?>
+	<div id="edit-product-group">
+		<?php echo (document::$ajax ? '<h3>' : '<h1>' . $app_icon) . (!empty($option_group->data['id']) ? language::translate('title_edit_attribute', 'Edit Attribute') : language::translate('title_create_new_attribute', 'Create New Attribute')) . (document::$ajax ? '</h3>' : '</h1>') . functions::form_draw_form_begin('option_group_form', 'post', false, false, 'style="max-width: 640px;"'); ?>
+		<div class="row">
+			<div class="form-group col-md-auto">
+				<label><?php echo language::translate('title_name', 'Name'); ?></label>
+			<?php foreach (array_keys(language::$languages) as $language_code) echo functions::form_draw_regional_input_field($language_code, 'name['. $language_code .']', true, ''); ?>
+			</div>
+			<div class="form-group col-md-4">
+				<label><?php echo language::translate('title_function', 'Function'); ?></label>
+				<select class="form-control" name="function">
+					<?php if(isset($called_by_product_id)) { ?>
+						<option value="specification"<?php echo $_POST['function'] == 'specification' ? ' selected' : '' ?>>specification</option>
+						<option value="section"<?php echo $_POST['function'] == 'section' ? ' selected' : '' ?>>section</option>
+					<optgroup label="<?php echo language::translate('title_options', 'Options') ?>"><?php } ?>
+
+						<option value="radio"<?php echo $_POST['function'] == 'radio' ? ' selected' : '' ?>>radio</option>
+						<option value="select"<?php echo $_POST['function'] == 'select' ? ' selected' : '' ?>>select</option>
+						<option value="checkbox"<?php echo $_POST['function'] == 'checkbox' ? ' selected' : '' ?>>checkbox</option>
+						<option value="input"<?php echo $_POST['function'] == 'input' ? ' selected' : '' ?>>input</option>
+						<option value="textarea"<?php echo $_POST['function'] == 'textarea' ? ' selected' : '' ?>>textarea</option><?php if(isset($called_by_product_id)) { ?>
+					</optgroup><?php } ?>
+				</select>
+			</div>
+		</div>
+		<div class="form-group" <?php
+		echo (isset($called_by_product_id) && empty(implode($_POST['description']))) ? 'style="display:none"' : '' ?> id="description">
+			<label><?php echo language::translate('title_description', 'Description'); ?></label>
+			<?php foreach (array_keys(language::$languages) as $language_code) echo functions::form_draw_regional_wysiwyg_field($language_code, 'description['. $language_code .']', true, 'style="height: 125px;"'); ?>
+		</div>
+		<?php
+		if (isset($called_by_product_id) && empty(implode($_POST['description']))) { ?>
+			<div class="form-group" id="add_description">
+				<a class="add" href="#"><?php echo functions::draw_fonticon('fa-plus-circle', 'style="color: #66cc66;"'); ?> <?php echo language::translate('title_add_description', 'Add Description'); ?></a>
+			</div>
+		<?php
+		}
+		?>
+
+		<!-- Mutliset -->
+
+		<div id="option-values-multiset">
+			<div id="options-sorting" class="row">
+				<div class="form-group col-md-auto">
+					<label><?php echo language::translate('title_sort', 'Sort'); ?></label>
+					<div class="radio">
+						<label><?php echo functions::form_draw_radio_button('sort', 'alphabetical', true); ?> <?php echo language::translate('title_alphabetical', 'Alphabetical'); ?></label>
+					</div>
+					<div class="radio">
+						<label><?php echo functions::form_draw_radio_button('sort', 'priority', true); ?> <?php echo language::translate('title_priority', 'Priority'); ?></label>
+					</div>
+					<div class="radio">
+						<label><?php echo functions::form_draw_radio_button('sort', 'product', true); ?> <?php echo language::translate('text_set_by_product', 'Set by product'); ?></label>
+					</div>
+				</div>
+				<div class="form-group col-md-4">
+					<label><?php echo language::translate('title_required', 'Required'); ?></label>
+					<div class="checkbox">
+						<label><?php echo functions::form_draw_checkbox('required', '1', true); ?> <?php echo language::translate('title_yes', 'Yes'); ?></label>
+					</div>
+				</div>
+			</div>
+			<?php if(!isset($called_by_product_id)) { ?><h2><?php echo language::translate('title_values', 'Values'); ?></h2><?php } ?>
+			<table class="table table-striped table-hover data-table">
+				<thead>
+					<tr>
+						<th class="apply_to_any_product"><?php echo language::translate('title_id', 'ID'); ?></th>
+						<th class="main"<?php echo (isset($called_by_product_id)) ? ' style="width:70%"' : '' ?>><?php echo language::translate('title_value', 'Value'); ?></th>
+						<?php if($called_by_product_id) { ?>
+							<th class="main" style="width:10%"></th>
+							<th style="width:10%" class="main"><?php echo language::translate('title_quantity_unit', 'Unity'); ?></th>
+							<th style="width:10%;white-space:normal" class="apply_to_any_product"><?php echo language::translate('title_all', 'All'); ?>*</th>
+						<?php } ?>
+						<th class="apply_to_any_product">&nbsp;</th>
+					</tr>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					$displayed_values_ids = '';
+					if (!empty($_POST['values'])) foreach (array_keys($_POST['values']) as $key) {
+						$displayed_values_ids .= $_POST['values'][$key]['id'] . ',';
+					?>
+						<tr>
+							<td class="apply_to_any_product"><?php echo (isset($_POST['values'][$key]['id']) ? $_POST['values'][$key]['id'] : '') . functions::form_draw_hidden_field('values['. $key .'][id]', true);
+							?></td>
+							<td>
+								<?php foreach (array_keys(language::$languages) as $language_code)
+								echo functions::form_draw_regional_input_field($language_code, 'values['. $key .'][name]['. $language_code .']', true, ''); ?></td>
+
+							<?php if(isset($called_by_product_id)) { ?>
+
+								<td><?php
+								echo functions::form_draw_text_field('values['. $key .'][value]', true, ''); ?></td>
+
+								<td><?php
+								echo functions::form_draw_quantity_units_list('values['. $key .'][unit_id]', true, false); ?></td>
+
+								<td style="text-align:center;vertical-align:middle" class="apply_to_any_product"><?php
+								echo functions::form_draw_hidden_field('values['. $key .'][product_id]', $called_by_product_id) . functions::form_draw_checkbox('values['. $key .'][product_id]', '0', true); ?></td>
+
+							<?php } ?>
+
+							<td class="text-right apply_to_any_product"><a class="move-up" href="#" title="<?php  echo language::translate('text_move_up', 'Move up'); ?>"><?php
+							echo functions::draw_fonticon('fa-arrow-circle-up fa-lg', 'style="color: #3399cc;"'); ?></a> <a class="move-down" href="#" title="<?php echo language::translate('text_move_down', 'Move down'); ?>"><?php
+							echo functions::draw_fonticon('fa-arrow-circle-down fa-lg', 'style="color: #3399cc;"'); ?></a> <a class="remove" href="#" <?php echo 'id="remove_value_' . $_POST['values'][$key]['id'] . '"'; ?> title="<?php echo language::translate('title_remove', 'Remove'); ?>"><?php
+							echo functions::draw_fonticon('fa-times-circle fa-lg', 'style="color: #cc3333;"'); ?></a>
+							</td>
+						</tr>
+					<?php }
+					if(substr($displayed_values_ids, -1) == ',') {
+						$displayed_values_ids = substr($displayed_values_ids, 0, -1);
+					}
+					?>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="3"><a class="add apply_to_any_product" href="#"<?php echo $_POST['function'] == 'specification' ? ' style="display:none"' : '' ?>><?php echo functions::draw_fonticon('fa-plus-circle', 'style="color: #66cc66;"'); ?> <?php echo language::translate('title_add_value', 'Add Value'); ?></a></td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+
+		<!-- Range -->
+
+		<div id="option-values-range">
+			<h2><?php echo language::translate('title_values', 'Values'); ?></h2>
+			<table class="table table-striped table-hover data-table">
+				<thead>
+					<tr>
+						<th><?php echo language::translate('title_id', 'ID'); ?></th>
+						<th width="100%"><?php echo language::translate('title_value', 'Value'); ?></th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					if (!empty($_POST['values'])) {
+						$keys = array_keys($_POST['values']);
+						$key = array_shift($keys);
+					} else {
+						$key = 0;
+					}
+					?>
+					<tr>
+						<td><?php echo isset($_POST['values'][$key]['id']) ? $_POST['values'][$key]['id'] : ''; ?><?php echo functions::form_draw_hidden_field('values['. $key .'][id]', true); ?></td>
+						<td><?php echo language::translate('title_range', 'Range'); ?>: <?php echo functions::form_draw_text_field('values['. $key .'][value]', true); ?> (<?php echo language::translate('title_example', 'Example'); ?>: 100-400)</td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<!-- Input -->
+
+		<div id="option-values-input">
+			<h2><?php echo language::translate('title_values', 'Values'); ?></h2>
+			<table class="table table-striped table-hover data-table">
+				<thead>
+					<tr>
+						<th><?php echo language::translate('title_id', 'ID'); ?></th>
+						<th width="100%"><?php echo language::translate('title_value', 'Value'); ?></th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					if (!empty($_POST['values'])) {
+						$keys = array_keys($_POST['values']);
+						$key = array_shift($keys);
+					} else {
+						$key = 0;
+					}
+					?>
+					<tr>
+						<td><?php echo isset($_POST['values'][$key]['id']) ? $_POST['values'][$key]['id'] : ''; ?><?php echo functions::form_draw_hidden_field('values['. $key .'][id]', true); ?></td>
+						<td><?php echo language::translate('title_default', 'Default'); ?>: <?php echo functions::form_draw_text_field('values['. $key .'][value]', true); ?></td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<!-- Textarea -->
+
+		<div id="option-values-textarea">
+			<h2><?php echo language::translate('title_values', 'Values'); ?></h2>
+			<table class="table table-striped table-hover data-table">
+				<thead>
+					<tr>
+						<th><?php echo language::translate('title_id', 'ID'); ?></th>
+						<th width="100%"><?php echo language::translate('title_value', 'Value'); ?></th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					if (!empty($_POST['values'])) {
+						$keys = array_keys($_POST['values']);
+						$key = array_shift($keys);
+					} else {
+						$key = 0;
+					}
+					?>
+					<tr>
+						<td><?php echo isset($_POST['values'][$key]['id']) ? $_POST['values'][$key]['id'] : ''; ?><?php echo functions::form_draw_hidden_field('values['. $key .'][id]', true); ?></td>
+						<td><?php echo language::translate('title_default', 'Default'); ?>: <?php echo functions::form_draw_textarea('values['. $key .'][value]', true); ?></td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="row">
+			<div class="form-group col-md-auto" >
+				<?php
+					echo '<p class="btn-group">' .
+					functions::form_draw_button('save', language::translate('title_save', 'Save'), 'submit', '', 'save') .
+					functions::form_draw_button('cancel', language::translate('title_cancel', 'Cancel'), 'button', 'onclick="' . (isset($called_by_product_id) ? '$.featherlight.close()' : 'history.go(-1);') . '"', 'cancel') .
+
+					((!empty($option_group->data['id'])) ?
+						functions::form_draw_button('delete', language::translate('title_delete', 'Delete'), 'submit', 'onclick="if (!window.confirm(\''. language::translate('text_are_you_sure', 'Are you sure?') .'\')) return false;"', 'delete') : '') . '</p>';
+				?>
+			</div>
+			<?php
+				if(isset($called_by_product_id)) {
+			?>
+				<div class="form-group col-md-auto" class="apply_to_any_product" style="float:right">
+					<?php
+						echo language::translate('text_applies_to', 'Applies to') . ':&nbsp;' . functions::form_draw_parent_categories_list('product_id', true, false, false, $_GET['category_id'], true, array('name' => language::translate('text_this_product', 'This product'), 'id' => $called_by_product_id));
+					?>
+				</div>
+			<?php
+				}
+			?>
+		</div>
+	</div>
+	<?php echo functions::form_draw_form_end(); ?>
+
+	<script>
+		$('#add_description').on('click', function() {
+			$(this).hide();
+			$('#description').show();
+		});
+
+		/**/multisetStr = $('#option-values-multiset');
+		/****/oSortingSr = $('#options-sorting');
+		/**/oRangeStr = $('#option-values-range');
+		/**/oInputStr = $('#option-values-input');
+		/**/oTextArStr = $('#option-values-textarea');
+
+		allElementToAnyProduct = $('.apply_to_any_product');
+		thisBox = $('#edit-product-group');
+
+		thisBox.find('select[name="function"]').on('change', function() {
+
+			multisetStr.hide();
+			oSortingSr.hide();
+			oRangeStr.hide();
+			oInputStr.hide();
+			oTextArStr.hide();
+
+			allElementToAnyProduct = $('.apply_to_any_product');
+			allElementToAnyProduct.hide();
+
+			$('div[id^="option-values"] input, div[id^="option-values"] textarea').attr('disabled', 'disabled');
+
+			switch ($(this).find('option:selected').val()) {
+
+				case 'select':
+				case 'checkbox':
+				case 'radio':
+					allElementToAnyProduct.show();
+					multisetStr.show().find('input').removeAttr('disabled');
+					oSortingSr.show();
+					break;
+				case 'range':
+					allElementToAnyProduct.show();
+					oSortingSr.show();
+					oRangeStr.show().find('input').removeAttr('disabled');
+					break;
+				case 'input':
+					allElementToAnyProduct.show();;
+					oSortingSr.show();
+					oInputStr.show().find('input').removeAttr('disabled');
+					break;
+				case 'textarea':
+					allElementToAnyProduct.show();
+					oSortingSr.show();
+					oTextArStr.show().find('textarea').removeAttr('disabled');
+					break;
+				case 'specification':
+					allElementToAnyProduct.show();
+					multisetStr.show().find('input').removeAttr('disabled');
+					break;
+				case 'section':
+					multisetStr.find('input').removeAttr('disabled');
+					break;
+			}
+		});
+
+		<?php
+		if(isset($called_by_product_id)) {
+		?>
+
+			thisGroupToAnyProductSr = thisBox.find('input[type=checkbox][name="product_id"]');
+			eachValueToAnyProductSr = thisBox.find('input[type=checkbox][name$="[product_id]"]');
+
+			thisGroupToAnyProductSr.on('change', function() {
+				if(thisGroupToAnyProductSr.is(":checked")) {
+					eachValueToAnyProductSr.attr('checked', 'checked');
+				} else {
+					eachValueToAnyProductSr.removeAttr('checked');
+				}
+			});
+
+			// Turn on/off each delete buttons for both group_id or valueS_idS which are used in both db & js
+			var group_id = 'group_<?php echo (int)$_GET['option_group_id'] ?>';
+
+			if ((used_id.option[group_id] ? used_id.option[group_id] : false) ||
+				(used_id.stock[group_id] ? used_id.stock[group_id] : false)) {
+				thisBox.find('button[name="delete"]').attr('disabled', 'disabled');
+			}
+
+			var displayed_values_ids = [<?php echo $displayed_values_ids ?>];
+
+			displayed_values_ids.forEach(function(id) {
+				var value_id = 'value_' + id;
+
+				if ((used_id.option[value_id] ? used_id.option[value_id] : false) ||
+					(used_id.stock[value_id] ? used_id.stock[value_id] : false)) {
+					thisBox.find('.remove #remove_' + value_id).toggleClass('disabled');
+				}
+			});
+
+			// Submit form
+			$('form[name="option_group_form"]').on('submit', function(e){
+				e.preventDefault();
+				$('body').css('cursor', 'wait');
+				$.ajax({
+					url: '<?php echo document::link('', array(), true) ?>',
+					type: 'post',
+					data: $(this).closest('form').serialize() + '&' + document.activeElement.getAttribute('name') + '&token=<?php echo form::session_post_token(); ?>',
+					cache: false,
+					async: true,
+					dataType: 'json',
+					error: function(jqXHR, textStatus, errorThrown) {
+						alert(jqXHR.readyState + '\n' + textStatus + '\n' + errorThrown.message)
+					},
+					success: function(data) {
+						$.featherlight.close();
+						refreshAllSelectOptionGroups(data, '<?php echo $_GET['caller_name'] ?>');
+					},
+					complete: function(data) {
+						$('body').css('cursor', 'auto');
+					}
+				});
+			});
+			$('form[name="option_group_form"] #description').find('textarea').trumbowyg({
+				btns: [["viewHTML"], ["formatting"], ["strong", "em", "underline", "del"], ["link"], ["insertImage"], ["table"], ["justifyLeft", "justifyCenter", "justifyRight"], ["lists"], ["foreColor", "backColor"], ["preformatted"], ["horizontalRule"], ["removeformat"], ["fullscreen"]],
+				btnsDef: {
+					lists: {
+						dropdown: ["unorderedList", "orderedList"],
+						title: "Lists",
+						ico: "unorderedList"
+					}
+				},
+				lang: "<?php echo language::$selected['code'] ?>",
+				autogrowOnEnter: true,
+				imageWidthModalEdit: true,
+				removeformatPasted: true
+			});
+		<?php
+		} else { ?>
+			$('#add_description').trigger('click');
+		<?php
+		}
+		?>
+
+		var new_value_index = 1;
+
+		$('#option-values-multiset').on('click', '.add', function(event) {
+			event.preventDefault();
+			while ($('input[name^="values[new_'+ new_value_index +'][id]"]').length) new_value_index++;
+			var output = '<tr>' +
+			'<tr>'
+			+ '<td class="apply_to_any_product"><?php echo functions::general_escape_js(functions::form_draw_hidden_field('values[new_value_index][id]', true)) ; ?></td>'
+			+ '<td><?php foreach (array_keys(language::$languages) as $language_code) echo functions::general_escape_js(functions::form_draw_regional_input_field($language_code, 'values[new_value_index][name]['. $language_code .']', '')); ?></td>'
+
+			<?php if(isset($called_by_product_id)) { ?>
+
+				+ '<td><?php   echo functions::form_draw_text_field('values[new_value_index][value]', ''); ?></td>'
+
+				+ '<td><?php echo functions::general_escape_js(functions::form_draw_quantity_units_list('values[new_value_index][unit_id]', '')); ?></td>'
+
+				+ '<td style="text-align:center;vertical-align:middle" class="apply_to_any_product">  <?php echo functions::general_escape_js(functions::form_draw_hidden_field('values[new_value_index][product_id]', $called_by_product_id)) .  functions::general_escape_js(functions::form_draw_checkbox('values[new_value_index][product_id]', '0')); ?></td>'
+
+			<?php } ?>
+
+			+ '<td class="text-right apply_to_any_product"><a class="move-up" href="#" title="<?php  echo language::translate('text_move_up', 'Move up'); ?>"><?php echo functions::general_escape_js(functions::draw_fonticon('fa-arrow-circle-up fa-lg', 'style="color: #3399cc;"')); ?></a> <a class="move-down" href="#" title="<?php echo functions::general_escape_js(language::translate('text_move_down', 'Move down')); ?>"><?php echo functions::general_escape_js(functions::draw_fonticon('fa-arrow-circle-down fa-lg', 'style="color: #3399cc;"')); ?></a> <a class="remove" href="#" title="<?php echo functions::general_escape_js(language::translate('title_remove', 'Remove')); ?>"><?php echo functions::general_escape_js(functions::draw_fonticon('fa-times-circle fa-lg', 'style="color: #cc3333;"')); ?></a>'
+			+ '</td>'
+			+ '</tr>';
+
+			output = output.replace(/new_value_index/g, 'new_' + new_value_index);
+			$(this).closest('table').find('tbody').append(output);
+		});
+
+		$('#option-values-multiset').on('click', '.move-up, .move-down', function(event) {
+			event.preventDefault();
+			var row = $(this).closest('tr');
+
+			if ($(this).is('.move-up') && $(row).prevAll().length) {
+				$(row).insertBefore($(row).prev());
+			} else if ($(this).is('.move-down') && $(row).nextAll().length) {
+				$(row).insertAfter($(row).next());
+			}
+		});
+
+		$('#option-values-multiset').on('click', '.remove', function(event) {
+			event.preventDefault();
+			$(this).closest("tr").remove();
+		});
+		$('select[name=function]').trigger('change');
+		<?php
+		if(!$_GET['option_group_id']) {
+		?>
+			$('#option-values-multiset .add').trigger('click');
+		<?php
+		}
+		?>
+	</script>
+			]]></add>
+		</operation>
+	</file>
+	<file name="admin/catalog.app/edit_product.inc.php">
+		<operation error="log">
+			<search position="after"><![CDATA[
+	$product = new ctrl_product();
+			]]></search>
+			<add><![CDATA[
+	$_GET['product_id'] = -999999999;
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="before"><![CDATA[
+	if (empty($_POST)) {
+			]]></search>
+			<add><![CDATA[
+	if(empty($_GET['category_id']) && !empty($_GET['product_id'])) {
+		$_GET['category_id'] = functions::catalog_get_default($_GET['product_id']);
+	}
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="before"><![CDATA[
+	if (isset($_POST['delete'])) {
+			]]></search>
+			<add><![CDATA[
+	else {
+			$product->delete_options(-999999999);
+	}
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+			if (!isset($_POST['product_groups'])) $_POST['product_groups'] = array();
+			]]></search>
+			<add><![CDATA[//***REMOVE***]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+				'product_groups',
+			]]></search>
+			<add><![CDATA[//***REMOVE***]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+				'attributes',
+			]]></search>
+			<add><![CDATA[//***REMOVE***]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+		<li><a data-toggle="tab" href="#tab-options"><?php echo language::translate('title_options', 'Options'); ?></a></li>
+			]]></search>
+			<add><![CDATA[
+		<li><a data-toggle="tab" href="#tab-options"><?php echo language::translate('title_attributes', 'Attributes'); ?></a></li>
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="33"><![CDATA[
+						<label><?php echo language::translate('title_product_groups', 'Product Groups'); ?></label>
+			]]></search>
+			<add><![CDATA[//***REMOVE***]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="6"><![CDATA[
+				<?php foreach (array_keys(language::$languages) as $language_code) echo functions::form_draw_regional_wysiwyg_field($language_code, 'description['. $language_code .']', true, 'style="height: 125px;"'); ?>
+			]]></search>
+			<add><![CDATA[
+			<?php foreach (array_keys(language::$languages) as $language_code) echo functions::form_draw_regional_wysiwyg_field($language_code, 'description['. $language_code .']', true, 'style="height: 125px;"'); ?>
+			</div>
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+			<h2><?php echo language::translate('title_options', 'Options'); ?></h2>
+			]]></search>
+			<add><![CDATA[
+			<h2><?php echo language::translate('title_attributes', 'Attibutes'); ?></h2>
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+							<th style="min-width: 200px;"><?php echo language::translate('title_value', 'Value'); ?></th>
+			]]></search>
+			<add><![CDATA[
+						<th>&nbsp;</th>
+						<th style="min-width: 180px;"><?php echo language::translate('title_value', 'Value'); ?></th>
+						<th style="width: 80px;"><?php echo language::translate('title_filter', 'Filter'); ?></th>
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="13"><![CDATA[
+		foreach (array_keys($_POST['options']) as $key) {
+			]]></search>
+			<add><![CDATA[
+		foreach (array_keys($_POST['options']) as $key) {
+			$option_groups_query = database::query("select function from " . DB_TABLE_OPTION_GROUPS . " where id = '" . (int)$_POST['options'][$key]['group_id'] . "'");
+			$option_groups = database::fetch($option_groups_query);
+			?>
+			<tr<?php echo ($option_groups['function'] == 'section') ? ' class="section"' : ''?>>
+				<td><?php
+					//group list
+				echo functions::form_draw_option_groups_list('options['.$key.'][group_id]', true, false, '', array('product_id' => $_GET['product_id'], 'category_id' => $_GET['category_id'])); ?></td>
+
+
+				<td style="vertical-align: middle;"><a href="#" class="edit"><i class="fa fa-pencil"<?php echo $option_groups['function'] == 'section' ? '' : ' style="display:none"'?>></i></td>
+				<td><?php
+					//value list
+				echo functions::form_draw_option_values_list($_POST['options'][$key]['group_id'], 'options['.$key.'][value_id]', true, false, '', array('product_id' => $_GET['product_id'], 'hidden' => $option_groups['function'] == 'section')) ?></td>
+
+				<td style="text-align: center;vertical-align: middle"><?php
+					//filter
+				echo functions::form_draw_checkbox('options['.$key.'][filter]', '1', true, 'class="no-toggle"' . ($option_groups['function'] == 'section' ? ' style="display:none"' : '')); ?></td>
+
+				<td style="text-align: center;"><?php
+					//price operator
+					echo functions::form_draw_select_field('options['.$key.'][price_operator]', array('+','%','*'),
+				$_POST['options'][$key]['price_operator'], false, ' id="' . ($i=0) . '_options['.$key.'][currency_id]"', in_array($option_groups['function'], array('section', 'specification'))); ?></td>
+
+				<td><?php
+					//currencies
+				echo functions::form_draw_currency_field(settings::get('store_currency_code'), 'options['.$key.']['.settings::get('store_currency_code').']', true, ' id="' . (++$i) . '_options['.$key.'][currency_id]"', in_array($option_groups['function'], array('section', 'specification'))); ?></td>
+
+				<?php
+				foreach (array_keys(currency::$currencies) as $currency_code) {
+					if ($currency_code == settings::get('store_currency_code')) continue;
+				?>
+					<td><?php echo str_replace(PHP_EOL, '', functions::form_draw_currency_field($currency_code, 'options['.$key.']['. $currency_code. ']', number_format((float)$_POST['options'][$key][$currency_code], 4, '.', ''), true, ' id="' . (++$i) . '_options['.$key.'][currency_id]"', in_array($option_groups['function'], array('section', 'specification')))); ?></td>
+				<?php
+				}
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="1"><![CDATA[
+							<td><?php echo functions::form_draw_option_groups_list('new_option[new_1][group_id]', ''); ?></td>
+			]]></search>
+			<add><![CDATA[
+						<td><?php echo functions::form_draw_option_groups_list('new_option[new_1][group_id]'); ?></td>
+						<td><?php echo functions::form_draw_select_field('new_option[new_1][value_id]', array(array('','')), '', false, 'disabled="disabled"'); ?></td>
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after"><![CDATA[
+<?php echo functions::form_draw_form_end(); ?>
+			]]></search>
+			<add><![CDATA[
+<div id="new-og-sample" style="display:none"><?php echo functions::form_draw_option_groups_list('new_option[new_option_i][group_id]', '', false, '', array('product_id' => $_GET['product_id'], 'category_id' => $_GET['category_id'])); ?></div>
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after"><![CDATA[
+// Initiate
+			]]></search>
+			<add><![CDATA[
+	<?php
+	$used_id = array('option' => array(), 'stock' => array());
+	$products_options_query = database::query(
+		"select group_id, value_id from ". DB_TABLE_PRODUCTS_OPTIONS
+	);
+	while($products_option = database::fetch($products_options_query)) {
+		@$used_id['option']['group_' . $products_option['group_id']]++;
+		@$used_id['option']['value_' . $products_option['value_id']]++;
+	}
+	$products_options_stock_query = database::query(
+		"select combination from ". DB_TABLE_PRODUCTS_OPTIONS_STOCK
+	);
+	while($products_options_stock = database::fetch($products_options_stock_query)) {
+		foreach(explode(',', $products_options_stock['combination']) as $combination) {
+			list($group_id, $value_id) = explode('-', $combination);
+			@$used_id['stock']['group_' . $group_id]++;
+			@$used_id['stock']['value_' . $value_id]++;
+		}
+	}
+
+	echo 'var used_id = ' . json_encode($used_id) . ';' . PHP_EOL;
+	?>
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="6"><![CDATA[
+// Attributes
+			]]></search>
+			<add><![CDATA[//***REMOVE***]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after"><![CDATA[
+// Options
+			]]></search>
+			<add><![CDATA[
+
+	$('#table-options').on('click', '.edit', function(e) {
+		e.preventDefault();
+		$(this).closest('tr').find('select[name$="[value_id]"]').trigger('change', '-999999999');
+	});
+
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after" offset="1"><![CDATA[
+	$('#table-options').on('click', '.remove', function(e) {
+			]]></search>
+			<add><![CDATA[
+		var group = 'group_' + $(this).closest('tr').find('select[name$="[group_id]"]').val();
+		var value = 'value_' + $(this).closest('tr').find('select[name$="[value_id]"]').val();
+		if(used_id.option[group]) {
+			used_id.option[group]--;
+		}
+		if(used_id.option[value]) {
+			used_id.option[value]--;
+		}
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="43"><![CDATA[
+	$('#table-options').on('change', 'select[name^="options"][name$="[group_id]"]', function(){
+			]]></search>
+			<add><![CDATA[
+	var edit_option_path = '<?php echo document::link('', array('doc' => 'edit_option_group', 'product_id' => $_GET['product_id'], 'category_id' => $_GET['category_id'], "option_group_id" => "__"), array('app')) ?>';
+	var option_values_path = '<?php echo document::ilink('ajax/option_values.json'); ?>';
+
+	$('#table-options, #new-stock-option').on({
+		'focus' : function() {
+			$(this).data('val', $(this).val());
+			if(this.name.search('value') > 0) {
+				$('select[name="' + this.name.replace(/value/, 'group') + '"]').triggerHandler('change');
+			}
+		},
+		'click' : function() {
+			$(this).data('val', $(this).val());
+		},
+		'change': function(e, new_id) {
+			var valueSr = $('select[name="'+ this.name.replace(/group/, 'value') +'"]');
+			var is_group = this.name.search('group') > 0;
+			choice = (new_id != 'undefined' && new_id > 0 ? new_id : (is_group ? valueSr.val() : $(this).val()));
+			if($(this).val() == -999999999 || new_id == -999999999) {
+				$(this).val($(this).data('val'));
+				$.featherlight(
+					edit_option_path.replace((is_group ? '&option_group_id=' : '') + '__', (is_group ? '': $('select[name="' + this.name.replace(/value/, 'group') + '"]').val())) + '&caller_name=' + this.name,
+					{
+						loading: '<div class="loader" style="width: 128px; height: 128px; opacity: 0.5;"></div>',
+						closeIcon: '&#x2716;',
+						afterClose: function() {
+							$('body').css('cursor', 'auto');
+						}
+					}
+				)
+			} else if (is_group) {
+				var filterSr = $('input:checkbox[name="'+ this.name.replace(/group_id/, 'filter') +'"]');
+				var currencySr = $('[id$="'+ this.name.replace(/group/, 'currency') +'"]').parent();
+				var rowSr = $(this).closest('tr');
+				var pencilSr = rowSr.find('i[class$="fa-pencil"]');
+				var type = $(this).find('option:selected').text().split(/[\[\]]/)[1];
+
+				switch (type) {
+					case 'section':
+						pencilSr.show();
+						valueSr.parent().hide();
+						filterSr.hide();
+						currencySr.hide();
+						rowSr.addClass('section')
+						break;
+					case 'specification':
+						pencilSr.hide();
+						valueSr.parent().show();
+						filterSr.show();
+						currencySr.hide();
+						rowSr.removeClass('section');
+						break;
+					default:
+						pencilSr.hide();
+						valueSr.parent().show();
+						filterSr.show();
+						currencySr.show();
+						rowSr.removeClass('section')
+				}
+
+				$('body').css('cursor', 'wait');
+				$.ajax({
+					url: option_values_path + '?&option_group_id=' + $(this).val() + ($(this).closest('#new-stock-option').hasClass('lightbox') ? '' : '&product_id=<?php echo $_GET['product_id'] ?>&category_id=<?php echo $_GET['category_id'] ?>'),
+					type: 'get',cache: true, async: true, dataType: 'json',
+					error: function(jqXHR, textStatus, errorThrown) {
+						alert(jqXHR.readyState + '\n' + textStatus + '\n' + errorThrown.message);
+					},
+					success: function(data) {
+						valueSr.html('');
+						if (valueSr.attr('disabled')) valueSr.removeAttr('disabled');
+						if (data) {
+							valueSr.append('<option value="">-- <?php echo language::translate('title_select', 'Select') ?> --</option>');
+							$.each(data, function(i, zone) {
+								valueSr.append('<option value="'
+									+ (zone.id != null ? zone.id : '0') + '" '
+									+ (zone.id == choice ? ' selected="selected"' : '') + '>'
+									+ (zone.name != null ? zone.name : '')
+									+'</option>');
+							});
+						} else {
+							valueSr.attr('disabled', 'disabled');
+						}
+					},
+					complete: function() {
+						$('body').css('cursor', 'auto');
+					}
+				});
+			}
+		}
+		},
+		'select[name^="options"][name$="[group_id]"],' +
+		'select[name^="new_option"][name$="[group_id]"],' +
+		'select[name^="options"][name$="[value_id]"]');
+
+	function refreshAllSelectOptionGroups(item, caller_name) {
+		$('body').css('cursor', 'wait');
+		$.ajax({
+			url: '<?php echo document::ilink('ajax/option_groups.json', array('product_id' => $_GET['product_id'], 'category_id' => $_GET['category_id'])); ?>',
+			type: 'get', cache: true,  async: true, dataType: 'json',
+			error: function(jqXHR, textStatus, errorThrown) {
+				alert(jqXHR.readyState + '\n' + textStatus + '\n' + errorThrown.message);
+			},
+			success: function(data) {
+				$('select[name$="[group_id]').each(function() {
+					var name = this.name;
+					var choice = (item[0].new_option_group_id > 0 && name == caller_name ? item[0].new_option_group_id : $(this).val());
+					$(this).html('');
+					if (data) {
+						$.each(data, function(i, zone) {
+							$('select[name="'+ name +'"]').append('<option value="'
+								+ (zone.id != null ? zone.id : '0') +'"'
+								+ (zone.id == choice ? ' selected="selected"' : '') + '>'
+								+ (zone.name != null ? zone.name : '')
+								+ '</option>');
+						});
+					}
+				});
+			},
+			complete: function() {
+				$('select[name="'+ caller_name.replace(/value/, 'group') +'"]').trigger('change', item[0].new_option_value_id);
+				$('body').css('cursor', 'auto');
+			}
+		});
+	}
+	var new_option_i = 1;
+	$('#table-options').on('click', '.add', function(e) {
+		e.preventDefault();
+
+		var output = '<tr>'
+		+ '  <td>' + $("#new-og-sample").html().replace('new_option', 'options') + '</td>'
+		+ '  <td style="vertical-align: middle"><a href="#" class="edit"><i class="fa fa-pencil" style="display:none"></i></a></td>'
+		+ '  <td><?php echo functions::general_escape_js(functions::form_draw_select_field('options[new_option_i][value_id]', array(array('','')))); ?></td>'
+		+ '  <td style="text-align: center;vertical-align: middle"><?php echo  functions::general_escape_js(functions::form_draw_hidden_field('options[new_option_i][filter]', 1)) . functions::general_escape_js(functions::form_draw_checkbox('options[new_option_i][filter]', 0, '', 'class="no-toggle"')); ?></td>'
+		+ '  <td class="text-center"><?php echo functions::general_escape_js(functions::form_draw_select_field('options[new_option_i][price_operator]', array('+','*'), '+', false, 'id="' . ($i=0) . '_options[new_option_i][currency_id]"')); ?></td>'
+		+ '  <td><?php echo functions::general_escape_js(functions::form_draw_currency_field(settings::get('store_currency_code'), 'options[new_option_i]['. settings::get('store_currency_code') .']', 0, 'id="' . (++$i) . '_options[new_option_i][currency_id]"')); ?></td>'
+		<?php
+		foreach (array_keys(currency::$currencies) as $currency_code) {
+			if ($currency_code == settings::get('store_currency_code')) continue;
+		?>
+			+ '  <td><?php echo functions::general_escape_js(functions::form_draw_currency_field($currency_code, 'options[new_option_i]['. $currency_code. ']', '', 'id="' . (++$i) . '_options[new_option_i][currency_id]"')); ?></td>'
+		<?php
+		}
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after" offset="1"><![CDATA[
+	$('#table-stock').on('click', '.remove', function(e) {
+			]]></search>
+			<add><![CDATA[
+		var combination = $(this).closest('tr').attr('id').split(',');
+		combination.forEach(function(c) {
+			id = c.split('-');
+			var group = 'group_' + id[0];
+			var value = 'value_' + id[1];
+			if(used_id.stock[group]) {
+				used_id.stock[group]--;
+			}
+			if(used_id.stock[value]) {
+				used_id.stock[value]--;
+			}
+		});
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="1"><![CDATA[
+							 + '  <td><?php echo functions::general_escape_js(functions::form_draw_option_groups_list('new_option[option_index][group_id]', '')); ?></td>'
+			]]></search>
+			<add><![CDATA[
+							 + '  <td>' + $("#new-og-sample").html().replace(/new_option_i/, 'option_index') + '</td>'
+							 + '  <td><?php echo functions::general_escape_js(functions::form_draw_select_field('new_option[option_index][value_id]', array(array('','')), '', false)); ?></td>'
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+		output = output.replace(/option_index/g, 'new_' + option_index);
+			]]></search>
+			<add><![CDATA[
+		output = output.replace(/option_index/g, 'new_' + option_index).replace(/<option [^[<]+\[(section|specification)\]<\/option>/g, '').replace(/<option value="-999999999">[^<]+\<\/option>/ig, '');
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="28"><![CDATA[
+	$('#new-stock-option').on('change', 'select[name^="new_option"][name$="[group_id]"]', function(){
+			]]></search>
+			<add><![CDATA[
+	$('#table-stock').on('click', function() {
+		$('.lightbox select[name$="[group_id]"] option:contains(\'tion]\')').remove();
+	});
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+			if (groupElement.val() == '') {
+			]]></search>
+			<add><![CDATA[
+			var group_id = $(groupElement).val();
+			var value_id = $(valueElement).val();
+			var group = 'group_' + group_id;
+			var value = 'value_' + value_id;
+			if (!group_id) {
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+			new_option_code += $(groupElement).val() + '-' + $(valueElement).val();
+			]]></search>
+			<add><![CDATA[
+			if(used_id.stock[group]) {
+				used_id.stock[group]++;
+			} else {
+				used_id.stock[group] = 1;
+			}
+			if(used_id.stock[value]) {
+				used_id.stock[value]++;
+			} else {
+				used_id.stock[value] = 1;
+			}
+			new_option_code += value_id + '-' + group_id;
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="1"><![CDATA[
+		if (new_option_code == '') return;
+			]]></search>
+			<add><![CDATA[
+		if (new_option_code == '') return;
+		var output = '<tr id="combination-' + new_option_code +'">'
+			]]></add>
+		</operation>
+	</file>
+	<file name="admin/catalog.app/option_groups.inc.php">
+		<operation error="log">
+			<search position="replace"><![CDATA[
+	<li><?php echo functions::form_draw_link_button(document::link('', array('doc'=> 'edit_option_group'), array('app')), language::translate('title_create_new_group', 'Create New Group'), '', 'add'); ?></li>
+			]]></search>
+			<add><![CDATA[
+	<li><?php echo functions::form_draw_link_button(document::link('', array('doc'=> 'edit_option_group'), array('app')), language::translate('title_create_new_attribute', 'Create New Group'), '', 'add'); ?></li>
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after"><![CDATA[
+		left join ". DB_TABLE_OPTION_GROUPS_INFO ." pcgi on (pcgi.group_id = pcg.id and pcgi.language_code = '". database::input(language::$selected['code']) ."')
+			]]></search>
+			<add><![CDATA[
+		where product_id ='0'
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+				<td colspan="5"><?php echo language::translate('title_option_groups', 'Option Groups'); ?>: <?php echo database::num_rows($option_groups_query); ?></td>
+			]]></search>
+			<add><![CDATA[
+				<td colspan="5"><?php echo language::translate('title_attributes', 'Attributes'); ?>: <?php echo database::num_rows($option_groups_query); ?></td>
+			]]></add>
+		</operation>
+	</file>
+	<file name="includes/boxes/box_filter.inc.php">
+		<operation error="log">
+			<search position="replace" offset="1"><![CDATA[
+				"select product_group_id as id, name from ". DB_TABLE_PRODUCT_GROUPS_INFO ."
+			]]></search>
+			<add><![CDATA[
+			"select id, name from ". DB_TABLE_OPTION_GROUPS_INFO ."
+			where id in ('". implode("', '", array_keys($product_groups)) ."')
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+					'name' => $group['name'],
+			]]></search>
+			<add><![CDATA[
+				'name' => $group['name'] . ' :',
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="3"><![CDATA[
+					"select product_group_value_id as id, name from ". DB_TABLE_PRODUCT_GROUPS_VALUES_INFO ."
+			]]></search>
+			<add><![CDATA[
+					"select povi.value_id as id, povi.name, pov.value, qui.name as unit from ". DB_TABLE_OPTION_VALUES_INFO ." povi
+					left join ". DB_TABLE_OPTION_VALUES ." pov on pov.id = povi.value_id
+					left join ". DB_TABLE_QUANTITY_UNITS_INFO ." qui on (qui.quantity_unit_id = pov.unit_id and qui.language_code = '". database::input(language::$selected['code']) ."')
+					where povi.value_id in ('". implode("', '", $product_groups[$group['id']]) ."')
+					and povi.language_code = '". database::input(language::$selected['code']) ."'
+					order by name;"
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+						'name' => $value['name'],
+			]]></search>
+			<add><![CDATA[
+						'name' => implode(' ', array($value['name'], $value['value'], $value['unit'])),
+			]]></add>
+		</operation>
+	</file>
+	<file name="includes/controllers/ctrl_language.inc.php">
+		<operation error="log">
+			<search position="replace" offset="1"><![CDATA[
+							DB_TABLE_PRODUCT_GROUPS_INFO,
+			]]></search>
+			<add><![CDATA[//***REMOVE***]]></add>
+		</operation>
+	</file>
+	<file name="includes/controllers/ctrl_option_group.inc.php">
+		<operation error="log">
+			<search position="replace"><![CDATA[
+		public function __construct($group_id=null) {
+			]]></search>
+			<add><![CDATA[
+		public function __construct($group_id=null, $product_id=0) {
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+				$this->load((int)$group_id);
+			]]></search>
+			<add><![CDATA[
+			$this->load((int)$group_id, (int)$product_id);
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+		public function load($group_id) {
+			]]></search>
+			<add><![CDATA[
+		public function load($group_id, $product_id=0, $category_id=0) {
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+				where id = '". (int)$group_id ."'
+			]]></search>
+			<add><![CDATA[
+				where id = '". (int)$group_id ."'
+				and " .
+				(
+					$product_id ?
+					"(product_id = '0' or product_id in ('" . (int)$product_id . "'" . (functions::catalog_prepare_db_trailing_categories($category_id ? $category_id :functions::catalog_get_default($product_id), true)) . "))"
+					: "product_id = '0'"
+				) . "
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" index="2"><![CDATA[
+				where group_id = '". (int)$group_id ."'
+			]]></search>
+			<add><![CDATA[
+				where group_id = '". (int)$group_id ."'
+				and " .  ($product_id > 0 ? "(product_id = '" . (int)$product_id . "' or product_id = '0')" : "product_id = '0'") . "
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after"><![CDATA[
+		public function save() {
+			]]></search>
+			<add><![CDATA[
+		$new_id = ['option_group_id' => 0, 'option_value_id' => 0];
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after"><![CDATA[
+			$this->data['id'] = database::insert_id();
+			]]></search>
+			<add><![CDATA[
+			$new_id['option_group_id'] = $this->data['id'];
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after"><![CDATA[
+				$option_value['id'] = database::insert_id();
+			]]></search>
+			<add><![CDATA[
+				$new_id['option_value_id'] = $option_value['id'];
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+				set function = '". database::input($this->data['function']) ."',
+			]]></search>
+			<add><![CDATA[
+				set product_id = '" . database::input($this->data['product_id']) . "',
+				function = '". database::input($this->data['function']) ."',
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+					set value = '". database::input($option_value['value']) ."',
+			]]></search>
+			<add><![CDATA[
+					set product_id = '" . database::input(isset($option_value['product_id']) ? $option_value['product_id'] : 0) ."',
+					value = '". database::input($option_value['value']) ."',
+					unit_id = '". (int)$option_value['unit_id'] ."',
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after" index="1"><![CDATA[
+			cache::clear_cache('option_groups');
+					]]></search>
+			<add><![CDATA[
+			return $new_id;
+					]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+				where combination like '%". (int)$this->data['id'] ."-%';"
+			]]></search>
+			<add><![CDATA[
+				where combination like '%". (int)$this->data['id'] ."-%'
+				limit 1;"
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="4"><![CDATA[
+				$products_options_query = database::query(
+			]]></search>
+			<add><![CDATA[
+				$products_values_stock_query = database::query(
+					"select id from ". DB_TABLE_PRODUCTS_OPTIONS_STOCK ."
+					where combination like '%-". (int)$option_value['id'] ."%
+					limit 1"
+				);
+				if (database::num_rows($products_values_stock_query) > 0) trigger_error('Cannot delete option value linked to products.', E_USER_ERROR);
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+						description = '". @database::input($this->data['description'][$language_code]) ."'
+			]]></search>
+			<add><![CDATA[
+						description = '". @database::input($this->data['description'][$language_code], true) ."'
+			]]></add>
+		</operation>
+	</file>
+	<file name="includes/controllers/ctrl_product.inc.php">
+		<operation error="log">
+			<search position="before" offset="2"><![CDATA[
+	public function load($product_id) {
+			]]></search>
+			<add><![CDATA[
+			$this->delete_options(-999999999);
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after"><![CDATA[
+				$this->data['id'] = database::insert_id();
+			]]></search>
+			<add><![CDATA[
+				//register temporaries options
+				database::query("update ". DB_TABLE_OPTION_GROUPS ." set product_id = '" . (int)$this->data['id'] . "' where product_id = '-999999999'");
+				database::query("update ". DB_TABLE_OPTION_VALUES ." set product_id = '" . (int)$this->data['id'] . "' where product_id = '-999999999'");
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+			$this->data['product_groups'] = !empty($this->data['product_groups']) ? explode(',', $this->data['product_groups']) : array();
+			]]></search>
+			<add><![CDATA[//***REMOVE***]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="2"><![CDATA[
+			$this->data['product_groups'] = array_map('trim', $this->data['product_groups']);
+			]]></search>
+			<add><![CDATA[//***REMOVE***]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after" offset="2"><![CDATA[
+				$this->data['default_category_id'] = reset($this->data['categories']);
+			]]></search>
+			<add><![CDATA[
+			// moved Delete Options by better_products_management
+			database::query(
+				"delete from ". DB_TABLE_PRODUCTS_OPTIONS ."
+				where product_id = '". (int)$this->data['id'] ."'
+				and id not in ('". @implode("', '", array_column($this->data['options'], 'id')) ."');"
+			);
+
+			// Update options
+			$product_groups = '';
+			if (!empty($this->data['options'])) {
+				$i = 0;
+				foreach (array_keys($this->data['options']) as $key) {
+					$i++;
+
+					if (empty($this->data['options'][$key]['id'])) {
+						database::query(
+							"insert into ". DB_TABLE_PRODUCTS_OPTIONS ."
+							(product_id, date_created)
+							values ('". (int)$this->data['id'] ."', '". date('Y-m-d H:i:s') ."');"
+						);
+						$this->data['options'][$key]['id'] = database::insert_id();
+					}
+
+					$sql_currency_options = "";
+					foreach (array_keys(currency::$currencies) as $currency_code) {
+						$sql_currency_options .= $currency_code ." = '". (isset($this->data['options'][$key][$currency_code]) ? (float)$this->data['options'][$key][$currency_code] : 0) ."', ";
+					}
+
+					database::query(
+						"update ". DB_TABLE_PRODUCTS_OPTIONS ."
+						set group_id = '". database::input($this->data['options'][$key]['group_id']) ."',
+						value_id = '". database::input($this->data['options'][$key]['value_id']) ."',
+						price_operator = '". database::input($this->data['options'][$key]['price_operator']) ."',
+						filter = '". database::input($this->data['options'][$key]['filter']) ."',
+						$sql_currency_options
+						priority = '". (int)$i ."',
+						date_updated = '". date('Y-m-d H:i:s') ."'
+						where product_id = '". (int)$this->data['id'] ."'
+						and id = '". (int)$this->data['options'][$key]['id'] ."'
+						limit 1;"
+					);
+					if((int)$this->data['options'][$key]['filter']) {
+						$product_groups .= $this->data['options'][$key]['group_id'] . '-' . $this->data['options'][$key]['value_id'] . ',';
+					}
+				}
+				if(substr($product_groups, -1) == ',') {
+					$product_groups = substr($product_groups, 0, -1);
+				}
+			}
+
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+				product_groups = '". database::input(implode(',', $this->data['product_groups'])) ."',
+			]]></search>
+			<add><![CDATA[
+				product_groups = '". database::input($product_groups) ."',
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="1"><![CDATA[
+					meta_description = '". database::input($this->data['meta_description'][$language_code]) ."',
+			]]></search>
+			<add><![CDATA[
+					meta_description = '". database::input($this->data['meta_description'][$language_code]) ."'
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="41"><![CDATA[
+		// Delete options
+			]]></search>
+			<add><![CDATA[//***REMOVE***]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after" index="2"><![CDATA[
+			cache::clear_cache('products');
+			]]></search>
+			<add><![CDATA[
+			self::delete_options($this->data['id']);
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="before"><![CDATA[
+		public function add_image($file, $filename='') {
+			]]></search>
+			<add><![CDATA[
+		public function delete_options($id) {
+			$option_groups_query = database::query(
+				"select id from ". DB_TABLE_OPTION_GROUPS ."
+				where product_id = '". (int)$id ."';"
+			);
+			while ($option_group = database::fetch($option_groups_query)) {
+				database::query(
+				"delete from ". DB_TABLE_OPTION_GROUPS ."
+				where id = '". (int)$option_group['id'] ."';");
+				database::query(
+				"delete from ". DB_TABLE_OPTION_GROUPS_INFO ."
+				where id = '". (int)$option_group['id'] ."';");
+			}
+			$option_values_query = database::query(
+				"select id from ". DB_TABLE_OPTION_VALUES ."
+				where product_id = '". (int)$id ."';"
+			);
+			while ($option_value = database::fetch($option_values_query)) {
+				database::query(
+				"delete from ". DB_TABLE_OPTION_VALUES ."
+				where id = '". (int)$option_value['id'] ."';");
+				database::query(
+				"delete from ". DB_TABLE_OPTION_VALUES_INFO ."
+				where id = '". (int)$option_value['id'] ."';");
+			}
+		}
+
+			]]></add>
+		</operation>
+	</file>
+	<file name="includes/functions/func_catalog.inc.php">
+		<operation error="log">
+			<search position="before"><![CDATA[
+	function catalog_category_descendants($category_id=0, $language_code='') {
+			]]></search>
+			<add><![CDATA[
+	function catalog_prepare_db_trailing_categories($category_id=0, $negative_ids=false) {
+		$multiply = $negative_ids ? -1 : 1;
+		$ids_string = ',';
+		$trailling_cats = functions::catalog_category_trail($category_id, language::$selected['code']);
+		foreach($trailling_cats as $id => $name) {
+			$ids_string .= "'". ($id * $multiply) . "',";
+		}
+		return substr($ids_string, 0, -1);
+	}
+
+	function catalog_get_default($product_id) {
+		return database::fetch(database::query("select default_category_id from ". DB_TABLE_PRODUCTS ." where id = '". (int)$product_id ."'"))['default_category_id'];
+	}
+
+	function catalog_get_db_option_groups_list($product_id=0, $category_id=0) {
+		$query = "select pcg.id, pcg.function, pcg.required, pcgi.name from ". DB_TABLE_OPTION_GROUPS ." pcg
+		left join ". DB_TABLE_OPTION_GROUPS_INFO ." pcgi on (pcgi.group_id = pcg.id and pcgi.language_code = '". database::input(language::$selected['code']) ."') where " .
+		(
+			$product_id ?
+			"(pcg.product_id = 0 or pcg.product_id in ('" . (int)$product_id . "'" . (functions::catalog_prepare_db_trailing_categories($category_id ? $category_id :functions::catalog_get_default($product_id), true)) . ")) "
+			: "pcg.function not in ('section','specification') "
+		)
+		. "order by pcgi.name asc;";
+		return database::query($query);
+	}
+
+	function catalog_get_db_option_values_list($group_id, $product_id=0) {
+		$query = "select pcv.id, pcvi.name, pcv.value, pcui.name as unit from ". DB_TABLE_OPTION_VALUES ." pcv
+		left join ". DB_TABLE_OPTION_VALUES_INFO ." pcvi on (pcvi.value_id = pcv.id and pcvi.language_code = '". database::input(language::$selected['code']) ."')
+		left join ". DB_TABLE_QUANTITY_UNITS_INFO ." pcui on (pcui.quantity_unit_id = pcv.unit_id and pcvi.language_code = '". database::input(language::$selected['code']) ."')
+		where pcv.group_id = '". (int)$group_id ."'" .
+		(
+			$product_id  ?
+			" and (pcv.product_id = 0 or pcv.product_id = '" . (int)$product_id . "')"
+			: ""
+		)
+		. " order by pcvi.name asc;";
+		return database::query($query);
+	}
+
+			]]></add>
+		</operation>
+	</file>
+	<file name="includes/functions/func_form.inc.php">
+		<operation error="log">
+			<search position="before"><![CDATA[
+	function form_draw_countries_list($name, $input=true, $multiple=false, $parameters='') {
+
+			]]></search>
+			<add><![CDATA[
+	function form_draw_parent_categories_list($name, $input=true, $multiple=false, $parameters=false, $category_id = 0, $negative_ids = false, $bottom_option = '') {
+		$options = array();
+
+		if (empty($multiple)) $options[] = array(language::translate('title_all', 'All'), '0');
+
+		$level=1;
+		$multiply = $negative_ids ? -1 : 1;
+		foreach(functions::catalog_category_trail($category_id, language::$selected['code']) as $id => $cat_name) {
+			$options[] = array(str_repeat('··', $level++) . $cat_name, $id * $multiply);
+		}
+		if(is_array($bottom_option)) {
+			$options[] = array(str_repeat('··', $level) . $bottom_option['name'], $bottom_option['id']);
+		}
+		return functions::form_draw_select_field($name, $options, $input, $multiple, $parameters);
+	}
+
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="12"><![CDATA[
+	function form_draw_currency_field($currency_code, $name, $value=true, $parameters='') {
+			]]></search>
+			<add><![CDATA[
+	function form_draw_currency_field($currency_code, $name, $value=true, $parameters='', $hidden=false) {
+		if ($value === true) $value = form_reinsert_value($name);
+
+		if (empty($currency_code)) $currency_code = settings::get('store_currency_code');
+
+		document::$snippets['javascript']['input-currency-replace-decimal'] = "  $('body').on('change', 'input[data-type=\"currency\"]', function(){" . PHP_EOL
+		. "    if (String($(this).val()).match(/,/)) {" . PHP_EOL
+		. "      $(this).val($(this).val().replace(',', '.'));" . PHP_EOL
+		. "      $(this).trigger('change');" . PHP_EOL
+		. "    }" . PHP_EOL
+		. "  });";
+
+		return '<div class="input-group"' . ($hidden ? ' style="display:none"' : '') .'>' . PHP_EOL
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="4"><![CDATA[
+	function form_draw_select_field($name, $options=array(), $input=true, $multiple=false, $parameters='') {
+			]]></search>
+			<add><![CDATA[
+	function form_draw_select_field($name, $options=array(), $input=true, $multiple=false, $parameters='', $hidden=false) {
+
+		if (!is_array($options)) $options = array($options);
+
+		$html = '<div class="select-wrapper'. ($multiple ? ' multiple' : '') . '"' . ($hidden ? ' style="display:none"' : '') . '>' . PHP_EOL
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="17"><![CDATA[
+	function form_draw_option_groups_list($name, $input=true, $multiple=false, $parameters='') {
+			]]></search>
+			<add><![CDATA[
+	function form_draw_option_groups_list($name, $input=true, $multiple=false, $parameters='', $args=array()) {
+		extract($args);
+
+		$options = array();
+
+		if (empty($multiple)) $options[] = array('-- '. language::translate('title_select', 'Select') . ' --', '');
+
+		$db_query = functions::catalog_get_db_option_groups_list(@$product_id);
+		while ($option_group = database::fetch($db_query)) {
+			$options[] = array($option_group['name'] .' ['. $option_group['function'] .']', $option_group['id']);
+		}
+		if (@$product_id) {
+			$options[] = array(language::translate('title_new', 'New') . '...', -999999999);
+		}
+		if(@$json) {
+			$json = array();
+			foreach($options as $option) {
+				$json[] = array_combine(array('name', 'id'), $option);
+			}
+			return $json;
+		} else {
+			return functions::form_draw_select_field($name, $options, $input, $multiple, $parameters);
+		}
+	}
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="20"><![CDATA[
+	function form_draw_option_values_list($group_id, $name, $input=true, $multiple=false, $parameters='') {
+			]]></search>
+			<add><![CDATA[
+	function form_draw_option_values_list($group_id, $name, $input=true, $multiple=false, $parameters='', $args=array()) {
+		extract($args);
+
+		$options = array();
+
+		if (!$multiple) $options[] = array('-- '. language::translate('title_select', 'Select') . ' --', '');
+
+		$db_query = functions::catalog_get_db_option_values_list($group_id, @$product_id);
+		while ($option_value = database::fetch($db_query)) {
+			$option_value['name'] = implode(' ', array($option_value['name'], $option_value['value'], $option_value['unit']));
+			if (empty($option_value['name'])) $option_value['name'] = '('. language::translate('text_user_input', 'User input') .')';
+			$options[] = array($option_value['name'], $option_value['id']);
+		}
+
+		if (@$product_id) {
+			$option_group_query = database::query("select function from  ". DB_TABLE_OPTION_GROUPS ." where id = '" . (int)$group_id . "'");
+			$option_group = database::fetch($option_group_query);
+			if(in_array($option_group['function'], array('specification', 'select', 'radio', 'checkbox'))) {
+				$options[] = array(language::translate('title_edit', 'Edit') . '...', -999999999);
+			}
+		}
+		if(@$json) {
+			$json = array();
+			foreach($options as $option) {
+				$json[] = array_combine(array('name', 'id'), $option);
+			}
+			return $json;
+		} else {
+			return functions::form_draw_select_field($name, $options, $input, $multiple, $parameters, @$hidden);
+		}
+	}
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="3"><![CDATA[
+		while ($quantity_unit = database::fetch($quantity_units_query)) {
+			]]></search>
+			<add><![CDATA[
+		while ($quantity_unit = database::fetch($quantity_units_query)) {
+			if($quantity_unit['name']) {
+				$options[] = array($quantity_unit['name'], $quantity_unit['id'], 'data-separate="'. (!empty($quantity_unit['separate']) ? 'true' : 'false') .'" data-decimals="'. (int)$quantity_unit['decimals'] .'" title="'. htmlspecialchars($quantity_unit['description']) .'"');
+			}
+		}
+			]]></add>
+		</operation>
+	</file>
+	<file name="includes/library/lib_document.inc.php">
+		<operation error="log">
+			<search position="after"><![CDATA[
+		public static $layout = 'default';
+			]]></search>
+			<add><![CDATA[
+		public static $ajax = false;
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="before"><![CDATA[
+			// Set template
+			]]></search>
+			<add><![CDATA[
+			if (isset($_GET['ajax']) || isset($_POST['ajax']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')) {
+				self::$layout = 'ajax';
+				self::$ajax = true;
+			}
+			]]></add>
+		</operation>
+	</file>
+	<file name="includes/references/ref_product.inc.php">
+		<operation error="log">
+			<search position="replace" offset="1"><![CDATA[
+								"select * from ". DB_TABLE_OPTION_VALUES ."
+			]]></search>
+			<add><![CDATA[
+								"select * from ". DB_TABLE_OPTION_VALUES ." pcv
+								left join  ". DB_TABLE_QUANTITY_UNITS_INFO ." pcui on pcui.quantity_unit_id = pcv.unit_id
+								where pcv.id = '". (int)$product_option['value_id'] ."'
+								and pcui.language_code = '". language::$selected['code'] ."'
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace"><![CDATA[
+							foreach (array('id', 'value') as $key) {
+			]]></search>
+			<add><![CDATA[
+							foreach (array('id', 'value', 'unit_id', 'language_code') as $key) {
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="1"><![CDATA[
+								"select name from ". DB_TABLE_PRODUCT_GROUPS_INFO ."
+			]]></search>
+			<add><![CDATA[
+								"select name from ". DB_TABLE_OPTION_GROUPS_INFO ."
+								where group_id = '". (int)$group_id ."'
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="1"><![CDATA[
+								"select name from ". DB_TABLE_PRODUCT_GROUPS_VALUES_INFO ."
+			]]></search>
+			<add><![CDATA[
+								"select name from ". DB_TABLE_OPTION_VALUES_INFO ."
+								where value_id = '". (int)$value_id ."'
+			]]></add>
+		</operation>
+	</file>
+	<file name="pages/product.inc.php">
+		<operation error="log">
+			<search position="replace"><![CDATA[
+		'attributes' => !empty($product->attributes) ? preg_split('#\r\n|\r|\n#', $product->attributes) : array(),
+			]]></search>
+			<add><![CDATA[
+		'attributes' => $product->attributes,
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="before"><![CDATA[
+// Options
+			]]></search>
+			<add><![CDATA[
+$is_option = true;
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after"><![CDATA[
+// Options
+			]]></search>
+			<add><![CDATA[
+$_page->snippets['attributes'] = array();
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after"><![CDATA[
+		foreach ($product->options as $group) {
+			]]></search>
+			<add><![CDATA[
+		$value = '';
+		$is_option = true;
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after" offset="16"><![CDATA[
+				case 'textarea':
+			]]></search>
+			<add><![CDATA[
+
+				case 'specification':
+
+					$is_option = false;
+					if($group['values']) {
+						$value = array_shift($group['values']);
+						if(!empty($value['name']) || (!empty($value['value']))) {
+							$unit_name = '';
+							if (!empty($value['unit_id'])) {
+								$quantity_units_query = database::query("select name from " . DB_TABLE_QUANTITY_UNITS_INFO . " where quantity_unit_id = '" . (int)$value['unit_id'] . "' and language_code = '" . database::input($value['language_code']) . "'");
+								$quantity_units = database::fetch($quantity_units_query);
+								$unit_name = $quantity_units['name'];
+							}
+							$value = implode(' ', array($value['name'], $value['value'], $unit_name));
+						} else {
+							$value = '';
+						}
+					}
+					break;
+
+				case 'section':
+
+					$is_option = false;
+					if($group['values']) {
+						$value = array_shift($group['values']);
+						if(!empty($value['name'])) {
+							$value = $value['name'];
+						}
+				}
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="replace" offset="5"><![CDATA[
+			$_page->snippets['options'][] = array(
+			]]></search>
+			<add><![CDATA[
+			if($is_option) {
+				$_page->snippets['options'][] = array(
+					'name' => $group['name'],
+					'description' => $group['description'] != '' ? language::translate('text_more_info_bellow', 'More informations bellow') : '',
+					'required' => !empty($group['required']) ? 1 : 0,
+					'values' => $values,
+				);
+				if($group['description'] != '') {
+					$_page->snippets['attributes'][] = array(
+						'name' => $group['name'],
+						'description' => $group['description'],
+						'function' =>  'section',
+						'value' => '',
+					);
+				}
+			} else {
+				$_page->snippets['attributes'][] = array(
+					'name' => $group['name'],
+					'description' => $group['description'],
+					'function' =>  $group['function'],
+					'value' => $value,
+				);
+			}
+			]]></add>
+		</operation>
+	</file>
+	<file name="includes/templates/*.catalog/views/box_product.inc.php">
+		<operation error="log">
+			<search position="replace"><![CDATA[
+						<?php echo $option['description'] ? '<div>' . $option['description'] . '</div>' : ''; ?>
+			]]></search>
+		<add><![CDATA[
+						<?php echo $option['description'] ? '<div><small><i>' . $option['description'] . '</i></small></div>' : ''; ?>
+			]]></add>
+	</operation>
+	<operation error="log">
+		<search position="replace" offset="23" index="1"><![CDATA[
+				<table class="table table-striped table-hover">
+			]]></search>
+		<add><![CDATA[
+					<?php
+					$table_attributes = '';
+					$in_section = false;
+					$attributes_descriptions = '';
+					$report_to_index = 1;
+					if(count($attributes)) {
+						$attributes[] = array('function' => 'section');
+						foreach($attributes as $attribute) {
+							if($attribute['function'] == 'section') {
+								if ($in_section) {
+									if($attributes_descriptions) {
+										$table_attributes .=
+										'   <tr>' . PHP_EOL
+										. '    <td colspan="2">'. $attributes_descriptions .'</td>' . PHP_EOL
+										. '   </tr>' . PHP_EOL;
+										$attributes_descriptions = '';
+									}
+									$table_attributes  .=
+									' </tbody>' . PHP_EOL
+									. '</table>' . PHP_EOL;
+									$report_to_index = 1;
+									$in_section = false;
+								}
+								if(!empty($attribute['name'])) {
+									$table_attributes .=
+									'<table class="table table-striped table-hover">' . PHP_EOL
+									. ' <thead>' . PHP_EOL
+									. '   <tr>' . PHP_EOL
+									. '    <th colspan="2">'. $attribute['name'] .'</th>' . PHP_EOL
+									. '   </tr>' . PHP_EOL
+									. ' </thead>' . PHP_EOL
+									. ' <tbody>' . PHP_EOL;
+									if($attribute['description'] != '') {
+										$table_attributes .=
+										'   <tr>' . PHP_EOL
+										. '    <td colspan="2">' . $attribute['description'] .'</td>' . PHP_EOL
+										. '   </tr>' . PHP_EOL;
+									}
+									$in_section = true;
+								}
+							} else {
+								if($attribute['description'] != '') {
+									$attributes_descriptions .=  '<p><small><sup> ' . $report_to_index . '</sup> <b>' . $attribute['name'] . ' :</b><br/>' . $attribute['description'] . '</small></p>';
+								}
+								$table_attributes .=
+								'   <tr>' . PHP_EOL
+								. '    <td><b>'. trim($attribute['name']) . ($attribute['description'] != '' ? '</b> <sup>' . ($report_to_index++) . '</sup>' : '') . ' :</td>' . PHP_EOL
+								. '    <td>'. trim($attribute['value']) .'</td>' . PHP_EOL
+								. '   </tr>' . PHP_EOL;
+							}
+						}
+					}
+					if($table_attributes) {
+						echo $table_attributes .
+						' </tbody>' . PHP_EOL
+						. '</table>' . PHP_EOL;
+					}
+					?>
+			]]></add>
+	</operation>
+	</file>
+</modification>

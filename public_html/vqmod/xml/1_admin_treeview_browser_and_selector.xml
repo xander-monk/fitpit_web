@@ -1,0 +1,947 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification
+  xmlns="https://github.com/vqmod/vqmod"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="https://github.com/vqmod/vqmod https://raw.githubusercontent.com/vqmod/vqmod/master/vqmod.xsd">
+  <id>Admin Treeview Browser And Selector</id>
+  <version>2.0</version>
+  <vqmver>2.4.0</vqmver>
+  <author>Nicolas Molinari</author>
+  <!--
+  *****************************
+  INCLUDE LIBRARY
+  *****************************
+  -->
+  <file name="includes/library/lib_document.inc.php">
+    <operation error="log">
+      <search position="after"><![CDATA[
+    public static function init() {
+        ]]></search>
+      <add><![CDATA[
+      if(!empty($_GET['refresh'])) {
+        echo '<!DOCTYPE html><html><head><script src="/ext/jquery/jquery-3.4.1.min.js"></script><script>parent.location.reload();parent.$(\'.featherlight.active\').html(\'<div class="loader" style="width: 128px; height: 128px; opacity: 0.5;"></div>\');</script></head></html>';
+        exit;
+      }
+        ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="after"><![CDATA[
+		public static $layout = 'default';
+			]]></search>
+      <add><![CDATA[
+		public static $iframe = false;
+			]]></add>
+    </operation>
+    <operation error="log">
+      <search position="before"><![CDATA[
+			// Set template
+			]]></search>
+      <add><![CDATA[
+      if(!empty($_GET['iframe'])) {
+				self::$iframe = true;
+			}
+			]]></add>
+    </operation>
+  </file>
+  <file name="includes/library/lib_user.inc.php">
+    <operation error="log">
+      <search position="after"><![CDATA[
+			$user['permissions'] = @json_decode($user['permissions'], true);
+			]]></search>
+      <add><![CDATA[
+			if(!empty($user['permissions']['catalog']['docs'])) {
+				foreach($user['permissions']['catalog']['docs'] as $doc) {
+					$user['permissions']['docs'][$doc] = true;
+				}
+			}
+			]]></add>
+    </operation>
+    <operation error="log">
+      <search position="before"><![CDATA[
+    public static function require_login() {
+			]]></search>
+      <add><![CDATA[
+		public static function is_permitted($right) {
+			$tmp = explode('_', $right);
+			$modify = 0; $read = 1; $none = 2;
+
+			if(in_array($tmp[0], array('modify', 'read'))) {
+				$asked_right = $tmp[0];
+				array_shift($tmp);
+				$data_access = implode('_', $tmp);
+
+				if(session::$data['user']['status'] && empty(session::$data['user']['permissions']['data'][$data_access])) {
+					return true;
+				} else {
+					$right = session::$data['user']['permissions']['data'][$data_access];
+					return $$right <= $$asked_right;
+				}
+			} else if (session::$data['user']['status'] && empty(session::$data['user']['permissions']['catalog']['docs'])) {
+				return true;
+			} else {
+				return !empty(session::$data['user']['permissions']['docs'][$right]);
+			}
+		}
+			]]></add>
+    </operation>
+  </file>
+  <file name="includes/library/lib_functions.inc.php">
+    <operation error="log">
+      <search position="before"><![CDATA[
+      return call_user_func_array($function, $arguments);
+      ]]></search>
+      <add><![CDATA[
+        if($file == 'func_form.inc.php') {
+        for($i=0; $i<count($arguments); $i++) {
+          if(is_string($arguments[$i]) && preg_match('#~([0-9]+)\?(\w*)#', $arguments[$i], $matches)) {
+            $arguments[$i] = preg_replace('#(~[0-9]+\?\w*)#', '', $arguments[$i]);
+            if(!user::is_permitted('modify_' . $matches[2]) && !preg_match('#disabled#', $arguments[$i])) {
+              $arguments[$i] .= ' disabled="disabled"';
+            }
+            if(!user::is_permitted('read_' . $matches[2])) {
+              $arguments[$matches[1]-1] = 'XXX';
+            }
+            break;
+          }
+        }
+      }
+      ]]></add>
+    </operation>
+  </file>
+  <file name="includes/library/lib_notices.inc.php">
+    <operation error="log">
+      <search position="after"><![CDATA[
+      else self::$data[$type][] = $msg;
+      ]]></search>
+      <add><![CDATA[
+      if(document::$iframe) {
+        session::$data['notices'] = self::$data;
+        header('Location: '. document::link('', array('refresh' => 'true')));
+        exit;
+      }
+      ]]></add>
+    </operation>
+  </file>
+  <!--
+  *****************************
+  INCLUDE FUNCTIONS
+  *****************************
+  -->
+  <file name="includes/functions/func_draw.inc.php">
+    <operation error="log">
+      <search position="before"><![CDATA[
+  function draw_listing_category($category) {
+      ]]></search>
+      <add><![CDATA[
+
+  function draw_categories_treeview($category_id=0, $depth=1, $count=0) {
+
+    $output = '';
+
+    if ($category_id == 0) {
+      document::$snippets['head_tags']['catalog_treeview'] = '<link rel="stylesheet" href="'. WS_DIR_APP .'ext/jquery/categories-treeview' . (isset(document::$test) && document::$test ? '' : '.min') . '.css" />';
+      document::$snippets['foot_tags']['catalog_treeview'] = '<script src="'. WS_DIR_APP .'ext/jquery/categories-treeview' . (isset(document::$test) && document::$test ? '' : '.min') . '.js"></script>';
+
+      $output .= '<div class="form-group categories" id="categories" style="display:none"><label>' .  language::translate('title_categories', 'Categories') . '</label><div id="treeview" class="form-control"><div class="checkbox' . (isset($_GET['category_id']) && (int)$_GET['category_id'] == 0 ? ' current' : '') . '">'. functions::form_draw_radio_button('category_id', '0', true, 'style="display:none"') . functions::form_draw_checkbox('categories[]', '0', (isset($_POST['categories']) && in_array('0', $_POST['categories'], true)) ? '0' : false, 'data-name="'. htmlspecialchars(language::translate('title_root', 'Root')) .'" data-priority="0"') .' <label>'. functions::draw_fonticon('fa-folder-open root fa-lg', 'title="'. language::translate('title_root', 'Root') .'"') .' ['. language::translate('title_root', 'Root') .']</label></div>' . PHP_EOL;
+    }
+
+    // Output categories
+    $categories_query = database::query(
+      "select c.id, c.status, c.parent_id, ci.name
+      from ". DB_TABLE_CATEGORIES ." c
+      left join ". DB_TABLE_CATEGORIES_INFO ." ci on (ci.category_id = c.id and ci.language_code = '". language::$selected['code'] ."')
+      where c.parent_id = ". (int)$category_id ."
+      order by c.priority asc, ci.name asc;"
+    );
+
+    if(database::num_rows($categories_query)) {
+      $output .= '<div class="folder closed" data-id="' . $category_id . '">';
+      while ($category = database::fetch($categories_query)) {
+        $count++;
+        $has_child = false;
+        if (database::num_rows(database::query("select * from ". DB_TABLE_CATEGORIES ." where parent_id = ". (int)$category['id'] ." limit 1;")) > 0) {
+          $has_child = true;
+        }
+        $output .= '  <div class="checkbox' . (isset($_GET['category_id']) && (int)$_GET['category_id'] == (int)$category['id'] ? ' current' : '') . (empty($category['status']) ? ' semi-transparent' : '') . '">'. functions::form_draw_radio_button('category_id', $category['id'], true, 'style="display:none"') . functions::form_draw_checkbox('categories[]', $category['id'], !empty($_GET['product_id']), 'data-name="'. $category['name'] .'"') . functions::draw_fonticon('fa-circle', 'style="color: '. (!empty($category['status']) ? '#88cc44' : '#ff6644') .';"') .' <label>'. functions::draw_fonticon('fa-folder ' . ($has_child ? '' : 'leaf ') . 'fa-lg folder', 'style="margin-left: '. ($depth*0.5) .'em;"')  .' <span>'. ' <a href="'. document::href_link('', array('category_id' => $category['id']), true, array('query', 'page')) .'">' . ($category['name'] ? $category['name'] : '[untitled]') . '</a></span></label></div>' . PHP_EOL;
+
+        if ($has_child) {
+          $output .= draw_categories_treeview($category['id'], $depth+1, $count);
+        }
+      }
+      $output .= '</div>';
+    }
+
+    database::free($categories_query);
+
+    return $output . ($category_id == 0 ? '</div></div>' : '');
+  }
+
+      ]]></add>
+    </operation>
+  </file>
+  <!--
+  *****************************
+  ADMIN MODULES
+  *****************************
+  -->
+  <file name="admin/catalog.app/config.inc.php">
+    <operation error="log">
+      <search position="replace" offset="1"><![CDATA[
+        'doc' => 'catalog',
+      ]]></search>
+      <add><![CDATA[
+        'doc' => 'catalog',
+        'params' => array('category_id' => '0'),
+      ]]></add>
+    </operation>
+  </file>
+  <file name="admin/catalog.app/edit_category.inc.php">
+    <operation error="log">
+      <search position="replace"><![CDATA[
+    <?php echo $app_icon; ?> <?php echo !empty($category->data['id']) ? language::translate('title_edit_category', 'Edit Category') .': '. $category->data['name'][language::$selected['code']] : language::translate('title_add_new_category', 'Add New Category'); ?>
+      ]]></search>
+      <add><![CDATA[
+    <?php echo (document::$iframe ? '<h3>' : '<h1>' . $app_icon) . (!empty($category->data['id']) ? language::translate('title_edit_category', 'Edit Category') .': '. $category->data['name'][language::$selected['code']] : language::translate('title_add_new_category', 'Add New Category')) .  (document::$iframe ? '</h3>' : '</h1>') ?>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace"><![CDATA[
+    <?php echo functions::form_draw_button('cancel', language::translate('title_cancel', 'Cancel'), 'button', 'onclick="history.go(-1);"', 'cancel'); ?>
+      ]]></search>
+      <add><![CDATA[
+    <?php echo functions::form_draw_button('cancel', language::translate('title_cancel', 'Cancel'), 'button', 'onclick="' . (document::$iframe ? 'window.parent.$.featherlight.close()' : 'history.go(-1)' ) . ';"', 'cancel'); ?>
+      ]]></add>
+    </operation>
+  </file>
+  <file name="admin/catalog.app/edit_manufacturer.inc.php">
+    <operation error="log">
+      <search position="replace"><![CDATA[
+    <?php echo $app_icon; ?> <?php echo !empty($manufacturer->data['id']) ? language::translate('title_edit_manufacturer', 'Edit Manufacturer') :  language::translate('title_add_new_manufacturer', 'Add New Manufacturer'); ?>
+      ]]></search>
+      <add><![CDATA[
+    <?php echo (document::$iframe ? '<h3>' : '<h1>' . $app_icon) . (!empty($manufacturer->data['id']) ? language::translate('title_edit_manufacturer', 'Edit Manufacturer') :  language::translate('title_add_new_manufacturer', 'Add New Manufacturer')) . (document::$iframe ? '</h3>' : '</h1>') ?>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace"><![CDATA[
+    <?php echo functions::form_draw_button('cancel', language::translate('title_cancel', 'Cancel'), 'button', 'onclick="history.go(-1);"', 'cancel'); ?>
+      ]]></search>
+      <add><![CDATA[
+    <?php echo functions::form_draw_button('cancel', language::translate('title_cancel', 'Cancel'), 'button', 'onclick="' . (document::$iframe ? 'window.parent.$.featherlight.close()' : 'history.go(-1)' ) . ';"', 'cancel'); ?>
+      ]]></add>
+    </operation>
+  </file>
+  <file name="admin/pages.app/edit_page.inc.php">
+    <operation error="log">
+      <search position="replace"><![CDATA[
+    <?php echo $app_icon; ?> <?php echo !empty($page->data['id']) ? language::translate('title_edit_page', 'Edit Page') : language::translate('title_create_new_page', 'Create New Page'); ?>
+      ]]></search>
+      <add><![CDATA[
+    <?php echo (document::$iframe ? '<h3>' : '<h1>' . $app_icon) . (!empty($page->data['id']) ? language::translate('title_edit_page', 'Edit Page') : language::translate('title_create_new_page', 'Create New Page')) . (document::$iframe ? '</h3>' : '</h1>') ?>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace"><![CDATA[
+    <?php echo functions::form_draw_button('cancel', language::translate('title_cancel', 'Cancel'), 'button', 'onclick="history.go(-1);"', 'cancel'); ?>
+      ]]></search>
+      <add><![CDATA[
+    <?php echo functions::form_draw_button('cancel', language::translate('title_cancel', 'Cancel'), 'button', 'onclick="' . (document::$iframe ? 'window.parent.$.featherlight.close()' : 'history.go(-1)' ) . ';"', 'cancel'); ?>
+      ]]></add>
+    </operation>
+  </file>
+  <file name="admin/users.app/edit_user.inc.php">
+    <operation error="log">
+      <search position="before"><![CDATA[
+<div class="panel panel-app">
+      ]]></search>
+      <add><![CDATA[
+<style>
+.nested main {
+  padding: 0;
+  overflow: hidden;
+}
+.nested main #content {
+  padding: 0;
+}
+.nested main #content h3 {
+  margin-top: 0;
+}
+.horizontal > label {
+  font-weight: bold;
+}
+.horizontal > label:after {
+  content: ":";
+}
+.horizontal .radio {
+  display: table-cell;
+}
+</style>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="before" offset="3"><![CDATA[
+      <div class="panel-action btn-group">
+      ]]></search>
+      <add><![CDATA[
+      <div class="row">
+        <div class="form-group col-md-auto horizontal">
+          <label><?php echo language::translate('title_purchase_price', 'Purchase Price'); ?></label>
+          <div class="radio">
+            <label><?php echo functions::form_draw_radio_button('permissions[data][purchase_price]', 'modify', true); ?> <?php echo language::translate('title_edit', 'Edit'); ?></label>
+          </div>
+          <div class="radio">
+            <label><?php echo functions::form_draw_radio_button('permissions[data][purchase_price]', 'read', true); ?> <?php echo language::translate('text_read', 'Read'); ?></label>
+          </div>
+          <div class="radio">
+            <label><?php echo functions::form_draw_radio_button('permissions[data][purchase_price]', 'none', true); ?> <?php echo language::translate('text_none', 'None'); ?></label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-auto horizontal">
+          <label><?php echo language::translate('title_in_stock', 'In Stock'); ?></label>
+          <div class="radio">
+            <label><?php echo functions::form_draw_radio_button('permissions[data][stock_quantities]', 'modify', true); ?> <?php echo language::translate('title_edit', 'Edit'); ?></label>
+          </div>
+          <div class="radio">
+            <label><?php echo functions::form_draw_radio_button('permissions[data][stock_quantities]', 'read', true); ?> <?php echo language::translate('text_read', 'Read'); ?></label>
+          </div>
+          <div class="radio">
+            <label><?php echo functions::form_draw_radio_button('permissions[data][stock_quantities]', 'none', true); ?> <?php echo language::translate('text_none', 'None'); ?></label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-auto horizontal">
+          <label><?php echo language::translate('title_modifying_selling_price', 'Modifying the selling price'); ?></label>
+          <div class="radio">
+            <label><?php echo functions::form_draw_radio_button('permissions[data][selling_price]', 'modify', true); ?> <?php echo language::translate('title_yes', 'Yes'); ?></label>
+          </div>
+          <div class="radio">
+            <label><?php echo functions::form_draw_radio_button('permissions[data][selling_price]', 'read', true); ?> <?php echo language::translate('text_no', 'No'); ?></label>
+          </div>
+        </div>
+      </div>
+      ]]></add>
+    </operation>
+  </file>
+  <!--
+  *****************************
+  TEMPLATE CATALOG
+  *****************************
+  -->
+  <file name="includes/templates/*.catalog/layouts/default.inc.php">
+    <operation error="log">
+      <search position="before"><![CDATA[
+  </head>
+      ]]></search>
+      <add><![CDATA[
+<?php
+if(user::$data['status']) {
+?>
+<style>
+.fa-cog {
+  font-size: x-large;
+}
+#footer .fa-cog {
+  font-size: initial;
+}
+.listing .category, .listing .category, .listing  .listing  .manufacturer, .listing  .product-column, .listing  .product-row {
+  overflow: visible;
+}
+.image-wrapper {
+  overflow: hidden;
+  position: relative;
+}
+.edit-link {
+  opacity:0.2;
+  position:absolute;
+  margin-left: -20px;
+  margin-top: -10px;
+  transition: opacity 0.25s ease;
+}
+li:hover .edit-link, .edit-link:hover {
+  opacity: 1;
+}
+.prod-cog {
+  left: 8px;
+  top: -2px;
+  position: absolute;
+}
+</style>
+<?php
+}
+?>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="before"><![CDATA[
+</body>
+      ]]></search>
+      <add><![CDATA[
+<script>
+  if($('#notices').length) {
+  $('#scroll-up').trigger('click');
+  }
+</script>
+
+      ]]></add>
+    </operation>
+  </file>
+  <file name="includes/templates/*.catalog/views/box_product.inc.php">
+    <operation info="add edit link to product page" error="skip">
+      <search position="replace"><![CDATA[
+    <h1 class="title"><?php echo $name; ?></h1>
+            ]]></search>
+      <add><![CDATA[
+    <h1 class="title"><?php
+    if (user::is_permitted('edit_product')) {
+        echo ' <a title="Edit Product" data-toggle="lightbox" data-type="iframe" data-width="1030px" data-height="50vh" href="' .
+            document::href_link(WS_DIR_ADMIN, array('app' => 'catalog', 'doc' => 'edit_product', 'product_id' => $product_id, 'iframe' => 'true')) .
+        '"><i class="fa fa-cog edit-link"></i></a>';
+    }
+    echo $name;
+    ?></h1>
+            ]]></add>
+    </operation>
+  </file>
+  <file name="includes/templates/*.catalog/views/listing_product_column.inc.php">
+    <operation info="add edit link to product thumbnail" error="skip">
+      <search position="before"><![CDATA[
+</article>
+            ]]></search>
+      <add><![CDATA[
+    <?php
+      if (user::is_permitted('edit_product')) {
+    ?>
+      <a class="prod-cog" title="Edit Product" data-toggle="lightbox" data-type="iframe" data-width="1030px" data-height="50vh" href="<?php echo document::href_link(WS_DIR_ADMIN, array('app' => 'catalog', 'doc' => 'edit_product', 'product_id' => $product_id, 'iframe' => 'true')) ?>"><i class="fa fa-cog edit-link"></i></a>
+    <?php
+      }
+    ?>
+            ]]></add>
+    </operation>
+  </file>
+  <file name="includes/templates/*.catalog/views/listing_product_row.inc.php">
+    <operation error="log">
+      <search position="before"><![CDATA[
+</article>
+      ]]></search>
+      <add><![CDATA[
+    <?php
+      if (user::is_permitted('edit_product')) {
+    ?>
+      <a class="prod-cog" title="Edit Product" data-toggle="lightbox" data-type="iframe" data-width="1030px" data-height="50vh" href="<?php echo document::href_link(WS_DIR_ADMIN, array('app' => 'catalog', 'doc' => 'edit_product', 'product_id' => $product_id, 'iframe' => 'true')) ?>"><i class="fa fa-cog edit-link"></i></a>
+    <?php
+      }
+    ?>
+      ]]></add>
+    </operation>
+  </file>
+  <file name="includes/templates/*.catalog/pages/category.inc.php">
+    <operation info="add edit link to category page" error="skip">
+      <search position="replace"><![CDATA[
+    <h1 class="title"><?php echo $h1_title; ?></h1>
+            ]]></search>
+      <add><![CDATA[
+    <h1 class="title"><?php
+    if (user::is_permitted('edit_category')) {
+        echo ' <a style="position: absolute; z-index: 10;" title="Edit Category" data-toggle="lightbox" data-type="iframe" data-width="1030px" data-height="50vh" href="' .
+            document::href_link(WS_DIR_ADMIN, array('app' => 'catalog', 'doc' => 'edit_category', 'category_id' => $id, 'iframe' => 'true')) .
+        '"><i class="fa fa-cog edit-link"></i></a>';
+    }
+    echo $h1_title;
+    ?></h1>
+            ]]></add>
+    </operation>
+  </file>
+  <file name="includes/templates/*.catalog/views/box_site_footer.inc.php">
+    <operation info="add edit link to site footer categories" error="skip">
+      <search position="replace"><![CDATA[
+        <?php foreach ($categories as $category) echo '<li><a href="'. htmlspecialchars($category['link']) .'">'. $category['name'] .'</a></li>' . PHP_EOL; ?>
+            ]]></search>
+      <add><![CDATA[
+        <?php foreach ($categories as $category) {
+            echo '<li>';
+            if (user::is_permitted('edit_category')) {
+                echo '<a style="position: inherit; z-index: 10;" title="Edit Category" data-toggle="lightbox" data-type="iframe" data-width="1030px" data-height="50vh" href="' . document::href_link(WS_DIR_ADMIN, array('app' => 'catalog', 'doc' => 'edit_category', 'category_id' => $category['id'], 'iframe' => 'true')) .
+                '"><i class="fa fa-cog edit-link"></i></a>';
+            }
+            echo '<a href="'. htmlspecialchars($category['link']) .'">'. $category['name'] .'</a></li>' . PHP_EOL;
+        } ?>
+            ]]></add>
+    </operation>
+    <operation info="add edit link to site footer manufacturers" error="skip">
+      <search position="replace"><![CDATA[
+      <?php foreach ($manufacturers as $manufacturer) echo '<li><a href="'. htmlspecialchars($manufacturer['link']) .'">'. $manufacturer['name'] .'</a></li>' . PHP_EOL; ?>
+            ]]></search>
+      <add><![CDATA[
+        <?php foreach ($manufacturers as $manufacturer) {
+            echo '<li>';
+            if (user::is_permitted('edit_manufacturer')) {
+                echo '<a style="position: inherit; z-index: 10;" title="Edit Manufacturer" data-toggle="lightbox" data-type="iframe" data-width="1030px" data-height="50vh" href="' .
+                    document::href_link(WS_DIR_ADMIN, array('app' => 'catalog', 'doc' => 'edit_manufacturer', 'manufacturer_id' => $manufacturer['id'], 'iframe' => 'true')) .
+                '"><i class="fa fa-cog edit-link"></i></a>';
+            }
+            echo '<a href="'. htmlspecialchars($manufacturer['link']) .'">'. $manufacturer['name'] .'</a></li>' . PHP_EOL;
+        } ?>
+            ]]></add>
+    </operation>
+    <operation info="add edit link to site footer items" error="skip">
+      <search position="replace"><![CDATA[
+        <?php foreach ($pages as $page) echo '<li><a href="'. htmlspecialchars($page['link']) .'">'. $page['title'] .'</a></li>' . PHP_EOL; ?>
+            ]]></search>
+      <add><![CDATA[
+        <?php foreach ($pages as $page) {
+            echo '<li>';
+            if (user::is_permitted('edit_page')) {
+                echo '<a style="position: inherit; z-index: 10;" title="Edit Page" data-toggle="lightbox" data-type="iframe" data-width="1030px" data-height="50vh" href="' .
+                    document::href_link(WS_DIR_ADMIN, array('app' => 'pages', 'doc' => 'edit_page', 'pages_id' => $page['id'], 'iframe' => 'true')) .
+                '"><i class="fa fa-cog edit-link"></i></a>';
+            }
+            echo '<a href="'. htmlspecialchars($page['link']) .'">'. $page['title'] .'</a></li>' . PHP_EOL;
+        } ?>
+            ]]></add>
+    </operation>
+  </file>
+  <file name="admin/catalog.app/edit_product.inc.php">
+    <operation error="log">
+      <search position="replace"><![CDATA[
+  breadcrumbs::add(!empty($product->data['id']) ? language::translate('title_edit_product', 'Edit Product') . ': '. $product->data['name'][language::$selected['code']] : language::translate('title_add_new_product', 'Add New Product'));
+      ]]></search>
+      <add><![CDATA[
+  breadcrumbs::add(!empty($product->data['id']) ? $product->data['name'][language::$selected['code']] : language::translate('title_add_new_product', 'Add New Product'));
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace" index="1"><![CDATA[
+        'purchase_price',
+      ]]></search>
+      <add><![CDATA[
+        (user::is_permitted('modify_purchase_price') ? 'purchase_price': ''),
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace" index="1"><![CDATA[
+        'prices',
+      ]]></search>
+      <add><![CDATA[
+        (user::is_permitted('modify_selling_price') ? 'prices':  ''),
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace" index="1"><![CDATA[
+        'options_stock',
+      ]]></search>
+      <add><![CDATA[
+        (user::is_permitted('modify_stock_quantities') ? 'options_stock': ''),
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace" offset="12"><![CDATA[
+#categories {
+      ]]></search>
+      <add><![CDATA[
+#treeview {
+  max-width: 310px;
+  max-height: 310px;
+}
+#treview:hover {
+  min-width: 310px;
+  max-width: none;
+}
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace"><![CDATA[
+    <?php echo $app_icon; ?> <?php echo !empty($product->data['id']) ? language::translate('title_edit_product', 'Edit Product') . ': '. $product->data['name'][language::$selected['code']] : language::translate('title_add_new_product', 'Add New Product'); ?>
+      ]]></search>
+      <add><![CDATA[
+    <?php echo (document::$iframe ? '<h3>' : '<h1>' . $app_icon) . (!empty($product->data['id']) ? language::translate('title_edit_product', 'Edit Product') . ': '. $product->data['name'][language::$selected['code']] : language::translate('title_add_new_product', 'Add New Product')) . (document::$iframe ? '</h3>' : '</h1>') ?>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace"><![CDATA[
+  <div class="panel-body">
+      ]]></search>
+      <add><![CDATA[
+  <div class="panel-body<?php echo document::$ajax ? ' nested"' : '' ?>">
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace" index="2" offset="4"><![CDATA[
+              <div class="form-group">
+      ]]></search>
+      <add><![CDATA[
+            <div id="categories-selector" class="col-sm-5">
+              <?php
+                echo functions::form_draw_search_field('categories_search', false, 'autocomplete="off" placeholder="'. htmlspecialchars(language::translate('title_search', 'Search')) .'&hellip;"') . '<div class="results"></div>' . functions::draw_categories_treeview();
+      ]]></add>
+    </operation>
+        <operation error="log">
+          <search position="replace" offset="34"><![CDATA[
+    $output = '';
+          ]]></search>
+          <add><![CDATA[
+              ?>
+            </div>
+            <div class="col-sm-7">
+          ]]></add>
+        </operation>
+    <operation error="log">
+      <search position="before" offset="3"><![CDATA[
+                <label><?php echo language::translate('title_name', 'Name'); ?></label>
+      ]]></search>
+      <add><![CDATA[
+          </div>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="before" offset="1"><![CDATA[
+                <label><?php echo language::translate('title_description', 'Description'); ?></label>
+      ]]></search>
+      <add><![CDATA[
+              <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#<?php echo $language_code; ?>-description"><?php echo language::translate('title_description', 'Description'); ?></a></li>
+                <li><a data-toggle="tab" href="#<?php echo $language_code; ?>-technicaldata"><?php echo language::translate('title_information', 'Information'); ?></a></li>
+              </ul>
+
+              <div class="tab-content">
+                <div id="<?php echo $language_code; ?>-description" class="tab-pane fade in active" style="max-width: 640px;">
+
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="before" offset="1"><![CDATA[
+                <label><?php echo language::translate('title_technical_data', 'Technical Data'); ?> <a class="technical-data-hint" href="#"><?php echo functions::draw_fonticon('fa-question-circle'); ?></a></label>
+      ]]></search>
+      <add><![CDATA[
+                </div>
+                <div id="<?php echo $language_code; ?>-technicaldata" class="tab-pane fade in" style="max-width: 640px;">
+
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="before" offset="2"><![CDATA[
+                  <label><?php echo language::translate('title_head_title', 'Head Title'); ?></label>
+      ]]></search>
+      <add><![CDATA[
+                  </div>
+              </div>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace"><![CDATA[
+              <?php echo functions::form_draw_decimal_field('purchase_price', true, 2, 0, null); ?>
+      ]]></search>
+      <add><![CDATA[
+              <?php  echo functions::form_draw_decimal_field('purchase_price', true, 2, 0, null, '~2?purchase_price'); ?>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace" offset="1"><![CDATA[
+              <td><?php echo functions::form_draw_currency_field(settings::get('store_currency_code'), 'prices['. settings::get('store_currency_code') .']', true, 'data-currency-price="" placeholder=""'); ?></td>
+      ]]></search>
+      <add><![CDATA[
+              <td><?php echo functions::form_draw_currency_field(settings::get('store_currency_code'), 'prices['. settings::get('store_currency_code') .']', true, 'data-currency-price="" placeholder="" ~3?selling_price'); ?></td>
+            <td><?php echo functions::form_draw_decimal_field('gross_prices['. settings::get('store_currency_code') .']', '', currency::$currencies[settings::get('store_currency_code')]['decimals'], 0, null, 'placeholder="" ~3?selling_price'); ?></td>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace"><![CDATA[
+              <td><?php echo functions::form_draw_decimal_field('quantity', true); ?></td>
+      ]]></search>
+      <add><![CDATA[
+              <td><?php echo functions::form_draw_decimal_field('quantity', true, null, null, null, '~2?stock_quantities'); ?></td>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace"><![CDATA[
+              <td><?php echo functions::form_draw_decimal_field('options_stock['.$key.'][quantity]', true); ?></td>
+      ]]></search>
+      <add><![CDATA[
+              <td><?php echo functions::form_draw_decimal_field('options_stock['.$key.'][quantity]', true, null, null, null, '~2?stock_quantities'); ?></td>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="before" index="4"><![CDATA[
+                <a class="move-up" href="#" title="<?php echo language::translate('text_move_up', 'Move up'); ?>"><?php echo functions::draw_fonticon('fa-arrow-circle-up fa-lg', 'style="color: #3399cc;"'); ?></a>
+      ]]></search>
+      <add><![CDATA[
+              <?php if(user::is_permitted('modify_stock_quantities')) { ?>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="after" index="6"><![CDATA[
+              <a class="remove" href="#" title="<?php echo language::translate('title_remove', 'Remove'); ?>"><?php echo functions::draw_fonticon('fa-times-circle fa-lg', 'style="color: #cc3333;"'); ?></a>
+      ]]></search>
+      <add><![CDATA[
+                  <?php } ?>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace"><![CDATA[
+    <?php echo functions::form_draw_button('cancel', language::translate('title_cancel', 'Cancel'), 'button', 'onclick="history.go(-1);"', 'cancel'); ?>
+      ]]></search>
+      <add><![CDATA[
+    <?php echo functions::form_draw_button('cancel', language::translate('title_cancel', 'Cancel'), 'button', 'onclick="' . (document::$iframe ? 'window.parent.$.featherlight.close()' : 'history.go(-1)' ) . ';"', 'cancel'); ?>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="before"><![CDATA[
+// Default Category
+      ]]></search>
+      <add><![CDATA[
+  // Search Category & Categories Tree
+  $(document).ready(function() {
+    if($('#search').length) {
+      $('#search').html('');
+      $('#box-apps-menu').html('');
+      $('#categories-selector').appendTo('#search');
+      $('form[name="product_form"]').on('submit', function(e) {
+        $('#treeview').css('visibility', 'hidden').appendTo($(this));
+      });
+    }
+    $('#treeview').categoriesTreeview({
+      start: 'filtered',
+      input: $('input[name="categories_search"]')
+    });
+  });
+
+      ]]></add>
+    </operation>
+  </file>
+  <!--
+  *****************************
+  TEMPLATE ADMIN
+  *****************************
+  -->
+  <file name="includes/templates/*.admin/layouts/default.inc.php">
+    <operation error="log">
+      <search position="replace"><![CDATA[
+<meta name="viewport" content="width=1600">
+      ]]></search>
+      <add><![CDATA[
+<meta name="viewport" content="width=device-width, initial-scale=1">
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="after"><![CDATA[
+  </head>
+      ]]></search>
+      <add><![CDATA[
+  <style>
+    #search #categories {
+      height: 500px;
+    }
+    #search #treeview {
+      max-width: 235px;
+      height: 483px;
+      max-height: 483px;
+      padding: 7.5px;
+    }
+    .results {
+      max-width: 235px;
+    }
+    .result {
+      margin-bottom: 1px !important
+    }
+    .result .title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .result .list-group-item {
+      padding: 8px;
+    }
+  </style>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace"><![CDATA[
+    <div id="backend-wrapper">
+      ]]></search>
+      <add><![CDATA[
+<div id="backend-wrapper"<?php echo document::$iframe ? ' class="nested"' : '' ?>>
+  <?php
+    if(!document::$iframe) {
+  ?>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="replace" offset="5"><![CDATA[
+      <?php echo functions::form_draw_search_field('query', false, 'placeholder="'. htmlspecialchars(language::translate('title_search', 'Search')) .'&hellip;"'); ?>
+      ]]></search>
+      <add><![CDATA[
+            <?php
+              echo functions::form_draw_search_field('query', false, 'autocomplete="off" placeholder="'. htmlspecialchars(language::translate('text_search_phrase_or_keyword', 'Search phrase or keyword')) .'&hellip;"');
+            ?>
+            <div class="results"></div>
+            <?php
+              $treeview = false;
+              if(isset($_GET['doc']) && $_GET['doc'] == 'catalog') {
+                echo functions::draw_categories_treeview();
+                if(!empty($_GET['category_id'])) $treeview = true;
+            ?>
+              <style>
+                .results {
+                  margin-top: 0;
+                  position: fixed;
+                  z-index: 150;
+                  top: 10px;
+                  left: 253px;
+                  max-width: 450px;
+                  width: fit-content;
+                  border-radius: 4px;
+                  background-color: #f5f5f5;
+                  padding: 0 4px 0px 4px;
+                  box-shadow: 3px 3px 10px rgba(1,1,1,0.5);
+                }
+                #sidebar #search {
+                  padding-top: 10px;
+                  transition: all 1s ease-in-out;
+                }
+              </style>
+              <script>
+                $(document).ready(function() {
+                  $('#treeview').categoriesTreeview({
+                    start: 'restored',
+                    display: <?php echo empty($_GET['category_id']) ? 'false' : 'true' ?>,
+                    input: $('input[name="query"]'),
+                    remove: '<?php echo $_GET['doc'] == 'catalog' ? '' : 'checkboxes,status'?>'
+                  }).on('mouseover', function() {
+                    $('#search .results').hide().html('');
+                  });
+                  $('.results').on({
+                    'mouseleave': function() {
+                      $('input[name="query"]').val('').trigger('blur');
+                      $('#search .results').hide().html('');
+                    }
+                  });
+                  // Sidebar parallax effect
+                  var column = $('#search'), sidebar = $('#sidebar');
+                  $(window).bind('resize scroll', function(e){
+                    if($(this).scrollTop() > 10) {
+                      $('.results').css('top', '0').css('margin-top', '2px');
+                    } else {
+                      $('.results').css('top', '10px').css('margin-top', '');
+                    }
+                    var offset = $(this).scrollTop() - $('#logotype').height();
+                    if(offset + column.height() < sidebar.height() - 20) {
+                      offset = offset < 0 ? 0 : offset;
+                      column.css('margin-top', offset + 'px');
+                    }
+                  }).trigger('resize');
+                });
+              </script>
+            <?php
+              }
+            ?>
+          </div>
+          <?php if(!$treeview) {?>
+            {snippet:box_apps_menu}
+          <?php } ?>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="before"><![CDATA[
+      <main id="main">
+      ]]></search>
+      <add><![CDATA[
+      <?php
+        }
+      ?>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="after"><![CDATA[
+      <main id="main">
+      ]]></search>
+      <add><![CDATA[
+          <?php
+            if(!document::$iframe) {
+          ?>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="before"><![CDATA[
+    <div id="content">
+      ]]></search>
+      <add><![CDATA[
+      <?php
+        }
+      ?>
+      ]]></add>
+    </operation>
+    <operation error="log">
+      <search position="before"><![CDATA[
+    {snippet:foot_tags}
+      ]]></search>
+      <add><![CDATA[
+    <?php
+      if(document::$iframe) {
+    ?>
+      <script>
+        $(window).on('load', function(){
+          $(window.frameElement).height($('#main').innerHeight());
+          $(window.frameElement).parent().height($('#main').innerHeight());
+        })
+      </script>
+    <?php
+      }
+    ?>
+      ]]></add>
+    </operation>
+  </file>
+    <operation error="log">
+      <search position="after"><![CDATA[
+    {snippet:javascript}
+      ]]></search>
+      <add><![CDATA[
+    <script>
+      $(document).ready(function() {
+        var lastChecked = null;
+
+        $('input[type="checkbox"]').click(function(e) {
+          if (!lastChecked) {
+            lastChecked = this;
+            return;
+          }
+
+          if (e.shiftKey) {
+            var start = $('input[type="checkbox"]').index(this);
+            var end = $('input[type="checkbox"]').index(lastChecked);
+
+            $('input[type="checkbox"]').slice(Math.min(start,end), Math.max(start,end)+ 1).prop('checked', lastChecked.checked);
+          }
+
+          lastChecked = this;
+        });
+      });
+    </script>
+      ]]></add>
+    </operation>
+  <file name="includes/templates/*.admin/pages/doc.inc.php">
+    <operation error="log">
+      <search position="replace" offset="8"><![CDATA[
+<style>
+      ]]></search>
+    <add><![CDATA[
+<?php
+  if(!document::$iframe) {
+?>
+<style>
+#content {
+  background: linear-gradient(135deg, rgba(<?php echo implode(', ', sscanf($theme['color'], "#%02x%02x%02x")); ?>, 1) 0px, rgba(255,255,255,1) 100px);
+}
+
+#content > .panel-app > .panel-heading {
+  border-color: <?php echo $theme['color']; ?>;
+}
+</style>
+<?php
+  }
+?>
+      ]]></add>
+  </operation>
+  </file>
+</modification>

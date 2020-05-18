@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <id>Price Slider</id>
+    <version>1.1</version>
+    <vqmver required="true">2.0</vqmver>
+    <author>Goulven Guillard (developped on a base from Andrew Whitaker on Stack Overflow : https://stackoverflow.com/a/10787708/812102)</author>
+    <licence>CC-BY-SA</licence>
+    <file name="includes/templates/default.catalog/views/box_filter.inc.php">
+      <operation error="log">
+        <search position="after"><![CDATA[<?php echo functions::form_draw_form_end(); ?>]]></search>
+        <add><![CDATA[
+  <div class="box-price-slider">
+    <h2 class="title"><?php echo language::translate('title_price', 'Price'); ?></h2>
+    <div id="price-slider-min"><?php echo currency::format(0); ?></div>
+    <div id="price-slider-max"><?php echo currency::format(5000); ?></div>
+    <div id="price-slider"></div>
+    <div id="price-range"><input type="number" id="minprice" min="0"> - <input type="number" id="maxprice" min="1"></div>
+  </div>
+  <script>
+
+    // format price according to current locale and currency
+    function formatPrice(price) {
+        return Intl.NumberFormat(
+        '<?php echo language::identify(); ?>',
+        {
+            style: 'currency',
+            currency: '<?php echo currency::identify(); ?>',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(price);
+    }
+
+    // get numerical price from formatted price
+    function getNumPrice(price) {
+        var p = price.split('<?php echo language::$selected["decimal_point"]; ?>');
+        for (var i=0;i<p.length;i++) p[i] = p[i].replace(/\D/g,'');
+        return p.join('.');
+    }
+
+    // get min and max prices from the list of products on this page
+    function getPriceLimits() {
+
+        var allprices = $(".price").map(function() {
+              return getNumPrice(this.innerHTML);
+        }).get();
+        var min = Math.min.apply(Math, allprices);
+        var max = Math.max.apply(Math, allprices);
+
+        // update displayed limits of the slider
+        $("#price-slider-min").html(formatPrice(min));
+        $("#price-slider-max").html(formatPrice(max));
+
+        return [min, max];
+    }
+
+    // hide products if not between minPrice and maxPrice
+    function showProducts(minPrice, maxPrice) {
+        $(".product-column").hide().filter(function() {
+            var price = getNumPrice($(this).find(".price").eq(0).text());
+            return price >= minPrice && price <= maxPrice;
+        }).show();
+    }
+
+    // JQuery price slider
+    $(function() {
+        limits = getPriceLimits();
+        var options = {
+            range: true,
+            min: limits[0],
+            max: limits[1],
+            values: [limits[0], limits[1]],
+            slide: function(event, ui) {
+                var min = ui.values[0],
+                    max = ui.values[1];
+
+                $("#minprice").val(min);
+                $("#maxprice").val(max);
+                showProducts(min, max);
+            }
+        }, min, max;
+
+        $("#price-slider").slider(options);
+
+        // set min and max to current slider values
+        min = getSliderMin();
+        max = getSliderMax();
+
+        // set input fields prices to slider values
+        $("#minprice").val(min);
+        $("#maxprice").val(max);
+
+        // display/hide products
+        showProducts(min, max);
+
+        // update slider when values are set in input fields
+        $("#minprice").change(function() {
+	    mmax = getSliderMax();
+	    mmin = Math.min($(this).val(), mmax);
+	    $("#minprice").val(mmin);
+            $("#price-slider").slider("values", 0, mmin);
+            showProducts($(this).val(), mmax);
+        });
+        $("#maxprice").change(function() {
+	    mmin = getSliderMin();
+	    mmax = Math.max($(this).val(), mmin);
+	    $("#maxprice").val(mmax);
+            $("#price-slider").slider("values", 1, mmax);
+            showProducts(mmin, $(this).val());
+        });
+
+    });
+
+    function getSliderMin() {
+        return $("#price-slider").slider("values", 0);
+    }
+
+    function getSliderMax() {
+        return $("#price-slider").slider("values", 1);
+    }
+
+  </script>
+          ]]>
+        </add>
+      </operation>
+    </file>
+    <file name="includes/library/lib_document.inc.php">
+      <operation error="log">
+        <search position="after"><![CDATA[jquery/jquery-3.4.1.min.js"></script>';]]></search>
+        <add><![CDATA[
+      self::$snippets['foot_tags']['jquery-ui-slider'] = '<script src="' . WS_DIR_APP . 'ext/price-slider/jquery-ui-slider.min.js"></script>';
+      self::$snippets['head_tags']['jquery-ui-slider-css'] = '<link rel="stylesheet" href="' . WS_DIR_APP . 'ext/price-slider/jquery-ui-slider.min.css"/>';
+      self::$snippets['head_tags']['jquery-ui-slider-theme'] = '<link rel="stylesheet" href="' . WS_DIR_APP . 'ext/price-slider/jquery-ui-slider.theme.css"/>';
+      self::$snippets['head_tags']['price-slider-css'] = '<link rel="stylesheet" href="' . WS_DIR_APP . 'ext/price-slider/price-slider.css"/>';]]>
+        </add>
+      </operation>
+    </file>
+
+
+</modification>
+
+

@@ -1,0 +1,22 @@
+#price-range {
+	text-align: center;
+}
+
+#price-range input {
+	width: 40%;
+}
+
+#price-slider {
+	clear: both;
+	margin: 1em;
+}
+
+#price-slider-min {
+	float: left;
+	margin: 6px;
+}
+
+#price-slider-max {
+	float: right;
+	margin: 6px;
+}

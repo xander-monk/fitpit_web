@@ -349,3 +349,86 @@
       limit 1;"
     );
   }
+
+  function catalog_keywords_search($ajax = false) {
+
+    if(empty($_GET['query'])) return false;
+
+    $query = database::input($_GET['query']);
+    $code_regex = database::input(functions::format_regex_code($_GET['query']));
+
+    $product_query =
+    "select p.*, pi.name, pi.short_description, pi.description, m.name as manufacturer_name, pp.price, pc.campaign_price, if(pc.campaign_price, pc.campaign_price, if(pc.campaign_price, pc.campaign_price, pp.price)) as final_price,
+    (
+      if(p.id = '". $query ."', 10, 0)
+      + (match(pi.name) against ('". $query ."' in boolean mode))
+      + (match(pi.short_description) against ('". $query ."' in boolean mode) / 2)
+      + (match(pi.description) against ('". $query ."' in boolean mode) / 3)
+      + if(pi.name like '%". $query ."%', 3, 0)
+      + if(pi.short_description like '%". $query ."%', 2, 0)
+      + if(pi.description like '%". $query ."%', 1, 0)
+      + if(p.code regexp '". $code_regex ."', 5, 0)
+      + if(p.sku regexp '". $code_regex ."', 5, 0)
+      + if(p.mpn regexp '". $code_regex ."', 5, 0)
+      + if(p.gtin regexp '". $code_regex ."', 5, 0)
+      + if (p.id in (
+        select product_id from ". DB_TABLE_PRODUCTS_OPTIONS_STOCK ."
+        where sku regexp '". $code_regex ."'
+      ), 5, 0)
+    ) as relevance
+
+    from (
+      select p.*, ss.orderable
+      from ". DB_TABLE_PRODUCTS ." p
+      left join ". DB_TABLE_SOLD_OUT_STATUSES ." ss on p.sold_out_status_id = ss.id
+      where status
+      and (p.quantity > 0 or ss.hidden != 1 or ss.hidden is null)
+      and (date_valid_from <= '". date('Y-m-d H:i:s') ."')
+      and (year(date_valid_to) < '1971' or date_valid_to >= '". date('Y-m-d H:i:s') ."')
+    ) p
+
+    left join ". DB_TABLE_PRODUCTS_INFO ." pi on (pi.product_id = p.id and pi.language_code = '". language::$selected['code'] ."')
+    left join ". DB_TABLE_MANUFACTURERS ." m on (m.id = p.manufacturer_id)
+
+    left join (
+      select product_id, if(`". database::input(currency::$selected['code']) ."`, `". database::input(currency::$selected['code']) ."` * ". (float)currency::$selected['value'] .", `". database::input(settings::get('store_currency_code')) ."`) as price
+      from ". DB_TABLE_PRODUCTS_PRICES ."
+    ) pp on (pp.product_id = p.id)
+
+    left join (
+      select product_id, if(`". database::input(currency::$selected['code']) ."`, `". database::input(currency::$selected['code']) ."` * ". (float)currency::$selected['value'] .", `". database::input(settings::get('store_currency_code')) ."`) as campaign_price
+      from ". DB_TABLE_PRODUCTS_CAMPAIGNS ."
+      where (start_date <= '". date('Y-m-d H:i:s') ."')
+      and (year(end_date) < '1971' or end_date >= '". date('Y-m-d H:i:s') ."')
+      order by end_date asc
+    ) pc on (pc.product_id = p.id)
+
+    having relevance > 0
+
+    order by " . ($ajax ? " relevance desc limit ". (int)$_GET['offset'] . ", " . (int)$_GET['limit'] : "%sql_sort");
+
+    if(!$ajax) {
+      switch($_GET['sort']) {
+        case 'name':
+          $product_query = str_replace("%sql_sort", "name asc", $product_query);
+          break;
+        case 'price':
+          $product_query = str_replace("%sql_sort", "final_price asc", $product_query);
+          break;
+        case 'date':
+          $product_query = str_replace("%sql_sort", "date_created desc", $product_query);
+          break;
+        case 'rand':
+          $product_query = str_replace("%sql_sort", "rand()", $product_query);
+          break;
+        case 'popularity':
+          $product_query = str_replace("%sql_sort", "(p.purchases / (datediff(now(), p.date_created)/7)) desc, (p.views / (datediff(now(), p.date_created)/7)) desc", $product_query);
+          break;
+        default:
+          $product_query = str_replace("%sql_sort", "relevance desc", $product_query);
+          break;
+      }
+    }
+
+    return database::query($product_query);
+  }

@@ -2,7 +2,8 @@
 
   <div class="navbar-header">
     <?php echo functions::form_draw_form_begin('search_form', 'get', document::ilink('search'), false, 'class="navbar-form"'); ?>
-      <?php echo functions::form_draw_search_field('query', true, 'placeholder="'. language::translate('text_search_products', 'Search products') .' &hellip;"'); ?>
+      <?php  // echo functions::form_draw_search_field('query', true, 'placeholder="'. language::translate('text_search_products', 'Search products') .' &hellip;"'); ?>
+      <?php echo functions::form_draw_search_field('query', true, 'placeholder="'. language::translate('text_search_products', 'Search products') .' &hellip;" autocomplete="off"'); ?>
     <?php echo functions::form_draw_form_end(); ?>
 
     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#default-menu">
@@ -102,3 +103,92 @@
     </ul>
   </div>
 </nav>
+
+<script>
+var ss_limit = 8;
+  $('form[name="search_form"] input[name="query"]').autocomplete({
+    appendTo: '.navbar-header',
+    source: '/ajax/search.json',
+    limit: ss_limit,
+    onSelect: function (e, term, item) {
+      window.location.href = item.data('link');
+    },
+    onShow: function() {
+      $('document').ready(function() {
+        var suggestionHeight = $('.autosuggestion').first().outerHeight();
+        $('.autosuggestions').css('max-height', ss_limit * suggestionHeight);
+      });
+    },
+    renderItem: function (item, search){
+      return '<div class="autosuggestion ' + (item.data.type) + '" data-val="' + item.value + '" data-link = "' + item.data.link +'">' +
+      (item.data.type == 'product' ? item.data.html :  '<i class="fa fa-caret-right fa-fw"></i>' + item.value)
+      +  '</div>';
+    }
+  }).on({
+    'focus' : function() {
+      if($('.navbar-toggle').is(':visible')) {
+        $('.navbar-toggle').trigger('click');
+      }
+    },
+    'blur' : function() {
+      $(this).val('')
+    }
+  });
+</script>
+<style>
+  .autosuggestions {
+    position: absolute;
+    overflow-y: scroll;
+    z-index: 1000;
+    background-color: #fdfdfd;
+    top: 47px;
+    border-radius: 4px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+  }
+  .autosuggestion {
+    background: #f3f3f3;
+    height: 68px;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 125ms linear;
+    cursor: pointer;
+    clear:both;
+    overflow: hidden;
+    position: relative;
+  }
+  .autosuggestion.category {
+    line-height: 68px;
+    vertical-align: middle;
+  }
+  .autosuggestion img {
+    float:left;
+    padding-right:7.5px;
+  }
+  .autosuggestion div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 16px;
+    white-space: nowrap;
+    padding-top: 8px;
+  }
+  .autosuggestion button {
+    position: absolute;
+    right: 4px;
+    margin-top: -12px
+  }
+  .autosuggestion small {
+    color: #bbb
+  }
+  .autosuggestion b  {
+    color: #000;
+  }
+  .autosuggestion.selected {
+    background: rgba(0, 0, 0, 0.05);
+  }
+  @media (max-width: 768px) {
+    .autosuggestions {
+      width: 100%;
+      top: 38px;
+    }
+  }
+</style>

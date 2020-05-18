@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification
+  xmlns="https://github.com/vqmod/vqmod"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="https://github.com/vqmod/vqmod https://raw.githubusercontent.com/vqmod/vqmod/master/vqmod.xsd">
+  <id>Admin Better Products View</id>
+  <version>2.0</version>
+  <vqmver>2.4.0</vqmver>
+  <author>Nicolas Molinari</author>
+  <file name="includes/library/lib_breadcrumbs.inc.php">
+    <operation error="log">
+      <search position="after" offset="4"><![CDATA[
+    public static function add($title, $link=null) {
+      ]]></search>
+      <add><![CDATA[
+      if(strstr($link, 'app=catalog&doc=catalog') && !empty($_GET['category_id'])) {
+        $path = functions::catalog_category_trail($_GET['category_id']);
+        if(count($path) > 2) {
+          self::$data[] = array(
+            'title' => '...',
+            'link' => '',
+          );
+        }
+        foreach (array_slice($path, -2, null, true) as $category_id => $category_name) {
+          self::$data[] = array(
+            'title' => $category_name,
+            'link' => document::link(WS_DIR_ADMIN, array('app' => 'catalog', 'doc'=> 'catalog', 'category_id' => $category_id)),
+          );
+        }
+      }
+      ]]></add>
+    </operation>
+  </file>
+  <file name="includes/functions/func_form.inc.php">
+    <operation error="log">
+      <search position="replace" offset="6"><![CDATA[
+    document::$snippets['javascript']['input-decimal-replace-decimal'] = '  $(\'body\').on(\'change\', \'input[data-type="decimal"]\', function(){' . PHP_EOL
+      ]]></search>
+      <add><![CDATA[
+    document::$snippets['javascript']['input-decimal-replace-decimal'] = '  $(\'body\').on(\'change\', \'input[data-type="decimal"]\', function(){' . PHP_EOL
+                                                                       . '    $(this).val(Number($(this).val().replace(\',\', \'.\')).toFixed($(this).data(\'decimals\')));' . PHP_EOL
+                                                                       . '  });';
+
+    return '<input '. (!preg_match('#class="([^"]+)?"#', $parameters) ? 'class="form-control"' : '') .' type="number" name="'. htmlspecialchars($name) .'" value="'. $value .'" data-type="decimal" data-decimals="' . $decimals . '" step="any" '. (($min !== null) ? 'min="'. (float)$min .'"' : false) . (($max !== null) ? ' max="'. (float)$max .'"' : false) . (($parameters) ? ' '.$parameters : false) .' />';
+  }
+      ]]></add>
+    </operation>
+  </file>
+</modification>

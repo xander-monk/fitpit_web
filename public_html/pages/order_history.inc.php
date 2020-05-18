@@ -27,6 +27,11 @@
     $page_items = 0;
 
     while ($order = database::fetch($orders_query)) {
+      $orderx 	= new ctrl_order($order['id']);
+      $items 		= (isset($orderx->data['items'])) ? $orderx->data['items'] : [];
+      $tracking_id  = (isset($orderx->data['shipping_tracking_id'])) ? $orderx->data['shipping_tracking_id'] : '';
+      $order_totals = array_slice($orderx->data['order_total'], 1);
+          
       $_page->snippets['orders'][] = array(
         'id' => $order['id'],
         'link' => document::ilink('order', array('order_id' => $order['id'], 'public_key' => $order['public_key'])),
@@ -34,6 +39,9 @@
         'order_status' => $order['order_status_name'],
         'date_created' => language::strftime(language::$selected['format_datetime'], strtotime($order['date_created'])),
         'payment_due' => currency::format($order['payment_due'], false, $order['currency_code'], $order['currency_value']),
+        'items' => $items,
+        'order_totals' => $order_totals,
+        'tracking_id' => $tracking_id,
       );
       if (++$page_items == settings::get('data_table_rows_per_page')) break;
     }

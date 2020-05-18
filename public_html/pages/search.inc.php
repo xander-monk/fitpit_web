@@ -33,6 +33,7 @@
   );
 
   $code_regex = functions::format_regex_code($_GET['query']);
+  $products_query = functions::catalog_keywords_search(true);
 
   $query =
     "select p.*, pi.name, pi.short_description, m.name as manufacturer_name, pp.price, pc.campaign_price, if(pc.campaign_price, pc.campaign_price, if(pc.campaign_price, pc.campaign_price, pp.price)) as final_price,

@@ -17,7 +17,9 @@
           if (!is_file($file)) $file = vmod::check(FS_DIR_APP . 'includes/templates/default.catalog/'. $view .'.inc.php');
         }
 
-        $this->html = $this->_process_view($file, $this->snippets);
+        $_short_file = str_replace(FS_DIR_HTTP_ROOT . WS_DIR_TEMPLATES, '', $file);
+        $this->html = "\n<!--VIEW_OPEN:$_short_file-->\n" . $this->_process_view($file, $this->snippets)  . "\n<!--VIEW_CLOSE:$_short_file-->\n";
+        // $this->html = $this->_process_view($file, $this->snippets);
       }
 
       if (empty($this->html)) return null;

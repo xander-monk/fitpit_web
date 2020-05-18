@@ -62,3 +62,24 @@
     </div>
   </section>
 </footer>
+
+<script>
+  $('head').append('<style>.sticky {position:fixed;z-index:9999;left:0;right:0;top:0;}</style>');
+  var div = '#site-menu';
+  var windowScrollTop = $(window).scrollTop();
+  var divOffsetTop = $(div).offset().top;
+  if(windowScrollTop > divOffsetTop){
+    $(div).addClass('sticky');
+  } else {
+    $(div).removeClass('sticky');
+  }
+
+  $(window).on('scroll', function(){
+    var windowScrollTop = $(window).scrollTop();
+    if(windowScrollTop > divOffsetTop){
+      $(div).addClass('sticky');
+    } else {
+      $(div).removeClass('sticky');
+    }
+  });
+</script>
