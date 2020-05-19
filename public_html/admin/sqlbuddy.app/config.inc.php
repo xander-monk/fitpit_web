@@ -4,7 +4,7 @@
     'name' => 'SQL Buddy',
     'default' => 'sqlbuddy',
     'theme' => array(
-      'icon' => '',
+      'icon' => 'fa-database',
       'color' => '',
     ),
     'menu' => array(),

@@ -2,11 +2,11 @@
 #sqlbuddy-wrapper {
   position: absolute;
   left: 250px;
-  top: 0px;
+  top: 40px;
   margin-left: 250px;
   width: calc(100% - 250px);
   margin: 0px auto;
-  height: 100%;
+  height: calc(100vH - 40px);
   border: none;
 }
 #sqlbuddy {
@@ -34,11 +34,6 @@ function resizeIframe() {
 }
 
 // .onload doesn't work with IE8 and older.
-if (iframe.attachEvent) {
-    iframe.attachEvent("onload", resizeIframe);
-} else {
-    iframe.onload=resizeIframe;
-}
-
-window.onresize = resizeIframe;
+// iframe.onload=resizeIframe;
+// window.onresize = resizeIframe;
 </script>

@@ -1,0 +1,61 @@
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Notice:  Undefined index: REMOTE_ADDR in /home/xander/Work/FitPit/fitpit_web/public_html/includes/config.inc.php on line 132
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Notice:  Undefined index: SERVER_NAME in /home/xander/Work/FitPit/fitpit_web/public_html/includes/compatibility.inc.php on line 327
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Notice:  Undefined index: REQUEST_METHOD in /home/xander/Work/FitPit/fitpit_web/public_html/includes/error_handler.inc.php on line 61
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Notice:  Undefined index: REQUEST_URI in /home/xander/Work/FitPit/fitpit_web/public_html/includes/error_handler.inc.php on line 61
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Notice:  Undefined index: SERVER_PROTOCOL in /home/xander/Work/FitPit/fitpit_web/public_html/includes/error_handler.inc.php on line 61
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Notice:  Undefined index: REMOTE_ADDR in /home/xander/Work/FitPit/fitpit_web/public_html/includes/error_handler.inc.php on line 63
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Warning:  gethostbyaddr(): Address is not a valid IPv4 or IPv6 address in /home/xander/Work/FitPit/fitpit_web/public_html/includes/error_handler.inc.php on line 63
+[19-May-2020 15:56:51 Europe/Helsinki] Notice: Undefined index: REMOTE_ADDR in ~/includes/library/lib_session.inc.php on line 24
+ ← ~/vqmod/vqcache/vq2-includes_library_lib_notices.inc.php on line 8 in spl_autoload_call()
+ ← ~/includes/autoloader.inc.php on line 104 in init()
+ ← ~/includes/app_header.inc.php on line 36 in class_exists()
+ ← ~/index.php on line 16 in require_once()
+Request:   
+Host: 
+Client:  ()
+User Agent: 
+
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Notice:  Undefined index: REQUEST_METHOD in /home/xander/Work/FitPit/fitpit_web/public_html/includes/error_handler.inc.php on line 61
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Notice:  Undefined index: REQUEST_URI in /home/xander/Work/FitPit/fitpit_web/public_html/includes/error_handler.inc.php on line 61
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Notice:  Undefined index: SERVER_PROTOCOL in /home/xander/Work/FitPit/fitpit_web/public_html/includes/error_handler.inc.php on line 61
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Notice:  Undefined index: REMOTE_ADDR in /home/xander/Work/FitPit/fitpit_web/public_html/includes/error_handler.inc.php on line 63
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Warning:  gethostbyaddr(): Address is not a valid IPv4 or IPv6 address in /home/xander/Work/FitPit/fitpit_web/public_html/includes/error_handler.inc.php on line 63
+[19-May-2020 15:56:51 Europe/Helsinki] Notice: Undefined index: REMOTE_ADDR in ~/includes/library/lib_session.inc.php on line 26
+ ← ~/vqmod/vqcache/vq2-includes_library_lib_notices.inc.php on line 8 in spl_autoload_call()
+ ← ~/includes/autoloader.inc.php on line 104 in init()
+ ← ~/includes/app_header.inc.php on line 36 in class_exists()
+ ← ~/index.php on line 16 in require_once()
+Request:   
+Host: 
+Client:  ()
+User Agent: 
+
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Notice:  Undefined index: REQUEST_METHOD in /home/xander/Work/FitPit/fitpit_web/public_html/includes/error_handler.inc.php on line 61
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Notice:  Undefined index: REQUEST_URI in /home/xander/Work/FitPit/fitpit_web/public_html/includes/error_handler.inc.php on line 61
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Notice:  Undefined index: SERVER_PROTOCOL in /home/xander/Work/FitPit/fitpit_web/public_html/includes/error_handler.inc.php on line 61
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Notice:  Undefined index: REMOTE_ADDR in /home/xander/Work/FitPit/fitpit_web/public_html/includes/error_handler.inc.php on line 63
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Warning:  gethostbyaddr(): Address is not a valid IPv4 or IPv6 address in /home/xander/Work/FitPit/fitpit_web/public_html/includes/error_handler.inc.php on line 63
+[19-May-2020 15:56:51 Europe/Helsinki] Warning: require_once(/home/xander/Work/FitPit/fitpit_web/public_html/includes/library/lib_mysqli.inc.php): failed to open stream: No such file or directory in ~/includes/autoloader.inc.php on line 102
+ ← ~/includes/library/lib_database.inc.php on line 16 in spl_autoload_call()
+ ← ~/includes/library/lib_database.inc.php on line 134 in connect()
+ ← ~/includes/library/lib_settings.inc.php on line 10 in query()
+ ← ~/includes/autoloader.inc.php on line 104 in init()
+ ← ~/index.php on line 18 in spl_autoload_call()
+Request:   
+Host: 
+Client:  ()
+User Agent: 
+
+[19-May-2020 15:56:51 Europe/Helsinki] PHP Fatal error:  require_once(): Failed opening required '/home/xander/Work/FitPit/fitpit_web/public_html/includes/library/lib_mysqli.inc.php' (include_path='.:/usr/share/php') in /home/xander/Work/FitPit/fitpit_web/public_html/includes/autoloader.inc.php on line 102
+[19-May-2020 15:57:38 Europe/Helsinki] Warning: require_once(/home/xander/Work/FitPit/fitpit_web/public_html/includes/library/lib_mysqli.inc.php): failed to open stream: No such file or directory in ~/includes/autoloader.inc.php on line 102
+ ← ~/includes/library/lib_database.inc.php on line 16 in spl_autoload_call()
+ ← ~/includes/library/lib_database.inc.php on line 134 in connect()
+ ← ~/includes/library/lib_settings.inc.php on line 10 in query()
+ ← ~/includes/autoloader.inc.php on line 104 in init()
+ ← ~/index.php on line 18 in spl_autoload_call()
+Request: GET / HTTP/1.1
+Host: localhost:8000
+Client: 127.0.0.1 (localhost)
+User Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36
+
+[19-May-2020 15:57:38 Europe/Helsinki] PHP Fatal error:  require_once(): Failed opening required '/home/xander/Work/FitPit/fitpit_web/public_html/includes/library/lib_mysqli.inc.php' (include_path='.:/usr/share/php') in /home/xander/Work/FitPit/fitpit_web/public_html/includes/autoloader.inc.php on line 102

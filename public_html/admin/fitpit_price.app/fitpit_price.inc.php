@@ -1,215 +1,273 @@
-<?php
 
-  $show_results = false; 
-
-  $log = '';
-  $file_link = '';
-  $rows = array(); 
-  $rows_errors = array(); 
+<?php 
+  $show_results = true;
+  $filelist = [];
 
   $filesdir = FS_DIR_HTTP_ROOT . '/excel/';
   $filelist = scandir($filesdir, 1);
 
-  // rsort($filelist, SORT_STRING);
- 
-  if (isset($_POST['import_images'])) {
-    $rows = database::query("select * from per_product_img where lc_id != 0");
-    if (database::num_rows($rows) > 0) {
-      while ($row = database::fetch($rows)) {
-        //var_dump(FS_DIR_HTTP_ROOT);
-        $ids = explode(',',$row['lc_ids']);
-        foreach ($ids as $id) {
-          if($id == $row['lc_id']) continue;
+  $fields = ['manufacturer','category','name','size','flavour','expiration','pack','base','rrp','sale','additional','qty','rank'];
 
-          $product = new ctrl_product($id);
-
-          $name = explode('/',$row['img']);
-          $fn = '/products/' . $row['code'] . '_' . $name[count($name)-1];
-          $pfn = 'products/' . $row['code'] . '_' . $name[count($name)-1];
-          copy($row['img'], FS_DIR_HTTP_ROOT  . WS_DIR_IMAGES . $fn);
-          
-          $product->add_image(FS_DIR_HTTP_ROOT . WS_DIR_IMAGES . $fn);
-          
-        }
-        
-      }
-    }
+  if (isset($_POST['update_config_se'])) {
+    database::query(
+      "update _excel_config set
+        val = '". database::input($_POST['start_col']) ."'
+        where conf = 'start_col'"
+    );
+    database::query(
+      "update _excel_config set
+        val = '". database::input($_POST['start_val']) ."'
+        where conf = 'start_val'"
+    );
+    database::query(
+      "update _excel_config set
+        val = '". database::input($_POST['end_col']) ."'
+        where conf = 'end_col'"
+    );
+    database::query(
+      "update _excel_config set
+        val = '". database::input($_POST['end_val']) ."'
+        where conf = 'end_val'"
+    );
   }
 
-  if (isset($_POST['import_desc'])) {
-    $rows = database::query("select * from per_product_lang where lc_id != 0");
-    if (database::num_rows($rows) > 0) {
-      while ($row = database::fetch($rows)) {
-        //var_dump(FS_DIR_HTTP_ROOT);
-        $ids = explode(',',$row['lc_ids']);
-        foreach ($ids as $id) {
-          if($id == $row['lc_id']) continue;
+  if (isset($_POST['update_config_cols'])) {
+    foreach($fields as $field) {
+      database::query(
+        "update _excel_config set
+          col = '". database::input($_POST[$field.'_col']) ."'
+          where field = '".$field."'"
+      );
+    }
 
-          database::query(
-            "update ". DB_TABLE_PRODUCTS_INFO ." set
-            short_description = '". database::input($row['description_short']) ."',
-            description = '". database::input($row['description']) ."',
-            head_title = '". database::input($row['meta_title']) ."',
-            meta_description = '". database::input($row['meta_description']) ."'
-            where id = ". (int)$id ."
-            limit 1;"
-          );
-          
-        }
-        
+  }
+
+
+  $config_query = database::query("select * from _excel_config");
+  $config_se = [];
+  $config_cols = [];
+
+  if (database::num_rows($config_query) > 0) {
+    while ($row = database::fetch($config_query)) {
+      if(!is_null($row['conf'])) {
+        $config_se[$row['conf']] = $row['val'];
+      } else {
+        $config_cols[$row['field']] = $row['col'];
       }
+      
     }
   }
-  
-  $key = date('YmdHi');
+  //var_dump($config_se);
+  //var_dump($config_cols);
+
   if (isset($_POST['import_products'])) {
-  //if ($_POST['import_products_key'] == $key) {
-    var_dump('import_products');
-    try {
-
-      if (!isset($_FILES['file']['tmp_name']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
-        throw new Exception(language::translate('error_must_select_file_to_upload', 'You must select a file to upload'));
-      }
-
-      
-
-      
-      $now = date('Y-m-d-H-i-s');
-      $data = file_get_contents($_FILES['file']['tmp_name']);
-      $file_link = '/excel/'.$now.'.xlsx';
-      $file = FS_DIR_HTTP_ROOT . '/excel/'.$now.'.xlsx';
-      move_uploaded_file( $_FILES['file']['tmp_name'], $file);
-
-      $size = $_FILES['file']['tmp_name'];
-      // read
-        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-        $spreadsheet = $reader->load($file);
-        $worksheet = $spreadsheet->getActiveSheet();
-
-        // index, key, default, required
-        $row_map = array(
-          array(1,'id',             false,  false),
-          array(2,'option_id',      false,  false),
-          array(3,'manufacturer',   '',     true),
-          array(4,'category',       '',     false),
-          array(5,'name',           '',     true),
-          array(6,'option',         false,  false),
-          array(7,'price',          0,      false),
-          array(8,'quantity',       0,      false),
-          array(9,'status',         1,      false),
-          array(10,'sale',          false,  false),
-          array(11,'short_description','',     false),
-          //array(12,'code','',     false),
-        );
-        foreach ($worksheet->getRowIterator() as $r => $row) {
-          if($r==1) continue;
-
-          // mapping row
-          $erow = array(); $error = false;
-          foreach ($row_map as $rules) {
-            $var = $worksheet->getCellByColumnAndRow($rules[0], $r)->getValue();
-            if($var == '=FALSE()') {$var = false;}
-            if(empty($var)) { //is_null($var) || 
-              if($rules[3] === true) {
-                $error = true;
-                $erow[$rules[1]] = $rules[2];
-              } else {
-                $erow[$rules[1]] = $rules[2];
+    //if ($_POST['import_products_key'] == $key) {
+      var_dump('import_products');
+      try {
+  
+        if (!isset($_FILES['file']['tmp_name']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
+          throw new Exception(language::translate('error_must_select_file_to_upload', 'You must select a file to upload'));
+        }
+        
+        $now = date('Y-m-d-H-i-s');
+        $data = file_get_contents($_FILES['file']['tmp_name']);
+        $file_link = '/excel/'.$now.'.xlsx';
+        $file = FS_DIR_HTTP_ROOT . '/excel/'.$now.'.xlsx';
+        move_uploaded_file( $_FILES['file']['tmp_name'], $file);
+  
+        $size = $_FILES['file']['tmp_name'];
+        // read
+          $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+          $spreadsheet = $reader->load($file);
+          $worksheet = $spreadsheet->getActiveSheet();
+  
+          $rows = []; $started =  false; $ended = false;
+          foreach ($worksheet->getRowIterator() as $r => $row) {
+            //var_dump($r);
+            if(!$started) {
+              $var = $worksheet->getCell($config_se['start_col'] . $r)->getValue();
+              if($var === $config_se['start_val']) {
+                $started = true;  
+                continue;
               }
-
-            } else {
-              $erow[$rules[1]] = $var;
             }
 
-            // col HIDE invert
-            if($rules[1] == 'status' && $var == 1) {
-              $erow[$rules[1]] = 0;
-            }
+            if($started) {
+              $var = $worksheet->getCell($config_se['end_col'] . $r)->getValue();
+              if($var === $config_se['end_val']) $ended = true;
 
-            
-          }
-          if($error === true) {
-            array_push($rows_errors,$erow);
-          } else {
-            array_push($rows,$erow);
+              if(!$ended) {
+                $data = [];
+                $skip = false;
+                foreach($fields as $field) {
+                  switch ($field) {
+                    case 'category':
+                      $data[$field] = $worksheet->getCell($config_cols[$field] . $r)->getValue();
+                      if(is_null($data[$field]) || empty($data[$field]) || $data[$field] == '') $skip = true;
+                      break;
+                    case 'name':
+                      $data[$field] = $worksheet->getCell($config_cols[$field] . $r)->getValue();
+                      $data['bg'] = $worksheet->getStyle($config_cols[$field] . $r)->getFill()->getStartColor()->getRGB();
+                      break;
+                    case 'expiration':
+                      $data[$field] = $worksheet->getCell($config_cols[$field] . $r)->getFormattedValue();
+                      break;
+                    
+                    default:
+                      $data[$field] = $worksheet->getCell($config_cols[$field] . $r)->getValue();
+                      break;
+                  }
+
+                }
+                /*if($r == 906) {
+                  echo '<pre>';
+                  var_dump($skip);
+                  var_dump($data);
+                  die;
+                }*/
+                if($skip === false) {
+                  array_push($rows,$data);
+                }
+                //
+              }
+            }
           }
           
-        }
+          // database::query('TRUNCATE TABLE _excel');
+          foreach ($rows as $key => $row) {
 
-        database::query('TRUNCATE TABLE _excel');
-        foreach ($rows as $key => $erow) {
-          if($erow['id'] == false) {$erow['id'] = 0;}
-          if($erow['option_id'] == false) {$erow['option_id'] = 0;}
-          if($erow['option'] == false) {$erow['option'] = '';}
-          if($erow['sale'] == false) {$erow['sale'] = 0;}
-            
-            /*
-              ".database::input($erow['id']).",
-              ".database::input($erow['option_id']).",
-            */
+            if($row['category'] === '') continue;
 
-          database::query("insert into _excel 
-            (manufacturer,category,name,variant,price,quantity,status,sale,short_description) 
-            values (
-              '".database::input($erow['manufacturer'])."',
-              '".database::input($erow['category'])."',
-              '".database::input($erow['name'])."',
-              '".database::input($erow['option'])."',
-              ".database::input($erow['price']).",
-              ".database::input($erow['quantity']).",
-              ".database::input($erow['status']).",
-              ".database::input($erow['sale']).",
-              '".database::input($erow['short_description'])."'
-            );");
+            $hash = md5( implode('|', [
+              $row['manufacturer'],$row['category'],$row['name'],$row['size'],$row['flavour']
+            ]));
 
-        }
+            $search_query = database::query("select * from _excel where hash = '".$hash."'");
+            if (database::num_rows($search_query) == 0) {
+              // insert
+              database::query("insert into _excel (hash, created) values ('".database::input($hash)."','".date('Y-m-d H:i:s')."')");
+            }
 
-        
-      //$spreadsheet = $reader->load($filepath);
-      //exit;
-      $show_results = true;
-      ob_clean();
-      //unset($_POST['import_products_key']);
-      unlink($file);
-      ?>
-      <script>
-      console.log('@'); 
-      window.location.href = '/admin/?app=catalog&doc=excel';
-      simulateClick = function (elem) {
-        // Create our event (with options)
-        var evt = new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-          view: window
-        });
-        // If cancelled, don't dispatch our event
-        var canceled = !elem.dispatchEvent(evt);
-      };
-      document.getElementById('doc-excel');
-      </script> 
-      <?
-      die; // 
-        //  <script> console.log('@'); window.location.reload();</script> 
-    } catch (Exception $e) {
-      notices::add('errors', $e->getMessage());
+            if (database::num_rows($search_query) > 1) {
+              // log error
+            }
+
+            $query = [];
+            foreach($fields as $field) {
+              array_push($query, $field . " = '". database::input($row[$field]) ."'");
+            }
+
+            database::query(
+              "update _excel set ".implode(',', $query).", 
+                bg = '".$row['bg']."', 
+                updated = '".date('Y-m-d H:i:s')."' 
+               where  hash = '".$hash."'"
+            );
+  
+          }
+  
+          
+        //$spreadsheet = $reader->load($filepath);
+        //exit;
+        //$show_results = true;
+        //ob_clean();
+        //unset($_POST['import_products_key']);
+        //unlink($file);
+        /*?>
+        <script>
+        console.log('@'); 
+        window.location.href = '/admin/?app=catalog&doc=excel';
+        simulateClick = function (elem) {
+          // Create our event (with options)
+          var evt = new MouseEvent('click', {
+            bubbles: true,
+            cancelable: true,
+            view: window
+          });
+          // If cancelled, don't dispatch our event
+          var canceled = !elem.dispatchEvent(evt);
+        };
+        document.getElementById('doc-excel');
+        </script> 
+        <?*/
+        // die; // 
+          //  <script> console.log('@'); window.location.reload();</script> 
+      } catch (Exception $e) {
+        notices::add('errors', $e->getMessage());
+      }
     }
-  }
-
-
 ?>
-<h1><?php echo $app_icon; ?> <?php echo language::translate('title_excel_import_export', 'Excel Import'); ?></h1>
+<div class="row">
+  <div class="col-md-4"><h3><?php echo $app_icon; ?> <?php echo language::translate('title_excel_import_export', 'Excel Import'); ?></h3></div>
+  <div class="col-md-8 text-right">
+  <a class="btn" role="button" data-toggle="collapse" href="#collapseSettings" aria-expanded="false" aria-controls="collapseSettings">
+    Settings
+  </a>
+
+  <div class="collapse" id="collapseSettings">
+    <div class="panel panel-default">
+      <div class="panel-body">
+
+        <div class="row text-left">
+          <div class="col-md-6">
+            <fieldset class="well">
+              <legend>Start / End</legend>
+              <?php echo functions::form_draw_form_begin('form_config_se', 'post', '', true); ?>
+              <table class="table">
+                <tr>
+                  <th>Type</th>
+                  <th>Col</th>
+                  <th>Val</th>
+                </tr>
+                <tr>
+                  <th>Start</th>
+                  <td><?php echo functions::form_draw_text_field('start_col', $config_se['start_col']); ?></td>
+                  <td><?php echo functions::form_draw_text_field('start_val', $config_se['start_val']); ?></td>
+                </tr>
+                <tr>
+                  <th>End</th>
+                  <td><?php echo functions::form_draw_text_field('end_col', $config_se['end_col']); ?></td>
+                  <td><?php echo functions::form_draw_text_field('end_val', $config_se['end_val']); ?></td>
+                </tr>
+              </table>
+              <?php echo functions::form_draw_button('update_config_se', language::translate('title_save', 'Save'), 'submit', '', 'save'); ?>
+              <?php echo functions::form_draw_form_end(); ?>
+            </fieldset>
+          </div>
+          <div class="col-md-6">
+            <fieldset class="well">
+              <legend>Cols</legend>
+              <?php echo functions::form_draw_form_begin('form_config_cols', 'post', '', true); ?>
+              <table class="table">
+                <tr>
+                  <th>Field</th>
+                  <th>Excell col</th>
+                </tr>
+                <? foreach($fields as $field) { ?>
+                <tr>
+                  <th><?php echo $field ?></th>
+                  <td><?php echo functions::form_draw_text_field( $field.'_col', $config_cols[$field]); ?></td>
+                </tr>
+                <? } ?>
+              </table>
+              <?php echo functions::form_draw_button('update_config_cols', language::translate('title_save', 'Save'), 'submit', '', 'save'); ?>
+              <?php echo functions::form_draw_form_end(); ?>
+            </fieldset>
+          </div>
+          
+        </div>
+
+      </div>
+    </div>
+    </div>
+  </div>
+
+</div>
 
 <div class="row">
   
 
   <div class="col-md-12">
-
-    <h2>
-          Обновление / добавление товаров, производителей, категорий (superbody format)
-    <!--  <?php echo language::translate('title_products', 'Products'); ?>-->
-        
-    </h2>
-
     <div class="row">
       <div class="col-md-4">
         <fieldset class="well">
@@ -221,22 +279,6 @@
               
               <?php echo functions::form_draw_file_field('file'); ?>
             </div>
-
-            <!--
-            <div class="form-group">
-              <label><?php echo functions::form_draw_checkbox('insert_products', 'true', true, 'checked="true"'); ?> <?php echo language::translate('text_insert_new_products', 'Insert new products'); ?></label>
-            </div>
-            <div class="form-group">
-              <label><?php echo functions::form_draw_checkbox('insert_options', 'true', true,  'checked="true"'); ?> <?php echo language::translate('text_insert_new_options', 'Insert new options'); ?></label>
-            </div>
-
-            <div class="form-group">
-              <label><?php echo functions::form_draw_checkbox('insert_categories', 'true', true,  'checked="true"'); ?> <?php echo language::translate('text_insert_new_categories', 'Insert new categories'); ?></label>
-            </div>
-
-            <div class="form-group">
-              <label><?php echo functions::form_draw_checkbox('insert_manufacturers', 'true', true,  'checked="true"'); ?> <?php echo language::translate('text_insert_new_manufacturers', 'Insert new manufacturers'); ?></label>
-            </div>-->
 
             <input type="hidden" name="import_products_key" value="<?=date('YmdHi');?>">
             <button class="btn btn-default" type="submit" name="import_products" value="val">Считать</button>
