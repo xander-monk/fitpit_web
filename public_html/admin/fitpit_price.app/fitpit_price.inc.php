@@ -126,6 +126,7 @@
                   die;
                 }*/
                 if($skip === false) {
+                  $data['ord'] = $r;
                   array_push($rows,$data);
                 }
                 //
@@ -140,6 +141,10 @@
 
             $hash = md5( implode('|', [
               $row['manufacturer'],$row['category'],$row['name'],$row['size'],$row['flavour']
+            ]));
+
+            $product_hash = md5( implode('|', [
+              $row['manufacturer'],$row['category'],$row['name']
             ]));
 
             $search_query = database::query("select * from _excel where hash = '".$hash."'");
@@ -159,6 +164,8 @@
 
             database::query(
               "update _excel set ".implode(',', $query).", 
+                product_hash = '".$product_hash."', 
+                ord = ".$row['ord'].", 
                 bg = '".$row['bg']."', 
                 updated = '".date('Y-m-d H:i:s')."' 
                where  hash = '".$hash."'"
@@ -295,7 +302,7 @@
           <legend>Обработка</legend>
           <?php if($show_results === true || 1==1) { /* var_dump($_POST); $key; */ ?> 
             <progress max="100" value="0" style="width:100% "></progress>
-            <button class="btn btn-default" type="submit" id="process" value="Обработать" disabled>Обработать</button>
+            <button class="btn btn-default" type="submit" id="process" value="Обработать" >Обработать</button> <!--disabled-->
             <div id="stat" style="display:none;">
             <div> Всего: <span id="res_count"></span><!--<?php echo count($rows_errors)+count($rows);?>--></div>
             <div> Строк обработано: <span id="res_processed"></span><!--<?php echo count($rows_errors)+count($rows);?>--></div>
@@ -461,8 +468,17 @@
   $('#process').attr('disabled',false);
 
   window.processImport = function(data) {
+    /*
+    url: '<?php echo document::link(WS_DIR_ADMIN, array('doc' => 'attribute_values.json'), array('app')); ?>&group_id=' + $(this).val(),
+      type: 'get',
+      cache: true,
+      async: true,
+      dataType: 'json',
+      error: function(jqXHR, textStatus, errorThrown) {
+        alert(jqXHR.readyState + '\n' + textStatus + '\n' + errorThrown.message);
+      },*/
     $.ajax({
-      url: window.config.platform.url + 'ajax/import.json',
+      url: '<?php echo document::link(WS_DIR_ADMIN, array('doc' => 'import.json'), array('app')); ?>',
       type: 'get',
       data: {type:'processImport'},
       cache: false,
@@ -471,14 +487,14 @@
       beforeSend: function(jqXHR) {
         jqXHR.overrideMimeType('text/html;charset=' + $('meta[charset]').attr('charset'));
       },
-      error: function(jqXHR, textStatus, errorThrown) {
-        if (data) alert('Error while process import');
-        console.error('Error while process import');
-        console.debug(jqXHR.responseText);
+      error: function(jqXHR, textStatus) {
+        // if (data) alert('Error while process import');
+        console.warn('Error while process import');
+        console.warn(jqXHR.responseText, jqXHR, textStatus);
       },
       success: function(json) {
-        console.log(json);
-        // $('#stat').show();
+        console.log('success', json);
+        //$('#stat').show();
         
         /*Object.keys(json).map( k => {
           $('#res_'+k).text(json[k]);
@@ -500,7 +516,7 @@
         }
       },
       complete: function() {
-        if (data) $('*').css('cursor', '');
+        // if (data) $('*').css('cursor', '');
       }
     });
 

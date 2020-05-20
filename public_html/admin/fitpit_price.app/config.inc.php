@@ -10,6 +10,7 @@
     'menu' => array(),
     'docs' => array(
       'fitpit_price' => 'fitpit_price.inc.php',
+      'import.json' => 'import.json.inc.php',
     ),
   );
   

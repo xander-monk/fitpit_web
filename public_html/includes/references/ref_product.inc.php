@@ -296,6 +296,13 @@
             if ((isset($product_option[$this->_currency_code]) && $product_option[$this->_currency_code] != 0) || (isset($product_option[settings::get('store_currency_code')]) && $product_option[settings::get('store_currency_code')] != 0)) {
 
               switch ($product_option['price_operator']) {
+                case '=':
+                  if ($product_option[$this->_currency_code] != 0) {
+                    $product_option['price_adjust'] = currency::convert($product_option[$this->_currency_code], $this->_currency_code, settings::get('store_currency_code'));
+                  } else {
+                    $product_option['price_adjust'] = $product_option[settings::get('store_currency_code')];
+                  }
+                  break;
 
                 case '+':
                   if ($product_option[$this->_currency_code] != 0) {
