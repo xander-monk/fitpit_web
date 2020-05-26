@@ -76,7 +76,7 @@
         
         database::query(
           "update ". DB_TABLE_CURRENCIES ."
-          set value = '". (float)$value ."'
+          set value = '". 1 / (float)$value ."'
           where code = '". database::input($currency_code) ."'
           limit 1;"
         );
