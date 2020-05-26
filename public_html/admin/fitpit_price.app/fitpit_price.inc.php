@@ -8,6 +8,85 @@
 
   $fields = ['manufacturer','category','name','size','flavour','expiration','pack','base','rrp','sale','additional','qty','rank'];
 
+  if (isset($_POST['lookup_dsc'])) {
+    var_dump('lookup_dsc');
+    $pq = database::query("select id,
+      (select name from products_info where product_id = products.id and language_code = 'uk' limit 1) as title, 
+      (select name from manufacturers where id = products.manufacturer_id limit 1) as brand
+    from products");
+    $bq = database::query("select * from _base_products");
+
+    $prods = [];
+    if (database::num_rows($pq) > 0) {
+    while ($prow = database::fetch($pq)) {
+      //if($prow['brand'] == $brand && $prow['title'] == $row['title']) {
+        array_push($prods, $prow);
+      // }
+    }}
+    $count = 0;
+    if (database::num_rows($bq) > 0) {
+      while ($row = database::fetch($bq)) {
+        $brand = str_replace('_', ' ', 
+          str_replace( '_'.str_replace(' ', '_', $row['title']), '', $row['sku'])
+        );
+        foreach($prods as $prow) {
+          if($prow['brand'] == $brand && $prow['title'] == $row['title']) {
+            $count++;
+            database::query(
+              "update _base_products set
+              lc_id = '". database::input($prow['id']) ."'
+                where id = ". database::input($row['id'])
+            );
+            // var_dump($prow['title']);
+          }
+        }
+        //var_dump($brand, $row['title']);
+      }
+    }
+    var_dump($count);
+  }
+
+  if (isset($_POST['add_dsc'])) {
+    var_dump('add_dsc');
+    $count = 0;
+    
+    $bq = database::query("select * from _base_products where  lc_id IS NOT NULL and mark = 0 limit 500");
+    var_dump(database::num_rows($bq) );
+    if (database::num_rows($bq) > 0) {
+      while ($row = database::fetch($bq)) {
+
+        $product = new ctrl_product((int)$row['lc_id']);
+        /*if($row['dsc'] !='') {
+          database::query(
+            "update ". DB_TABLE_PRODUCTS_INFO ." set
+            description = '". database::input($row['dsc']) ."'
+            where product_id = ". (int)$row['lc_id'] ."
+            "
+          );
+          $count++;
+        }*/
+
+        $attr = json_decode($row['atr']);
+        //var_dump($attr->image); die;
+        if(@is_array($attr->image)) {
+          
+        foreach($attr->image as $img) {
+          if($img->path != '') {
+            $path = explode('/',$img->path);
+            $fn = '/products/' . $path[count($path)-1];
+            // var_dump($fn);
+            $img = file_get_contents('https:' . $img->path);
+            file_put_contents(FS_DIR_HTTP_ROOT  . WS_DIR_IMAGES . $fn, $img);
+            $product->add_image(FS_DIR_HTTP_ROOT . WS_DIR_IMAGES . $fn);
+            // var_dump($img); die;
+          }
+        }}
+      }
+    }
+    var_dump($count);
+    die;
+  }
+
   if (isset($_POST['update_config_se'])) {
     database::query(
       "update _excel_config set
@@ -258,6 +337,13 @@
                 <? } ?>
               </table>
               <?php echo functions::form_draw_button('update_config_cols', language::translate('title_save', 'Save'), 'submit', '', 'save'); ?>
+              <?php echo functions::form_draw_form_end(); ?>
+
+              <?php echo functions::form_draw_form_begin('form_lookup', 'post', '', true); ?>
+              <?php echo functions::form_draw_button('lookup_dsc', 'find ids', 'submit', '', 'save'); ?>
+              <?php echo functions::form_draw_form_end(); ?>
+              <?php echo functions::form_draw_form_begin('form_addlookup', 'post', '', true); ?>
+              <?php echo functions::form_draw_button('add_dsc', 'add dsc', 'submit', '', 'save'); ?>
               <?php echo functions::form_draw_form_end(); ?>
             </fieldset>
           </div>

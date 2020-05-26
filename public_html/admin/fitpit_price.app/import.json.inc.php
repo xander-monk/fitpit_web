@@ -78,6 +78,11 @@
         (category_id, name, language_code)
         values ('". $category_id ."', '". database::input($category_name) ."','uk');"
       );
+      database::query(
+        "insert into ". DB_TABLE_CATEGORIES_INFO ."
+        (category_id, name, language_code)
+        values ('". $category_id ."', '". database::input($category_name) ."','ru');"
+      );
 
       array_push($log,  'Creating new category: '. $category_name.'; id: '. $category['category_id']);
       $rows[$key]['default_category_id'] = $category_id;
@@ -122,12 +127,14 @@
     foreach (array('name') as $field) {
       if ($row[$field] != '') {
         $product->data[$field]['uk'] = str_replace("'", "`", $row[$field]);
+        $product->data[$field]['ru'] = str_replace("'", "`", $row[$field]);
       }
     }
 
     if ($row['base'] != 0) {
       $product->data['prices']['EUR'] = $row['base'];
     }
+
 
     /*$product->data['campaigns'] = [];
     if($row['sale'] != 0) {
@@ -170,7 +177,12 @@
             database::query(
               "insert into ". DB_TABLE_OPTION_VALUES_INFO ."
               (value_id, name, language_code)
-              values (".(int)$value_id .", '". $row[$prm] ."','uk');"
+              values (".(int)$value_id .", '". database::input($row[$prm]) ."','uk');"
+            );
+            database::query(
+              "insert into ". DB_TABLE_OPTION_VALUES_INFO ."
+              (value_id, name, language_code)
+              values (".(int)$value_id .", '". database::input($row[$prm]) ."','ru');"
             );
           }
         }
