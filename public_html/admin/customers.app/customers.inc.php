@@ -35,7 +35,7 @@
   }
 
   $customers_query = database::query(
-    "select c.* from ". DB_TABLE_CUSTOMERS ." c
+    "select c.*, (select name from ". DB_TABLE_CUSTOMERS_GROUPS ." where id = c.groups) as group_name from ". DB_TABLE_CUSTOMERS ." c
     where c.id
     ". (!empty($sql_find) ? "and (". implode(" or ", $sql_find) .")" : "") ."
     order by c.firstname, c.lastname;"
@@ -86,7 +86,9 @@
             <th><?php echo language::translate('title_id', 'ID'); ?></th>
             <th><?php echo language::translate('title_email', 'Email'); ?></th>
             <th><?php echo language::translate('title_name', 'Name'); ?></th>
-            <th class="main"><?php echo language::translate('title_company', 'Company'); ?></th>
+            <th><?php echo language::translate('title_groups', 'Group'); ?></th>
+            <th><?php echo language::translate('title_discount', 'Discount'); ?></th>
+            <th ><?php echo language::translate('title_company', 'Company'); ?></th>
             <th class="text-center"><?php echo language::translate('title_date_registered', 'Date Registered'); ?></th>
             <th>&nbsp;</th>
           </tr>
@@ -100,6 +102,8 @@
             <td><?php echo $customer['id']; ?></td>
             <td><a href="<?php echo document::href_link('', array('doc' => 'edit_customer', 'customer_id' => $customer['id']), true); ?>"><?php echo $customer['email']; ?></a></td>
             <td><?php echo $customer['firstname'] .' '. $customer['lastname']; ?></td>
+            <td><?php echo $customer['group_name']; ?></td>
+            <td><?php echo $customer['discount']; ?></td>
             <td><?php echo $customer['company']; ?></td>
             <td class="text-right"><?php echo language::strftime(language::$selected['format_datetime'], strtotime($customer['date_created'])); ?></td>
             <td class="text-right"><a href="<?php echo document::href_link('', array('doc' => 'edit_customer', 'customer_id' => $customer['id']), true); ?>" title="<?php echo language::translate('title_edit', 'Edit'); ?>"><?php echo functions::draw_fonticon('fa-pencil'); ?></a></td>

@@ -65,6 +65,9 @@
           'phone',
           'newsletter',
           'notes',
+          'discount',
+          'groups',
+          'www',
         );
 
         foreach ($fields as $field) {

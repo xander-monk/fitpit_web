@@ -93,6 +93,8 @@
         "update ". DB_TABLE_CUSTOMERS ."
         set
           code = '". database::input($this->data['code']) ."',
+          groups = ". (int)$this->data['groups'] .",
+          discount = ". (int)$this->data['discount'] .",
           status = '". (!empty($this->data['status']) ? '1' : '0') ."',
           email = '". database::input($this->data['email']) ."',
           tax_id = '". database::input($this->data['tax_id']) ."',
@@ -106,6 +108,7 @@
           country_code = '". database::input($this->data['country_code']) ."',
           zone_code = '". database::input($this->data['zone_code']) ."',
           phone = '". database::input($this->data['phone']) ."',
+          www = '". database::input($this->data['www']) ."',
           different_shipping_address = '". (!empty($this->data['different_shipping_address']) ? '1' : '0') ."',
           shipping_company = '". database::input($this->data['shipping_address']['company']) ."',
           shipping_firstname = '". database::input($this->data['shipping_address']['firstname']) ."',

@@ -15,6 +15,11 @@
         'params' => array(),
       ),
       array(
+        'title' => language::translate('title_customerts_groups', 'Customers groups'),
+        'doc' => 'groups',
+        'params' => array(),
+      ),
+      array(
         'title' => language::translate('title_csv_import_export', 'CSV Import/Export'),
         'doc' => 'csv',
         'params' => array(),
@@ -33,5 +38,8 @@
       'edit_customer' => 'edit_customer.inc.php',
       'get_address.json' => 'get_address.json.inc.php',
       'newsletter' => 'newsletter.inc.php',
+      'groups' => 'customers_groups.inc.php',
+      'edit_customer_group' => 'edit_customer_group.inc.php',
+
     ),
   );
