@@ -1,3 +1,5 @@
+
+
 <div id="sidebar">
   <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_category_tree.inc.php'); ?>
 
@@ -6,8 +8,6 @@
 
 <div id="content">
   {snippet:notices}
-
-  <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_slides.inc.php'); ?>
 
   <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_manufacturer_logotypes.inc.php'); ?>
 
