@@ -23,8 +23,8 @@
           'link' => document::ilink('manufacturer', array('manufacturer_id' => $manufacturer['id'])),
           'image' => array(
             'original' => 'images/' . $manufacturer['image'],
-            'thumbnail' => functions::image_thumbnail(FS_DIR_APP . 'images/' . $manufacturer['image'], 0, 30, 'FIT'),
-            'thumbnail_2x' => functions::image_thumbnail(FS_DIR_APP . 'images/' . $manufacturer['image'], 0, 60, 'FIT'),
+            'thumbnail' => functions::image_thumbnail(FS_DIR_APP . 'images/' . $manufacturer['image'], 0, 150, 'FIT'),
+            'thumbnail_2x' => functions::image_thumbnail(FS_DIR_APP . 'images/' . $manufacturer['image'], 0, 320, 'FIT'),
           ),
         );
       }
