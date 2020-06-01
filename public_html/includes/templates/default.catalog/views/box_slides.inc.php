@@ -1,6 +1,5 @@
-<section id="box-slides" class="carousel slide" data-ride="carousel">
+<section id="box-slides" class="">
 
-  <div class="carousel-inner">
 <?php
   foreach ($slides as $key => $slide) {
     echo '<div class="item'. (($key == 0) ? ' active' : '') .'">' . PHP_EOL;
@@ -9,7 +8,7 @@
       echo '<a href="'. htmlspecialchars($slide['link']) .'">' . PHP_EOL;
     }
 
-    echo '<img src="'. document::href_link($slide['image']) .'" alt="" style="width: 100%;" /></a>' . PHP_EOL;
+    echo '<img src="'. document::href_link($slide['image']) .'" alt="" /></a>' . PHP_EOL;
 
     if (!empty($slide['caption'])) {
       echo '<div class="carousel-caption">'. $slide['caption'] .'</div>' . PHP_EOL;
@@ -22,18 +21,5 @@
     echo '</div>' . PHP_EOL;
   }
 ?>
-  </div>
 
-  <?php if (count($slides) > 1) { ?>
-  <ol class="carousel-indicators">
-    <?php foreach ($slides as $key => $slide) echo '<li data-target="#box-slides" data-slide-to="'.  $key .'"'. (($key == 0) ? ' class="active"' : '') .'></li>'; ?>
-  </ol>
-
-  <a class="left carousel-control" href="#box-slides" data-slide="prev">
-    <span class="icon-prev"><?php echo functions::draw_fonticon('fa-chevron-left'); ?></span>
-  </a>
-  <a class="right carousel-control" href="#box-slides" data-slide="next">
-    <span class="icon-next"><?php echo functions::draw_fonticon('fa-chevron-right'); ?></span>
-  </a>
-  <?php } ?>
 </section>

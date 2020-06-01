@@ -42,6 +42,12 @@
       > li {
         width: 20%;
         float: left;
+        @media (max-width: @media-breakpoint-md) {
+          width: 33.3333%;
+        }
+        @media (max-width: @media-breakpoint-sm) {
+          width: 50%;
+        }
       }
       > li > a {
         padding-left: 30px;

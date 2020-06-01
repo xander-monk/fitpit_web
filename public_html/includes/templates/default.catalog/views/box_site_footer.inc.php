@@ -42,7 +42,7 @@
       </ul>
     </section>
 
-    <section class="contact hidden-xs">
+    <section class="contact">
       <h3 class="title"><?php echo language::translate('title_contact', 'Contact'); ?></h3>
 
       <p><?php echo nl2br(settings::get('store_postal_address')); ?></p>

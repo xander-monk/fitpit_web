@@ -19,7 +19,7 @@
     display: block;
     overflow-y: auto;
   }
-  @media (min-width: @media-breakpoint-sm) {
+  @media (min-width: @media-breakpoint-md) {
     width: auto;
     border-top: 0;
     box-shadow: none;
@@ -85,6 +85,9 @@
     border-top: none;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+    @media (max-width: @media-breakpoint-sm) {
+      background-image: none;
+    }
     &.account-dropdown {
       min-width: 0;
     }
@@ -130,7 +133,7 @@
 .navbar-header {
   display: flex;
   width: 100%;
-  @media (min-width: @media-breakpoint-sm) {
+  @media (min-width: @media-breakpoint-md) {
     float: left;
     width: @default-sidebar-width + @default-gutter-size;
   }
@@ -161,13 +164,13 @@
     &:focus {
       outline: 0;
     }
-    @media (min-width: @media-breakpoint-sm) {
+    @media (min-width: @media-breakpoint-md) {
       display: none;
     }
   }
 }
 
-@media (min-width: @media-breakpoint-sm) {
+@media (min-width: @media-breakpoint-md) {
   .navbar-right {
     float: right !important;
   }
