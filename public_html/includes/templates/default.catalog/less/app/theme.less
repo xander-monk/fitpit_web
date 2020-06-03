@@ -571,7 +571,7 @@ html {
 }
 
 #box-articles {
-  padding: 50px 0;
+  padding: 50px 0 0 0;
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex;
@@ -604,6 +604,79 @@ html {
   }
 }
 
+#box-reviews-slider {
+  background: url('../../images/rev-bg.jpg') center no-repeat;
+  background-size: cover;
+  margin: 0 -@default-gutter-size;
+  padding: 100px @default-gutter-size;
+  .reviews-slider {
+    .slide {
+      .review-out {
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        -webkit-flex-wrap: nowrap;
+        -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+        -webkit-justify-content: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        -webkit-align-content: center;
+        -ms-flex-line-pack: center;
+        align-content: center;
+        -webkit-align-items: center;
+        -ms-flex-align: center;
+        align-items: center;
+        color: @fp_textWhite;
+        img {
+          margin-bottom: 20px;
+        }
+        p {
+          margin-bottom: 50px;
+          font-size: 18px;
+        }
+        .review-author {
+          display: -ms-flexbox;
+          display: -webkit-flex;
+          display: flex;
+          -webkit-flex-direction: row;
+          -ms-flex-direction: row;
+          flex-direction: row;
+          -webkit-flex-wrap: nowrap;
+          -ms-flex-wrap: nowrap;
+          flex-wrap: nowrap;
+          -webkit-justify-content: center;
+          -ms-flex-pack: center;
+          justify-content: center;
+          -webkit-align-content: center;
+          -ms-flex-line-pack: center;
+          align-content: center;
+          -webkit-align-items: center;
+          -ms-flex-align: center;
+          align-items: center;
+          img {
+            margin: 0 20px 0 0;
+            width: 80px;
+            border-radius: 50%;
+            border: 2px solid @fp_green_10;
+          }
+          .name {
+            display: block;
+            font-size: 26px;
+          }
+          .city {
+            font-style: italic;
+            font-size: 20px;
+            color: @fp_green_10;
+          }
+        }
+      }
+    }
+  }
+}
 
 
 
@@ -630,7 +703,6 @@ html {
             transition-property: height, visibility;
   }
 
-  .panel-group .panel+.panel {}
   .panel-group {
     .panel {
       border-radius: 0;
@@ -656,7 +728,7 @@ html {
           content: "";
           position: relative;
           top: 1px;
-          display: inline-block;
+          display: block;
           font: normal normal normal 20px/1 FontAwesome;
           font-size: inherit;
           text-rendering: auto;

@@ -52,6 +52,50 @@
 
   <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_latest_products.inc.php'); ?>
 
+  <section id="box-reviews-slider">
+    <div class="reviews-slider">
+      <div class="slide">
+        <div class="review-out">
+          <img src="../images/quotes-img.png" alt="">
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+          <div class="review-author">
+            <div class="pic"><img src="../images/author-img-1.jpg" alt=""></div>
+            <div>
+              <span class="name">Someone famous in</span>
+              <span class="city">Source Title</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide" style="display:none;">
+        <div class="review-out">
+          <img src="../images/quotes-img.png" alt="">
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+          <div class="review-author">
+            <div class="pic"><img src="../images/author-img-1.jpg" alt=""></div>
+            <div>
+              <span class="name">Someone famous in</span>
+              <span class="city">Source Title</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide" style="display:none;">
+        <div class="review-out">
+          <img src="../images/quotes-img.png" alt="">
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+          <div class="review-author">
+            <div class="pic"><img src="../images/author-img-1.jpg" alt=""></div>
+            <div>
+              <span class="name">Someone famous in</span>
+              <span class="city">Source Title</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="box-articles">
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
       <div class="panel panel-default">
