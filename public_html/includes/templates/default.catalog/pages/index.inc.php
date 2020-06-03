@@ -52,4 +52,48 @@
 
   <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_latest_products.inc.php'); ?>
 
+  <section id="box-articles">
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingOne">
+          <h2 class="panel-title">
+            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              Collapsible Group Item #1
+            </a>
+          </h2>
+        </div>
+        <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form humour the and randomised words which don't look even slightly believable. If you are is going to use a passage of Lorem Ipsum</div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingTwo">
+          <h2 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              Collapsible Group Item #2
+            </a>
+          </h2>
+        </div>
+        <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form humour the and randomised words which don't look even slightly believable. If you are is going to use a passage of Lorem Ipsum</div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingThree">
+          <h2 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              Collapsible Group Item #3
+            </a>
+          </h2>
+        </div>
+        <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form humour the and randomised words which don't look even slightly believable. If you are is going to use a passage of Lorem Ipsum</div>
+        </div>
+      </div>
+    </div>
+    <div class="pic-wrapp">
+      <img src="../images/article1.png" alt="">
+    </div>
+  </section>
+
 </div>

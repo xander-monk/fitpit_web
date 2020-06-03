@@ -569,3 +569,120 @@ html {
     }
   }
 }
+
+#box-articles {
+  padding: 50px 0;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-content: center;
+  -ms-flex-line-pack: center;
+  align-content: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  .panel-group, .pic-wrapp {
+    width: 50%;
+  }
+  .panel-group {
+    padding-right: 50px;
+  }
+  .pic-wrapp {
+    img {
+      display: block;
+      width: 100%;
+    }
+  }
+}
+
+
+
+
+#accordion {
+
+  .collapse {
+    display: none;
+  }
+  .collapse.in {
+    display: block;
+  }
+  .collapsing {
+    position: relative;
+    height: 0;
+    overflow: hidden;
+    -webkit-transition-timing-function: ease;
+         -o-transition-timing-function: ease;
+            transition-timing-function: ease;
+    -webkit-transition-duration: .35s;
+         -o-transition-duration: .35s;
+            transition-duration: .35s;
+    -webkit-transition-property: height, visibility;
+         -o-transition-property: height, visibility;
+            transition-property: height, visibility;
+  }
+
+  .panel-group .panel+.panel {}
+  .panel-group {
+    .panel {
+      border-radius: 0;
+    }
+  }
+  .panel-default {
+    .panel-heading {
+      padding: 0;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      h1, h2, h3, h4 {
+        padding-bottom: 0;
+        margin: 0;
+      }
+      a {
+        display: block;
+        padding: 15px 20px;
+        text-decoration: none;
+        color: @fp_green_1;
+        &:after {
+          content: "";
+          position: relative;
+          top: 1px;
+          display: inline-block;
+          font: normal normal normal 20px/1 FontAwesome;
+          font-size: inherit;
+          text-rendering: auto;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          float: right;
+          transition: transform .25s linear;
+          -webkit-transition: -webkit-transform .25s linear;
+        }
+      }
+      a[aria-expanded="true"] {
+        background-color: @fp_green_1;
+        color: @fp_green_9;
+      }
+      a[aria-expanded="true"]:after {
+        content: "\f077";
+      }
+      a[aria-expanded="false"]:after {
+        content: "\f078";
+      }
+    }
+    .panel-body {
+      padding: 20px;
+      background-color: @fp_green_1;
+      color: @fp_textWhite;
+    }
+  }
+}
+
