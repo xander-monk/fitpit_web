@@ -15,7 +15,7 @@
   
 
 
-  $res = database::query("select * from _excel where product_hash in ('".implode("','",$prods)."')");
+  $res = database::query("select *, (select min(base) from _excel as e where e.product_hash = _excel.product_hash) as min_base  from _excel where product_hash in ('".implode("','",$prods)."')");
   $rows = [];
   if (database::num_rows($res) > 0) {
     while ($r = database::fetch($res)) {
@@ -29,7 +29,8 @@
             break;
           case 'sale':   
           case 'rrp':   
-          case 'base':   
+          case 'base': 
+          case 'min_base':  
             $q[$k] = (float)$v;         
             break;
           default:
@@ -131,8 +132,8 @@
       }
     }
 
-    if ($row['base'] != 0) {
-      $product->data['prices']['EUR'] = $row['base'];
+    if ($row['min_base'] != 0) {
+      $product->data['prices']['EUR'] = $row['min_base'];
     }
 
 
@@ -156,7 +157,63 @@
     $rows[$key]['product_id'] = (int)$product->data['id'];
 
   }
-  
+
+  //attributes
+  foreach ($rows as $key => $row) {
+    if($row['size'] != '' || $row['flavour'] != '') {
+      $rows[$key]['options'] = [];
+    }
+    $params = ['', 'size', 'flavour'];
+    foreach($params as $group => $prm) {
+      if($group != '') {
+
+        if($row[$prm] != '') {
+          if ($option = database::fetch(database::query("select value_id from ". DB_TABLE_ATTRIBUTE_VALUES_INFO ." where name = '". database::input($row[$prm]) ."' and language_code = 'uk' limit 1;"))) {
+            $rows[$key]['options'][$prm] = ['value_id' => $option['value_id'], 'group_id' => $group];
+          } else {
+            database::query("insert into ". DB_TABLE_ATTRIBUTE_VALUES ." (group_id) values (".$group.");");
+            $value_id = database::insert_id();
+            $rows[$key]['options'][$prm] = ['value_id' => $value_id, 'group_id' => $group];
+            database::query(
+              "insert into ". DB_TABLE_ATTRIBUTE_VALUES_INFO ."
+              (value_id, name, language_code)
+              values (".(int)$value_id .", '". database::input($row[$prm]) ."','uk');"
+            );
+            database::query(
+              "insert into ". DB_TABLE_ATTRIBUTE_VALUES_INFO ."
+              (value_id, name, language_code)
+              values (".(int)$value_id .", '". database::input($row[$prm]) ."','ru');"
+            );
+          }
+        }
+      }
+    }
+
+    foreach($params as $group => $prm) {
+      if($group != '') {
+        if($row[$prm] != '') {
+
+          if($option = database::fetch(database::query(
+            "select id from ". DB_TABLE_PRODUCTS_ATTRIBUTES ." where 
+              value_id = ". (int)$rows[$key]['options'][$prm]['value_id'] ." and 
+              group_id = ". (int)$rows[$key]['options'][$prm]['group_id'] ." and 
+              product_id = ". (int)$row['product_id'] ."  limit 1;"))) {
+            
+          } else {
+            database::query(
+              "insert into ". DB_TABLE_PRODUCTS_ATTRIBUTES ."
+                (product_id, group_id, value_id)
+                values (
+                  ". (int)$row['product_id'] .",
+                  ". (int)$rows[$key]['options'][$prm]['group_id'] .",
+                  ". (int)$rows[$key]['options'][$prm]['value_id'] .");"
+            );
+          }
+
+        }
+      }
+    }
+  }
   
   //options
   foreach ($rows as $key => $row) {
@@ -198,13 +255,17 @@
               value_id = ". (int)$rows[$key]['options'][$prm]['value_id'] ." and 
               group_id = ". (int)$rows[$key]['options'][$prm]['group_id'] ." and 
               product_id = ". (int)$row['product_id'] ."  limit 1;"))) {
-            database::query(
-              "update ". DB_TABLE_PRODUCTS_OPTIONS ."
-                set EUR = ". (float)$row['base'] ."
-                where product_id = ". (int)$row['product_id'] ."
-                and id = ". (int)$option['id'] ."
-                limit 1;"
-            );
+            if($prm == 'size') {
+              if($row['base'] > $row['min_base']) {
+                database::query(
+                  "update ". DB_TABLE_PRODUCTS_OPTIONS ."
+                    set EUR = ". (float)($row['base'] - $row['min_base']) ."
+                    where product_id = ". (int)$row['product_id'] ."
+                    and id = ". (int)$option['id'] ."
+                    limit 1;"
+                );
+              }
+            }
           } else {
             database::query(
               "insert into ". DB_TABLE_PRODUCTS_OPTIONS ."
@@ -213,7 +274,7 @@
                   ". (int)$row['product_id'] .",
                   ". (int)$rows[$key]['options'][$prm]['group_id'] .",
                   ". (int)$rows[$key]['options'][$prm]['value_id'] .", 
-                  ". (float)$row['base'] .", 
+                  ". (float)$row['base'] - (float)$row['min_base'] .", 
                   '". date('Y-m-d H:i:s') ."');"
             );
           }
@@ -330,6 +391,9 @@
     //'products' => $products,
     'ids' => $ids
   ];
+
+
+
 
   /*if($json['count'] == $json['processed']) {
     $now = date('Y-m-d-H-i-s');
