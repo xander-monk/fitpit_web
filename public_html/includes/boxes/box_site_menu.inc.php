@@ -23,7 +23,19 @@
         'link' => document::ilink('category', array('category_id' => $category['id'])),
         'image' => functions::image_thumbnail(FS_DIR_APP . 'images/' . $category['image'], 24, 24, 'CROP'),
         'priority' => $category['priority'],
+        'sub' => array()
       );
+      $sub_categories_query = functions::catalog_categories_query($category['id']);
+      while ($sub_category = database::fetch($sub_categories_query)) {
+        array_push($box_site_menu->snippets['categories'][$category['id']]['sub'], array(
+          'type' => 'category',
+          'id' => $sub_category['id'],
+          'title' => $sub_category['name'],
+          'link' => document::ilink('category', array('category_id' => $sub_category['id'])),
+          'image' => functions::image_thumbnail(FS_DIR_APP . 'images/' . $sub_category['image'], 24, 24, 'CROP'),
+          'priority' => $sub_category['priority'],
+        ));
+      }
     }
 
   // Manufacturers

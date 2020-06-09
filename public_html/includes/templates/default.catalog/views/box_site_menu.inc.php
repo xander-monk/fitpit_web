@@ -21,14 +21,18 @@
       </li>
 
       <?php if ($categories) { ?>
-      <li class="categories dropdown">
-        <a href="#" data-toggle="dropdown" class="dropdown-toggle"><?php echo language::translate('title_categories', 'Categories'); ?> <b class="caret"></b></a>
-        <ul class="dropdown-menu">
-          <?php foreach ($categories as $item) { ?>
-          <li><a href="<?php echo htmlspecialchars($item['link']); ?>"><?php echo $item['title']; ?></a></li>
-          <?php } ?>
-        </ul>
-      </li>
+      
+      <?php foreach ($categories as $item) { ?>
+        <li class="categorie dropdown">
+          <a href="#" data-toggle="dropdown" class="dropdown-toggle"><?php echo $item['title']; ?> <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <?php foreach ($item['sub'] as $sub_item) { ?>
+            <li><a href="<?php echo htmlspecialchars($sub_item['link']); ?>"><?php echo $sub_item['title']; ?></a></li>
+            <?php } ?>
+          </ul>
+        </li>
+      <?php } ?>
+      
       <?php } ?>
 
       <?php if ($manufacturers) { ?>

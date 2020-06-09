@@ -6,6 +6,7 @@
 
   <?php // include vmod::check(FS_DIR_APP . 'includes/boxes/box_recently_viewed_products.inc.php'); ?>
 </div>-->
+<?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_slides.inc.php'); ?>
 
 <div id="content">
   {snippet:notices}

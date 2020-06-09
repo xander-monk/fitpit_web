@@ -43,7 +43,7 @@
     </header>
 
     <main>
-      <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_slides.inc.php'); ?>
+      <?php // include vmod::check(FS_DIR_APP . 'includes/boxes/box_slides.inc.php'); ?>
       <section id="main">
         {snippet:content}
       </section>
@@ -92,7 +92,7 @@
         }
       ]
     });
-    /*
+    
     $('.reviews-slider').slick({
       dots: true,
       infinite: true,
@@ -102,7 +102,7 @@
       autoplay: true,
       autoplaySpeed: 2000
     });
-    */
+    
   </script>
 </body>
 
