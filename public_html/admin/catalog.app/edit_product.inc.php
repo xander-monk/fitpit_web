@@ -374,7 +374,7 @@
 
         </div>
 
-        <div id="tab-information" class="tab-pane" style="max-width: 640px;">
+        <div id="tab-information" class="tab-pane" >
 
           <ul class="nav nav-tabs">
             <?php foreach (language::$languages as $language) { ?>
@@ -393,7 +393,7 @@
 
               <div class="form-group">
                 <label><?php echo language::translate('title_description', 'Description'); ?></label>
-                <?php echo functions::form_draw_regional_wysiwyg_field($language_code, 'description['. $language_code .']', true, 'style="height: 250px;"'); ?>
+                <?php echo functions::form_draw_regional_wysiwyg_field($language_code, 'description['. $language_code .']', true, 'style="height: 500px;"'); ?>
               </div>
 
               <div class="form-group">

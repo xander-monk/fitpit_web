@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+	<id>Summernote</id>
+	<version>1.0</version>
+	<vqmver required="true">2.4.0</vqmver>
+	<author>tim-international.net</author>
+
+	<file name="includes/functions/func_form.inc.php">
+		<operation error="log">
+			<search position="replace"><![CDATA[
+  function form_draw_wysiwyg_field($name, $value=true, $parameters='') {
+      ]]></search>
+			<add><![CDATA[
+  function form_draw_summernote_field($name, $value=true, $parameters='') {
+
+    if ($value === true) $value = form_reinsert_value($name);
+
+    document::$snippets['head_tags']['summernote'] = '<link rel="stylesheet" href="'. WS_DIR_APP .'ext/summernote/summernote-lite.css" />';
+    document::$snippets['foot_tags']['summernote'] = '<script src="'. WS_DIR_APP .'ext/summernote/summernote-lite.js"></script>';
+
+    document::$snippets['javascript'][] = '  $(\'textarea[name="'. $name .'"]\').summernote({' . PHP_EOL
+                                        . '    height: $(\'textarea[name="'. $name .'"]\').height()' . PHP_EOL
+                                        //. '    toolbar: [ ["style", ["style"]], ["font", ["bold", "italic", "underline", "clear"]], ["fontname", ["fontname"]], ["color", ["color"]], ["para", ["ul", "ol", "paragraph"]], ["height", ["height"]], ["table", ["table"]], ["insert", ["link", "picture", "hr"]], ["view", ["fullscreen", "codeview"]], ["help", ["help"]]]' . PHP_EOL
+                                        . '  });';
+
+    return '<textarea '. (!preg_match('#class="([^"]+)?"#', $parameters) ? 'class="form-control"' : '') .' name="'. htmlspecialchars($name) .'" data-type="wysiwyg"'. (($parameters) ? ' '.$parameters : false) .'>'. htmlspecialchars($value) .'</textarea>';
+  }
+
+  function form_draw_wysiwyg_field($name, $value=true, $parameters='') {
+    return form_draw_summernote_field($name, $value, $parameters);
+      ]]></add>
+		</operation>
+	</file>
+</modification>
