@@ -243,7 +243,23 @@
       }
     }
 
+    public static function require_wholesale() {
+      if (!self::check_wholesale()) {
+        //notices::add('warnings', language::translate('warning_must_login_page', 'You must be logged in to view the page.'));
+        header('Location: ' . document::link('login', array('redirect_url' => $_SERVER['REQUEST_URI'])));
+        exit;
+      }
+    }
+
+
+
     public static function check_login() {
       if (!empty(self::$data['id'])) return true;
+    }
+
+
+    public static function check_wholesale() {
+      // var_dump((int)self::$data['groups']); die;
+      if ((int)self::$data['groups'] > 1) return true;
     }
   }

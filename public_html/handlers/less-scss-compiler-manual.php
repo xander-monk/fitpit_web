@@ -46,7 +46,7 @@
 
   $less_file = preg_replace('#(/css/)#', '/less/', $requested_file);
   $less_file = preg_replace('#((\.min)?\.css)$#', '.less', $less_file);
-
+  
   $scss_file = preg_replace('#(\/css\/)#', '/scss/', $requested_file);
   $scss_file = preg_replace('#((\.min)?\.css)$#', '.scss', $scss_file);
 
@@ -74,6 +74,7 @@
   // Update .css from .less
     case (file_exists($less_file)):
       
+
       try {
         $map_file = $css_file.'.map';
 
@@ -109,7 +110,7 @@
           //$less->parseFile($less_file, dirname($less_file));
           $less->parseFile($less_file);
           $css = $less->getCss();
-
+          // var_dump($less_file, $css_minified_file);die;
           file_put_contents($css_minified_file, $css);
         }
 

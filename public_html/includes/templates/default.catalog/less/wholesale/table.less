@@ -1,0 +1,30 @@
+#wholesale-data {
+    thead {
+        tr {
+            td {
+                font-size: 10px;
+                font-weight: 700;
+            }
+        }
+    }
+    tbody {
+        tr {
+            td {
+                font-size: 12px;
+                padding: 0.25rem;
+                vertical-align: middle;
+                &.col_manufacturer, 
+                &.col_category {
+                    width: 100px !important;
+                    max-width: 100px !important;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+                &.col_name {
+                    width: 20% !important;
+                }
+            }
+        }
+    }
+}

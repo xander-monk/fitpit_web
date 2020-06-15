@@ -62,6 +62,12 @@
         </ul>
       </li>
       <?php } ?>
+
+      <?php if (!empty(customer::$data['id'])) { ?>
+        <li class="information dropdown">
+          <a href="/wholesale"><?php echo language::translate('title_wholesale', 'Wholesale'); ?></a>
+        </li>
+      <?php } ?>
     </ul>
     
     <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_region.inc.php'); ?>

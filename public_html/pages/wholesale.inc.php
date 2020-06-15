@@ -6,7 +6,8 @@
   document::$snippets['head_tags']['noindex'] = '<meta name="robots" content="noindex" />';
   document::$snippets['title'][] = language::translate('wholesale:head_title', 'Wholesale');
 
-  customer::require_login();
+  // var_dump(customer::require_wholesale()); die;
+  customer::require_wholesale();
 
   if (empty($_GET['page']) || !is_numeric($_GET['page'])) $_GET['page'] = 1;
 
