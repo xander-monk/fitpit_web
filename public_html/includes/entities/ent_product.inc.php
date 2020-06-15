@@ -225,6 +225,7 @@
       database::query(
         "update ". DB_TABLE_PRODUCTS ." set
         status = ". (int)$this->data['status'] .",
+        new = ". (int)$this->data['new'] .",
         manufacturer_id = ". (int)$this->data['manufacturer_id'] .",
         supplier_id = ". (int)$this->data['supplier_id'] .",
         delivery_status_id = ". (int)$this->data['delivery_status_id'] .",

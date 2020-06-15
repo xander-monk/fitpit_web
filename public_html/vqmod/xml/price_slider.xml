@@ -3,7 +3,7 @@
     <id>Price Slider</id>
     <version>1.1</version>
     <vqmver required="true">2.0</vqmver>
-    <author>Goulven Guillard (developped on a base from Andrew Whitaker on Stack Overflow : https://stackoverflow.com/a/10787708/812102)</author>
+    <author></author>
     <licence>CC-BY-SA</licence>
     <file name="includes/templates/default.catalog/views/box_filter.inc.php">
       <operation error="log">
