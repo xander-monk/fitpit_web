@@ -393,7 +393,7 @@
 
               <div class="form-group">
                 <label><?php echo language::translate('title_description', 'Description'); ?></label>
-                <?php echo functions::form_draw_regional_wysiwyg_field($language_code, 'description['. $language_code .']', true, 'style="height: 500px;"'); ?>
+                <?php echo functions::form_draw_regional_textarea($language_code, 'description['. $language_code .']', true, 'style="height: 500px;"'); ?>
               </div>
 
               <div class="form-group">
@@ -1353,3 +1353,27 @@
     $.featherlight.close();
   });
 </script>
+<script src="https://cdn.tiny.cloud/1/bp3bdzdrbb8lc14gelm7xmligipdhqympm6or3v8qw7jocdq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+      selector: 'textarea',
+      height: 500,
+  menubar: false,
+  plugins: [
+    'advlist autolink lists link image charmap print preview anchor',
+    'searchreplace visualblocks code fullscreen',
+    'insertdatetime media table paste code help wordcount'
+  ],
+      toolbar: 'undo redo | formatselect | ' +
+  'bold italic backcolor | alignleft aligncenter ' +
+  'alignright alignjustify | bullist numlist outdent indent | ' +
+  'removeformat | fullscreen | help',
+    });
+  </script>
+  <style>
+    .tox-tinymce {
+      width: 100% !important;
+      height: 500px !important;
+
+    }
+    </style>
