@@ -6,6 +6,12 @@
       <?php echo functions::form_draw_search_field('query', true, 'placeholder="'. language::translate('text_search_products', 'Search products') .' &hellip;" autocomplete="off"'); ?>
     <?php echo functions::form_draw_form_end(); ?>
 
+    <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_contacts_header.inc.php'); ?>
+
+    <div class="text-right">
+      <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_cart.inc.php'); ?>
+    </div>
+
     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#default-menu">
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
@@ -16,9 +22,9 @@
   <div id="default-menu" class="navbar-collapse collapse">
 
     <ul class="nav navbar-nav">
-      <li class="hidden-xs">
+      <!--<li class="hidden-xs">
         <a href="<?php echo document::ilink(''); ?>" title="<?php echo language::translate('title_home', 'Home'); ?>"><?php echo functions::draw_fonticon('fa-home'); ?></a>
-      </li>
+      </li>-->
 
       <?php if ($categories) { ?>
       
@@ -57,14 +63,18 @@
       </li>
       <?php } ?>
     </ul>
+    
+    <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_region.inc.php'); ?>
 
     <ul class="nav navbar-nav navbar-right">
-      <li class="customer-service">
+      <!--<li class="customer-service">
         <a href="<?php echo document::href_ilink('customer_service'); ?>"><?php echo language::translate('title_customer_service', 'Customer Service'); ?></a>
-      </li>
+      </li>-->
 
       <li class="account dropdown">
-        <a href="#" data-toggle="dropdown" class="dropdown-toggle"><?php echo functions::draw_fonticon('fa-user'); ?> <?php echo !empty(customer::$data['id']) ? customer::$data['firstname'] : language::translate('title_sign_in', 'Sign In'); ?> <b class="caret"></b></a>
+        <a href="#" data-toggle="dropdown" class="dropdown-toggle">
+          <?php echo functions::draw_fonticon('fa-user'); ?>
+        </a>
         <ul class="dropdown-menu account-dropdown">
           <?php if (!empty(customer::$data['id'])) { ?>
             <li><a href="<?php echo document::href_ilink('order_history'); ?>"><?php echo language::translate('title_order_history', 'Order History'); ?></a></li>

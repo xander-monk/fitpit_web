@@ -111,8 +111,10 @@
           <?php foreach ($options as $option) { ?>
           <div class="form-group">
             <label><?php echo $option['name']; ?></label>
-            <?php echo $option['description'] ? '<div>' . $option['description'] . '</div>' : ''; ?>
-            <?php echo $option['values']; ?>
+            <div class="flex-form-row">
+              <?php echo $option['description'] ? '<div>' . $option['description'] . '</div>' : ''; ?>
+              <?php echo $option['values']; ?>
+            </div>
           </div>
           <?php } ?>
         <?php } ?>
@@ -179,28 +181,28 @@
     <?php if ($technical_data) { ?>
     <div id="tab-technical-data" class="tab-pane technical-data">
       <table class="table table-striped table-hover">
-<?php
-  for ($i=0; $i<count($technical_data); $i++) {
-    if (strpos($technical_data[$i], ':') !== false) {
-      @list($key, $value) = explode(':', $technical_data[$i]);
-      echo '  <tr>' . PHP_EOL
-         . '    <td>'. trim($key) .':</td>' . PHP_EOL
-         . '    <td>'. trim($value) .'</td>' . PHP_EOL
-         . '  </tr>' . PHP_EOL;
-    } else if (trim($technical_data[$i]) != '') {
-      echo '  <thead>' . PHP_EOL
-         . '    <tr>' . PHP_EOL
-         . '      <th colspan="2">'. $technical_data[$i] .'</th>' . PHP_EOL
-         . '    </tr>' . PHP_EOL
-         . '  </thead>' . PHP_EOL
-         . '  <tbody>' . PHP_EOL;
-    } else {
-      echo ' </tbody>' . PHP_EOL
-         . '</table>' . PHP_EOL
-         . '<table class="table table-striped table-hover">' . PHP_EOL;
-    }
-  }
-?>
+        <?php
+          for ($i=0; $i<count($technical_data); $i++) {
+            if (strpos($technical_data[$i], ':') !== false) {
+              @list($key, $value) = explode(':', $technical_data[$i]);
+              echo '  <tr>' . PHP_EOL
+                . '    <td>'. trim($key) .':</td>' . PHP_EOL
+                . '    <td>'. trim($value) .'</td>' . PHP_EOL
+                . '  </tr>' . PHP_EOL;
+            } else if (trim($technical_data[$i]) != '') {
+              echo '  <thead>' . PHP_EOL
+                . '    <tr>' . PHP_EOL
+                . '      <th colspan="2">'. $technical_data[$i] .'</th>' . PHP_EOL
+                . '    </tr>' . PHP_EOL
+                . '  </thead>' . PHP_EOL
+                . '  <tbody>' . PHP_EOL;
+            } else {
+              echo ' </tbody>' . PHP_EOL
+                . '</table>' . PHP_EOL
+                . '<table class="table table-striped table-hover">' . PHP_EOL;
+            }
+          }
+        ?>
       </table>
     </div>
     <?php } ?>

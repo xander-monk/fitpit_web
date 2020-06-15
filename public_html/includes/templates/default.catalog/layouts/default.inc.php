@@ -23,24 +23,20 @@
 
     <?php include vmod::check(FS_DIR_TEMPLATE . 'views/box_cookie_notice.inc.php'); ?>
 
-    <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_site_menu.inc.php'); ?>
-
-    <header id="header" class="hidden-print">
+    <div class="nav-out-custom">
+    
       <a class="logotype" href="<?php echo document::href_ilink(''); ?>">
         <img src="<?php echo document::href_link('images/logotype.png'); ?>"
           alt="<?php echo settings::get('store_name'); ?>" title="<?php echo settings::get('store_name'); ?>" />
         <span>FitPit</span>
       </a>
 
-      <div class="text-center hidden-md">
-        <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_region.inc.php'); ?>
-        <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_contacts_header.inc.php'); ?>
-      </div>
+      <div class="nav-out-custom_nav">
 
-      <div class="text-right">
-        <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_cart.inc.php'); ?>
+        <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_site_menu.inc.php'); ?>
+
       </div>
-    </header>
+    </div>
 
     <main>
       <?php // include vmod::check(FS_DIR_APP . 'includes/boxes/box_slides.inc.php'); ?>
@@ -95,12 +91,58 @@
     
     $('.reviews-slider').slick({
       dots: true,
+      //fade: true,
       infinite: true,
-      speed: 300,
+      //speed: 100,
       slidesToShow: 1,
-      adaptiveHeight: true,
       autoplay: true,
-      autoplaySpeed: 2000
+      autoplaySpeed: 5000,
+
+      prevArrow: '<button class="slick-arrow slick-prev"><span><i class="fa fa-chevron-left" aria-hidden="true"></i></span></button>',
+      nextArrow: '<button class="slick-arrow slick-next"><span><i class="fa fa-chevron-right" aria-hidden="true"></i></span></button>',
+
+      responsive: [{
+          breakpoint: 1200,
+          settings: {
+            arrows: false
+          }
+        }
+      ]
+    });
+    
+    $('.popular_slider, .latest_slider, .similar_slider').slick({
+      dots: true,
+      centerMode: true,
+      infinite: true,
+      slidesToShow: 5,
+      autoplay: true,
+      autoplaySpeed: 5000,
+
+      prevArrow: '<button class="slick-arrow slick-prev"><span><i class="fa fa-chevron-left" aria-hidden="true"></i></span></button>',
+      nextArrow: '<button class="slick-arrow slick-next"><span><i class="fa fa-chevron-right" aria-hidden="true"></i></span></button>',
+
+      responsive: [{
+          breakpoint: 1200,
+          settings: {
+            arrows: false,
+            slidesToShow: 3
+          }
+        },{
+          breakpoint: 800,
+          settings: {
+            arrows: false,
+            slidesToShow: 2,
+            centerMode: false
+          }
+        },{
+          breakpoint: 500,
+          settings: {
+            arrows: false,
+            slidesToShow: 1,
+            centerMode: true
+          }
+        }
+      ]
     });
     
   </script>

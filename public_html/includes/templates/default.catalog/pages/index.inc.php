@@ -41,7 +41,7 @@
 
   <section id="box-how-it-works" class="box hidden-xs hidden-sm">
     <div class="video-container">
-      <iframe src="https://www.youtube.com/embed/f4lMRYVXM3I" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/embed/Evr82KQH4ZI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
     <div class="how-it-works-text">
       <h1 class="title"><small>Как</small>Это работает</h1>
@@ -68,7 +68,7 @@
           </div>
         </div>
       </div>
-      <div class="slide" style="display:none;">
+      <div class="slide">
         <div class="review-out">
           <img src="../images/quotes-img.png" alt="">
           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
@@ -81,7 +81,7 @@
           </div>
         </div>
       </div>
-      <div class="slide" style="display:none;">
+      <div class="slide">
         <div class="review-out">
           <img src="../images/quotes-img.png" alt="">
           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
