@@ -29,8 +29,10 @@
   }
 
   $products_query = functions::catalog_keywords_search(true);
-
+  //$product = database::fetch($products_query);
+  //var_dump($product);
   while($product = database::fetch($products_query)) {
+    
     $short_description = preg_replace('/\r\n|\r|\n/', ' ', html_entity_decode(strip_tags($product['short_description'])));
     $short_description = functions::general_removeAccents($short_description);
     $long_description = preg_replace('/\r\n|\r|\n/', ' ', html_entity_decode(strip_tags($product['description'])));
@@ -51,22 +53,34 @@
       $desc = $short_description ? $short_description : $long_description;
     }
 
-    $desc = ($pos > 20 ? '...' : '') . substr($desc, $pos > 20 ? $pos-20 : 0, 101) . (strlen($desc) > 100 ?  '...' : '');
+    $desc = strip_tags (($pos > 20 ? '...' : '') . substr($desc, $pos > 20 ? $pos-20 : 0, 101) . (strlen($desc) > 100 ?  '...' : ''));
     $html_name = str_ireplace ($query, '<b>' . $query . '</b>', $product['name']);
     $desc  = str_ireplace ($query, '<b>' . $query . '</b>', $desc);
     $link = document::ilink('product', array('product_id' => $product['id']));
     $img_src = document::link(WS_DIR_APP . functions::image_thumbnail(FS_DIR_APP . 'images/' . $product['image'], 64, 64, settings::get('product_image_clipping'), settings::get('product_image_trim')));
+    
+    $orderable = false;
+    if($product['quantity'] > 0) {
+      $orderable = true;
+    }
 
-    $json[] = array('value' => $product['name'],
+    array_push($json, 
+    array(
+      'value' => $product['name'],
       'data' => array(
         'type' => 'product',
         'count' => true,
         'id' => $product['id'],
         'link' => $link,
-        'html' => '<img src="' . $img_src . '" alt=""/><div><button class="btn btn-success hidden-xs"' . (($product['quantity'] <= 0 && !$product['orderable']) ? 'disabled="disabled"' : '') .'><i class="fa fa-cart-plus"></i></button>' . $html_name . '<small>' . ($desc ? '<br><em>' . $desc . '</em>' : '') . '<br/>' . $product['manufacturer_name'] . '</small></div>'
-    ));
+        'name' => $product['name'],
+        'manufacturer' => $product['manufacturer_name'],
+        // 'desc' => $desc,
+        'orderable' => $orderable,
+        'img_src' => $img_src
+        //'html' => '<img src="' . $img_src . '" alt=""/><div><button class="btn btn-success hidden-xs"' . (($product['quantity'] <= 0 && !$product['orderable']) ? 'disabled="disabled"' : '') .'><i class="fa fa-cart-plus"></i></button>' . $html_name . '<small>' . ($desc ? '<br><em>' . $desc . '</em>' : '') . '<br/>' . $product['manufacturer_name'] . '</small></div>'
+    )));
   }
-
+  //var_dump($product);
   language::convert_characters($json, language::$selected['charset'], 'UTF-8');
   $json = json_encode($json, JSON_UNESCAPED_SLASHES);
 

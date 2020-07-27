@@ -49,7 +49,12 @@
           }
         }
 
-        self::add_product($_POST['product_id'], $options, (isset($_POST['quantity']) ? $_POST['quantity'] : 1));
+        $price = false;
+        if (!empty($_POST['price'])) {
+          $price = $_POST['price'];
+        }
+
+        self::add_product($_POST['product_id'], $options, (isset($_POST['quantity']) ? $_POST['quantity'] : 1), $price);
         header('Location: '. $_SERVER['REQUEST_URI']);
         exit;
       }
@@ -123,12 +128,12 @@
           );
         }
 
-        self::add_product($item['product_id'], unserialize($item['options']), $item['quantity'], true, $item['key']);
+        self::add_product($item['product_id'], unserialize($item['options']), $item['quantity'], $item['price'], true, $item['key']);
         if (isset(self::$items[$item['key']])) self::$items[$item['key']]['id'] = $item['id'];
       }
     }
 
-    public static function add_product($product_id, $options, $quantity=1, $force=false, $item_key=null) {
+    public static function add_product($product_id, $options, $quantity=1, $price = false, $force=false, $item_key=null) {
 
       $product = reference::product($product_id);
 
@@ -144,6 +149,7 @@
       $item = array(
         'id' => null,
         'product_id' => (int)$product->id,
+        'product_hash' => $product->product_hash,
         'options' => $options,
         'option_stock_combination' => '',
         'image' => $product->image,
@@ -171,6 +177,10 @@
         'dim_class' => $product->dim_class,
         'error' => '',
       );
+
+      if($price != false) {
+        $item['price'] = $price;
+      }
 
       try {
         if (!$product->id) {
@@ -287,6 +297,7 @@
               throw new Exception(language::translate('error_not_enough_products_in_stock_for_option', 'Not enough products in stock for the selected option') . ' ('. round($option_stock['quantity'], $product->quantity_unit['decimals']) .')');
             }
 
+            $item['hash'] = $option_stock['hash'];
             $item['option_stock_combination'] = $option_stock['combination'];
             if (!empty($option_stock['sku'])) $item['sku'] = $option_stock['sku'];
             if (!empty($option_stock['weight'])) $item['weight'] = $option_stock['weight'];
@@ -316,8 +327,10 @@
       }
 
     // Adjust price with extras
-      $item['price'] += $item['extras'];
-      $item['tax'] += tax::get_tax($item['extras'], $product->tax_class_id);
+      if($price == false) {
+        $item['price'] += $item['extras'];
+        $item['tax'] += tax::get_tax($item['extras'], $product->tax_class_id);
+      }
 
     // Round amounts (Gets rid of hidden decimals)
       if (settings::get('round_amounts')) {
@@ -345,8 +358,8 @@
         if (!$force) {
           database::query(
             "insert into ". DB_TABLE_CART_ITEMS ."
-            (customer_id, cart_uid, `key`, product_id, options, quantity, date_updated, date_created)
-            values (". (int)customer::$data['id'] .", '". database::input(self::$data['uid']) ."', '". database::input($item_key) ."', ". (int)$item['product_id'] .", '". database::input(serialize($item['options'])) ."', ". (float)$item['quantity'] .", '". date('Y-m-d H:i:s') ."', '". date('Y-m-d H:i:s') ."');"
+            (customer_id, cart_uid, `key`, product_id, options, quantity, price, product_hash, hash, date_updated, date_created)
+            values (". (int)customer::$data['id'] .", '". database::input(self::$data['uid']) ."', '". database::input($item_key) ."', ". (int)$item['product_id'] .", '". database::input(serialize($item['options'])) ."', ". (float)$item['quantity'] .", ". (float)$item['price'] .", '". database::input($item['product_hash']) ."', '". database::input($item['hash']) ."', '". date('Y-m-d H:i:s') ."', '". date('Y-m-d H:i:s') ."');"
           );
           self::$items[$item_key]['id'] = database::insert_id();
         }

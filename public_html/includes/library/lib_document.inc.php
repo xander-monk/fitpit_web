@@ -104,6 +104,7 @@
       );
 
       self::$snippets['head_tags'][] = "<script>var _env = ". json_encode(self::$jsenv, JSON_UNESCAPED_SLASHES) .", config = _env;</script>";
+      self::$snippets['_env'][] = "<script>var _env = ". json_encode(self::$jsenv, JSON_UNESCAPED_SLASHES) .", config = _env;</script>";
 
     // Prepare title
       if (!empty(self::$snippets['title'])) {

@@ -5,6 +5,7 @@
 <meta charset="{snippet:charset}" />
 <meta name="description" content="{snippet:description}" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
+{snippet:_env}
 
 <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.min.css"/>
@@ -58,75 +59,106 @@
 
 <div id="page" class="twelve-eighty">
 
-  <?php include vmod::check(FS_DIR_TEMPLATE . 'views/box_cookie_notice.inc.php'); ?>
+    <?php include vmod::check(FS_DIR_TEMPLATE . 'views/box_cookie_notice.inc.php'); ?>
 
-    <header id="header"  class="mx-5 mb-1">
-        <a class="logotype" href="<?php echo document::href_ilink(''); ?>">
-            <img src="<?php echo document::href_link('images/logotype.png'); ?>" alt="<?php echo settings::get('store_name'); ?>" title="<?php echo settings::get('store_name'); ?>" />
-        </a>
 
-        <div class="middle hidden-xs hidden-sm"></div>
+    <header id="header">
 
-        <div class="customer-service hidden-xs">
-            <div class="title"><?php echo language::translate('title_customer_service', 'Customer Service'); ?></div>
-            <div class="phone"><?php echo settings::get('store_phone'); ?></div>
-        </div>
-
+        <div class="nav-out-custom">
         
-        <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_cart.inc.php'); ?>
-        <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_region.inc.php'); ?>
-      
-        <!--<pre>
-            <? // var_dump(customer::$data['discount']);?> 
-        </pre>-->
-        <div class="account dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownAccountButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <?php echo customer::$data['company'];?> <?php echo functions::draw_fonticon('fa-user'); ?>
-        </button>
+            <a class="logotype" href="<?php echo document::href_ilink(''); ?>">
+                <img src="<?php echo document::href_link('images/logotype.png'); ?>"
+                alt="<?php echo settings::get('store_name'); ?>" title="<?php echo settings::get('store_name'); ?>" />
 
-        <ul class="dropdown-menu account-dropdown"  aria-labelledby="dropdownAccountButton">
-          <?php if (!empty(customer::$data['id'])) { ?>
-            <li><a href="<?php echo document::href_ilink('order_history'); ?>"><?php echo language::translate('title_order_history', 'Order History'); ?></a></li>
-            <li><a href="<?php echo document::href_ilink('edit_account'); ?>"><?php echo language::translate('title_edit_account', 'Edit Account'); ?></a></li>
-            <li><a href="<?php echo document::href_ilink('logout'); ?>"><?php echo language::translate('title_logout', 'Logout'); ?></a></li>
-          <?php } else { ?>
-            <li>
-              <?php echo functions::form_draw_form_begin('login_form', 'post', document::ilink('login'), false, 'class="navbar-form"'); ?>
-                <?php echo functions::form_draw_hidden_field('redirect_url', !empty($_GET['redirect_url']) ? $_GET['redirect_url'] : document::link()); ?>
+                <img src="<?php echo document::href_link('images/wholesale_logos.png'); ?>">
 
-                <div class="form-group">
-                  <?php echo functions::form_draw_email_field('email', true, 'required="required" placeholder="'. language::translate('title_email_address', 'Email Address') .'"'); ?>
-                </div>
+            </a>
 
-                <div class="form-group">
-                  <?php echo functions::form_draw_password_field('password', '', 'placeholder="'. language::translate('title_password', 'Password') .'"'); ?>
-                </div>
+            <? 
+                $EUR = round(1/currency::$currencies['UAH']['value']);
+                // echo var_dump(currency::$currencies); 
+            ?>
 
-                <div class="form-group">
-                  <div class="checkbox">
-                    <label><?php echo functions::form_draw_checkbox('remember_me', '1'); ?> <?php echo language::translate('title_remember_me', 'Remember Me'); ?></label>
-                  </div>
-                </div>
+            <div class="nav-out-custom_nav">
+                <?php // include vmod::check(FS_DIR_APP . 'includes/boxes/box_cart.inc.php'); ?>
+                <nav id="site-menu" class="navbar hidden-print">
+                    <div class="navbar-header">
+                    <div id="contacts_header">
 
-                <div class="btn-group btn-block">
-                  <?php echo functions::form_draw_button('login', language::translate('title_sign_in', 'Sign In')); ?>
-                </div>
-              <?php echo functions::form_draw_form_end(); ?>
-            </li>
-            <li class="text-center">
-              <a href="<?php echo document::href_ilink('create_account'); ?>"><?php echo language::translate('text_new_customers_click_here', 'New customers click here'); ?></a>
-            </li>
+                        <div class="box-content">
+                            <div class="phone">
+                                <a href="tel:+380992940566">+38 (099) 294 05 66</a>
+                            </div>
+                            <div class="phone">
+                                <a href="tel:+380934196469">+38 (093) 419 64 69</a>
+                            </div>
+                            </div>
 
-            <li class="text-center">
-              <a href="<?php echo document::href_ilink('reset_password'); ?>"><?php echo language::translate('text_lost_your_password', 'Lost your password?'); ?></a>
-            </li>
-          <?php } ?>
-        </ul>
+                            <div class="icons right">
+                                <a rel="nofollow" class="icon email" href="mailto:shop@fitpit.com.ua">
+                                    <i class="fa fa-envelope-o"></i>
+                                </a>
+                                <a rel="nofollow" class="icon telegram " href="tg://">
+                                    <i class="fa fa-paper-plane-o"></i>
+                                </a>
+                                <a rel="nofollow" class="icon viber " href="viber://chat?number=+38-095-904-42-13">
+                                    <i class="fa fa-phone"></i>
+                                </a>                            
+                            </div>
+                        </div>
+                        <div class="box-account">
+                            
+                        </div>
+                        <div class="box-cart text-right"  id="cart">
+                            <div class="row">
+                                <div class="col-8 text-right">Замовлення, шт</div>
+                                <div class="col-4 quantity" ><?php echo cart::$total['items'];?></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-8 text-right">Сума замовлення, грн</div>
+                                <div class="col-4 formatted_value"><?php echo currency::format(cart::$total['value']);?></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-8 text-right">Знижка</div>
+                                <div class="col-4 discount" ><?php echo customer::$data['discount'];?>%</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-8 text-right">Курс</div>
+                                <div class="col-4 eur-currency"><?php echo $EUR;?></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-8 text-right">До оплати, грн</div>
+                                <div class="col-4 total"></div>
+                            </div>
+                            <!--<div class="row">
+                                <div class="col-8 text-right">€</div>
+                                <div class="col-4 total-eur"></div>
+                            </div>-->
+
+                            <div class=" text-right">
+                                <a href="<?php echo document::href_ilink('order_history'); ?>" class="btn btn-secondary btn-sm">
+                                    <?php echo functions::draw_fonticon('fa-user'); ?> <?php echo customer::$data['company'];?>  
+                                </a>
+                                <a class="btn btn-primary btn-sm" href="<?php echo htmlspecialchars(document::ilink('checkout')); ?>">
+                                    Оформити
+                                </a>
+                            </div>
+                        </div>
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#default-menu">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        
       
     </header>
 
 
-    <main id="main" class="mx-5">
+    <main id="main" class="mx-1">
         {snippet:content}
     </main>
 

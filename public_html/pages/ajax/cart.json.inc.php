@@ -1,17 +1,30 @@
 <?php
   header('Content-type: application/json; charset='. language::$selected['charset']);
 
+  $eur = 29; // round(1/currency::$currencies['UAH']['value']);
+  $discount = customer::$data['discount'];
+
   $json = array(
     'items' => array(),
     'quantity' => cart::$total['items'],
     'value' => !empty(customer::$data['display_prices_including_tax']) ? cart::$total['value'] + cart::$total['tax'] : cart::$total['value'],
     'formatted_value' => !empty(customer::$data['display_prices_including_tax']) ? currency::format(cart::$total['value'] + cart::$total['tax']) : currency::format(cart::$total['value']),
     'text_total' => language::translate('title_total', 'Total'),
-  );
 
-  foreach (cart::$items as $item) {
+    'v' => cart::$total['value'],
+    'discount' => (int)$discount,
+    'with_discount_eur' => round ((cart::$total['value']*(1-(int)$discount/100)), 2),
+    'with_discount' => currency::format(cart::$total['value']*(1-(int)$discount/100))
+  );
+  //var_dump(cart::$items);die;
+  foreach (cart::$items as $key => $item) {
     $json['items'][] = array(
       'product_id' => $item['product_id'],
+
+      'product_hash' => $item['product_hash'],
+      'hash' => @$item['hash'],
+      'key' => $key,
+
       'name' => $item['name'],
       'quantity' => (float)$item['quantity'],
       'price' => (float)$item['price'],

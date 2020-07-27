@@ -10,11 +10,11 @@
 
   <section id="box-create-account" class="box">
 
-    <h1><?php echo language::translate('title_create_account', 'Create Account'); ?></h1>
+    <h1 style="max-width: 640px; margin: 0 auto; margin-bottom:15px;  "><?php echo language::translate('title_create_account', 'Create Account'); ?></h1>
 
-    <?php echo functions::form_draw_form_begin('customer_form', 'post', false, false, 'style="max-width: 640px;"'); ?>
+    <?php echo functions::form_draw_form_begin('customer_form', 'post', false, false, 'style="max-width: 640px; margin: 0 auto; "'); ?>
 
-      <?php if (settings::get('customer_field_company') || settings::get('customer_field_tax_id')) { ?>
+      <?php if (1 == 0 && ( settings::get('customer_field_company') || settings::get('customer_field_tax_id'))) { ?>
       <div class="row">
         <?php if (settings::get('customer_field_company')) { ?>
         <div class="form-group col-xs-6">
@@ -32,6 +32,14 @@
       </div>
       <?php } ?>
 
+      <?php echo functions::form_draw_hidden_field('address2', true); ?>
+      <?php echo functions::form_draw_hidden_field('postcode', '00000'); ?>
+      <?php echo functions::form_draw_hidden_field('country_code', 'UA'); ?>
+      <div class="form-group col-md-6"  style="display:none;">
+          <label><?php echo language::translate('title_zone_state_province', 'Zone/State/Province'); ?></label>
+          <?php echo functions::form_draw_zones_list(isset($_POST['country_code']) ? $_POST['country_code'] : '', 'zone_code', true, false); ?>
+        </div>
+
       <div class="row">
         <div class="form-group col-md-6">
           <label><?php echo language::translate('title_firstname', 'First Name'); ?></label>
@@ -44,40 +52,14 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="form-group col-md-6">
-          <label><?php echo language::translate('title_address1', 'Address 1'); ?></label>
-          <?php echo functions::form_draw_text_field('address1', true); ?>
-        </div>
-
-        <div class="form-group col-md-6">
-          <label><?php echo language::translate('title_address2', 'Address 2'); ?></label>
-          <?php echo functions::form_draw_text_field('address2', true); ?>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="form-group col-md-6">
-          <label><?php echo language::translate('title_postcode', 'Postal Code'); ?></label>
-          <?php echo functions::form_draw_text_field('postcode', true); ?>
-        </div>
-
-        <div class="form-group col-md-6">
-          <label><?php echo language::translate('title_city', 'City'); ?></label>
-          <?php echo functions::form_draw_text_field('city', true); ?>
-        </div>
-      </div>
-
-      <div class="row">
+      
+      <div class="row"  style="display:none;">
         <div class="form-group col-md-6">
           <label><?php echo language::translate('title_country', 'Country'); ?></label>
           <?php echo functions::form_draw_countries_list('country_code', true, false, 'required="required"'); ?>
         </div>
 
-        <div class="form-group col-md-6">
-          <label><?php echo language::translate('title_zone_state_province', 'Zone/State/Province'); ?></label>
-          <?php echo functions::form_draw_zones_list(isset($_POST['country_code']) ? $_POST['country_code'] : '', 'zone_code', true, false, 'required="required"'); ?>
-        </div>
+        
       </div>
 
       <div class="row">
@@ -103,6 +85,21 @@
           <?php echo functions::form_draw_password_field('confirmed_password', '', 'required="required"'); ?>
         </div>
       </div>
+
+      <div class="row">
+
+        <div class="form-group col-md-6">
+          <label><?php echo language::translate('title_city', 'City'); ?></label>
+          <?php echo functions::form_draw_text_field('city', true); ?>
+        </div>
+        <div class="form-group col-md-6">
+          <label><?php echo language::translate('title_address1', 'Address 1'); ?></label>
+          <?php echo functions::form_draw_text_field('address1', true); ?>
+        </div>
+
+        
+      </div>
+
 
       <div class="form-group">
         <label class="checkbox">

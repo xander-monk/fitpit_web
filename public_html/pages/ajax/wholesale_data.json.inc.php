@@ -4,10 +4,19 @@
   customer::require_login();
   header('Content-type: application/json; charset='. language::$selected['charset']);
 
-  $query = database::query("select *, 0 as cart from _excel");//  limit 200
+
+  $eur = 29; // round(1/currency::$currencies['UAH']['value']);
+  $discount = customer::$data['discount'];
+
+  $query = database::query("select *, 0 as cart1, 0 as cart2, 0 as user_price  from _excel limit 10");//  limit 200
   $data = [];
   if (database::num_rows($query) > 0) {
     while ($row = database::fetch($query)) {
+      $salemod = 0;
+      if(!empty($row['sale']) && $row['sale'] != '') {
+        $salemod = (float)$row['sale'] * 100 * -1;
+      }
+      $row['user_price'] = ceil (( $row['base'] * (1-(int)$salemod/100) ) * (1-(int)$discount/100) * $eur);
       array_push($data, $row);
     }
   }

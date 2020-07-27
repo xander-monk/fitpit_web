@@ -20,35 +20,28 @@
 
       <div class="row">
         <?php if (count($languages) > 1) { ?>
-        <div class="form-group col-md-6">
+        <div class="form-group col-md-4">
           <label><?php echo language::translate('title_language', 'Language'); ?></label>
           <?php echo functions::form_draw_select_field('language_code', $language_options, language::$selected['code']); ?>
         </div>
         <?php } ?>
 
         <?php if (count($currencies) > 1) { ?>
-        <div class="form-group col-md-6">
+        <div class="form-group col-md-4">
           <label><?php echo language::translate('title_currency', 'Currency'); ?></label>
           <?php echo functions::form_draw_select_field('currency_code', $currency_options, currency::$selected['code']); ?>
         </div>
         <?php } ?>
 
-        <div class="form-group col-md-6">
+        <div class="form-group col-md-4">
           <label><?php echo language::translate('title_country', 'Country'); ?></label>
           <?php echo functions::form_draw_countries_list('country_code', customer::$data['country_code']); ?>
         </div>
 
-        <div class="form-group col-md-6">
-          <label><?php echo language::translate('title_zone_state_province', 'Zone/State/Province'); ?></label>
-          <?php echo functions::form_draw_zones_list(customer::$data['country_code'], 'zone_code', customer::$data['zone_code']); ?>
-        </div>
-
-        <div class="form-group col-md-6">
-          <label><?php echo language::translate('title_display_prices_including_tax', 'Display Prices Including Tax'); ?></label>
-          <?php echo functions::form_draw_toggle('display_prices_including_tax', customer::$data['display_prices_including_tax'], 'y/n'); ?>
-        </div>
+        <?php echo functions::form_draw_hidden_field('zone_code', customer::$data['zone_code']); ?>
+        <?php echo functions::form_draw_hidden_field('display_prices_including_tax', customer::$data['display_prices_including_tax']); ?>
       </div>
-
+      
       <p class="btn-group btn-block">
         <?php echo functions::form_draw_button('save', language::translate('title_save', 'Save')); ?>
       </p>

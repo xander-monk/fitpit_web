@@ -79,7 +79,8 @@
         return $_COOKIE['currency_code'];
       }
 
-    // Get currency from country (via browser locale)
+    // Get currency from country (via browser locale) 
+    /*
       if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && preg_match('#^([a-z]{2}-[A-Z]{2})#', $_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
         if (preg_match('#-([A-Z]{2})#', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $matches)) {
           if (!empty($matches[1])) $country_code = $matches[1];
@@ -96,9 +97,10 @@
             return $country['currency_code'];
           }
         }
-      }
+      } */
 
-    // Get currency from country (via TLD)
+    // Get currency from country (via TLD) 
+    /*
       if (preg_match('#\.([a-z]{2})$#', $_SERVER['HTTP_HOST'], $matches)) {
         $countries_query = database::query(
           "select * from ". DB_TABLE_COUNTRIES ."
@@ -110,6 +112,7 @@
           return $country['currency_code'];
         }
       }
+      */
 
     // Return default currency
       if (in_array(settings::get('default_currency_code'), $all_currencies)) return settings::get('default_currency_code');
@@ -118,7 +121,7 @@
       if (in_array(settings::get('store_currency_code'), $all_currencies)) return settings::get('store_currency_code');
 
     // Return first currency
-      return (!empty($enabled_currencies)) ? $enabled_currencies[0] : $all_currencies[0];
+      // return (!empty($enabled_currencies)) ? $enabled_currencies[0] : $all_currencies[0];
     }
 
     public static function calculate($value, $to, $from=null) {

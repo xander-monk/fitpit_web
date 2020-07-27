@@ -11,7 +11,7 @@
 
   <div class="address billing-address">
 
-    <?php if (settings::get('customer_field_company') || settings::get('customer_field_tax_id')) { ?>
+    <?php if (1 == 0 && ( settings::get('customer_field_company') || settings::get('customer_field_tax_id')) ) { ?>
     <div class="row">
       <?php if (settings::get('customer_field_company')) { ?>
       <div class="form-group col-xs-6">
@@ -23,7 +23,7 @@
       <?php if (settings::get('customer_field_tax_id')) { ?>
       <div class="form-group col-xs-6">
         <label><?php echo language::translate('title_tax_id', 'Tax ID'); ?></label>
-        <?php echo functions::form_draw_text_field('tax_id', true); ?>
+        <?php echo functions::form_draw_hidden_field('tax_id', true); ?>
       </div>
       <?php } ?>
     </div>
@@ -43,42 +43,6 @@
 
     <div class="row">
       <div class="form-group col-xs-6">
-        <label><?php echo language::translate('title_address1', 'Address 1'); ?></label>
-        <?php echo functions::form_draw_text_field('address1', true, 'required="required"'); ?>
-      </div>
-
-      <div class="form-group col-xs-6">
-        <label><?php echo language::translate('title_address2', 'Address 2'); ?></label>
-        <?php echo functions::form_draw_text_field('address2', true); ?>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="form-group col-xs-6">
-        <label><?php echo language::translate('title_postcode', 'Postal Code'); ?></label>
-        <?php echo functions::form_draw_text_field('postcode', true); ?>
-      </div>
-
-      <div class="form-group col-xs-6">
-        <label><?php echo language::translate('title_city', 'City'); ?></label>
-        <?php echo functions::form_draw_text_field('city', true); ?>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="form-group col-xs-6">
-        <label><?php echo language::translate('title_country', 'Country'); ?></label>
-        <?php echo functions::form_draw_countries_list('country_code', true); ?>
-      </div>
-
-      <div class="form-group col-xs-6">
-        <label><?php echo language::translate('title_zone_state_province', 'Zone/State/Province'); ?></label>
-        <?php echo functions::form_draw_zones_list(isset($_POST['country_code']) ? $_POST['country_code'] : '', 'zone_code', true); ?>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="form-group col-xs-6">
         <label><?php echo language::translate('title_email_address', 'Email Address'); ?></label>
         <?php echo functions::form_draw_email_field('email', true, 'required="required"'. (!empty(customer::$data['id']) ? ' readonly="readonly"' : '')); ?>
       </div>
@@ -88,11 +52,53 @@
         <?php echo functions::form_draw_phone_field('phone', true, 'required="required"'); ?>
       </div>
     </div>
+
+    <div class="row">
+
+      <div class="form-group col-xs-6">
+        <label><?php echo language::translate('title_city', 'City'); ?></label>
+        <?php echo functions::form_draw_text_field('city', true); ?>
+      </div>
+
+      <div class="form-group col-xs-6">
+        <label><?php echo language::translate('title_address1', 'Address 1'); ?></label>
+        <?php echo functions::form_draw_text_field('address1', true, 'required="required"'); ?>
+      </div>
+
+      
+    </div>
+
+    <div class="row" style="display:none;">
+      <div class="form-group col-xs-6">
+        <label><?php echo language::translate('title_postcode', 'Postal Code'); ?></label>
+        <?php echo functions::form_draw_hidden_field('postcode', '00000'); ?>
+      </div>
+      <div class="form-group col-xs-6">
+        <label><?php echo language::translate('title_address2', 'Address 2'); ?></label>
+        <?php echo functions::form_draw_hidden_field('address2', true); ?>
+      </div>
+      
+    </div>
+
+    <div class="row"  style="display:none;">
+      <div class="form-group col-xs-6">
+        <label><?php echo language::translate('title_country', 'Country'); ?></label>
+        <?php // echo functions::form_draw_countries_list('country_code', true); ?>
+        <?php echo functions::form_draw_hidden_field('country_code', 'UA'); ?>
+      </div>
+
+      <div class="form-group col-xs-6">
+        <label><?php echo language::translate('title_zone_state_province', 'Zone/State/Province'); ?></label>
+        <?php echo functions::form_draw_zones_list(isset($_POST['country_code']) ? $_POST['country_code'] : '', 'zone_code', true); ?>
+      </div>
+    </div>
+
+    
   </div>
 
   <div class="address shipping-address">
 
-    <h3><?php echo functions::form_draw_checkbox('different_shipping_address', '1', !empty($_POST['different_shipping_address']) ? '1' : '', 'style="margin: 0px;"'); ?> <?php echo language::translate('title_different_shipping_address', 'Different Shipping Address'); ?></h3>
+    <h3 style="display:none;"><?php echo functions::form_draw_checkbox('different_shipping_address', '1', !empty($_POST['different_shipping_address']) ? '1' : '', 'style="margin: 0px;"'); ?> <?php echo language::translate('title_different_shipping_address', 'Different Shipping Address'); ?></h3>
 
     <fieldset<?php echo (empty($_POST['different_shipping_address'])) ? ' style="display: none;" disabled="disabled"' : false; ?>>
 

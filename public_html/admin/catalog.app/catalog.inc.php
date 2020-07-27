@@ -392,7 +392,22 @@
 
       while ($category = database::fetch($categories_query)) {
         $num_category_rows++;
+        $subcats_query = database::query("SELECT id  FROM `categories` where parent_id = ".$category['id']."");
+        $subcats_id = [$category['id']];
+        while ($subcat = database::fetch($subcats_query)) {
+          array_push($subcats_id,$subcat['id']);
+        };
+        $prods_query = database::query("SELECT product_id FROM `products_to_categories` where category_id in (". implode(',',$subcats_id) .")");
+        $prods_ids = []; 
+        while ($prod = database::fetch($prods_query)) {
+          array_push($prods_ids,$prod['product_id']);
+        };
+        $images_query = database::query("SELECT count(id) as q FROM `products` WHERE image = '' and id in (". implode(',',$prods_ids) .")");
+        $without_images = database::fetch($images_query);
 
+        $dsc_query = database::query("SELECT count(id) as q FROM `products_info` where language_code = 'uk' and description = '' and product_id in (". implode(',',$prods_ids) .")");
+        $without_dsc = database::fetch($dsc_query);
+        //var_dump($dsc_query);die;
         $output .= '<tr class="'. (!$category['status'] ? ' semi-transparent' : null) .'">' . PHP_EOL
                  . '  <td>'. functions::form_draw_checkbox('categories['. $category['id'] .']', $category['id'], true) .'</td>' . PHP_EOL
                  . '  <td>'. functions::draw_fonticon('fa-circle', 'style="color: '. (!empty($category['status']) ? '#88cc44' : '#ff6644') .';"') .'</td>' . PHP_EOL;
@@ -401,8 +416,8 @@
         } else {
           $output .= '  <td>'. functions::draw_fonticon('fa-folder', 'style="color: #cccc66; margin-left: '. ($depth*16) .'px;"') .' <a href="'. document::href_link('', array('category_id' => $category['id']), true) .'">'. ($category['name'] ? $category['name'] : '[untitled]') .'</a></td>' . PHP_EOL;
         }
-        $output .= '  <td>&nbsp;</td>' . PHP_EOL
-                 . '  <td></td>' . PHP_EOL
+        $output .= '  <td title="without images">'.$without_images['q'].'</td>' . PHP_EOL
+                 . '  <td title="without description">'.$without_dsc['q'].'</td>' . PHP_EOL
                  . '  <td class="text-right"><a href="'. document::href_link('', array('app' => $_GET['app'], 'doc' => 'edit_category', 'category_id' => $category['id'])) .'" title="'. language::translate('title_edit', 'Edit') .'">'. functions::draw_fonticon('fa-pencil').'</a></td>' . PHP_EOL
                  . '</tr>' . PHP_EOL;
 

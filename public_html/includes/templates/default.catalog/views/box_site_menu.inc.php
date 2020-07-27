@@ -63,11 +63,11 @@
       </li>
       <?php } ?>
 
-      <?php if (!empty(customer::$data['id'])) { ?>
+      
         <li class="information dropdown">
-          <a href="/wholesale"><?php echo language::translate('title_wholesale', 'Wholesale'); ?></a>
+          <a href="/uk/wholesale"><?php echo language::translate('title_wholesale', 'Wholesale'); ?></a>
         </li>
-      <?php } ?>
+      
     </ul>
     
     <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_region.inc.php'); ?>
@@ -136,10 +136,17 @@ var ss_limit = 8;
     onShow: function() {
       $('document').ready(function() {
         var suggestionHeight = $('.autosuggestion').first().outerHeight();
+        var sw = $('[name="search_form"]').width();
         $('.autosuggestions').css('max-height', ss_limit * suggestionHeight);
+        $('.autosuggestions').css('width', sw);
       });
     },
     renderItem: function (item, search){
+      var btn = '<button class="btn btn-success hidden-xs" disabled="disabled"><i class="fa fa-cart-plus"></i></button>';
+      if(item.data.orderable) {
+        btn = '<button class="btn btn-success hidden-xs"><i class="fa fa-cart-plus"></i></button>';
+      }
+      item.data.html = '<img src="' + item.data.img_src + '" alt=""/><div>' + btn + item.data.name + '<br><small>' + item.data.manufacturer + '</small></div>';
       return '<div class="autosuggestion ' + (item.data.type) + '" data-val="' + item.value + '" data-link = "' + item.data.link +'">' +
       (item.data.type == 'product' ? item.data.html :  '<i class="fa fa-caret-right fa-fw"></i>' + item.value)
       +  '</div>';
@@ -151,7 +158,7 @@ var ss_limit = 8;
       }
     },
     'blur' : function() {
-      $(this).val('')
+      //$(this).val('')
     }
   });
 </script>
@@ -194,7 +201,7 @@ var ss_limit = 8;
   .autosuggestion button {
     position: absolute;
     right: 4px;
-    margin-top: -12px
+    margin-top: 3px
   }
   .autosuggestion small {
     color: #bbb

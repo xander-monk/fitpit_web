@@ -122,6 +122,7 @@
         if (!empty(user::$data['id']) || $language['status'] == 1) $enabled_languages[] = $language['code'];
       }
 
+      
     // Return language from URI query
       if (!empty($_GET['language'])) {
         if (in_array($_GET['language'], $all_languages)) return $_GET['language'];
@@ -137,7 +138,8 @@
     // Return language from cookie
       if (isset($_COOKIE['language_code']) && in_array($_COOKIE['language_code'], $all_languages)) return $_COOKIE['language_code'];
 
-    // Return language from browser request headers
+    // Return language from browser request headers 
+    /*
       if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
         $browser_locales = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
       } elseif (isset($_SERVER['LC_CTYPE'])) {
@@ -150,8 +152,10 @@
           if (!empty($reg[1]) && in_array($reg[1], $enabled_languages)) return $reg[1];
         }
       }
+      */
 
-    // Return language from country (TLD)
+    // Return language from country (TLD) 
+    /*
       if (preg_match('#\.([a-z]{2})$#', $_SERVER['HTTP_HOST'], $matches)) {
         $countries_query = database::query(
           "select * from ". DB_TABLE_COUNTRIES ."
@@ -159,9 +163,13 @@
           limit 1;"
         );
         $country = database::fetch($countries_query);
-        if (!empty($country['language_code']) && in_array($country['language_code'], $enabled_languages)) return $country['language_code'];
+        if (!empty($country['language_code']) && in_array($country['language_code'], $enabled_languages)) {
+           var_dump($country['language_code']);die;
+        } 
       }
+      */
 
+      // var_dump(settings::get('default_language_code')); die;
     // Return default language
       if (in_array(settings::get('default_language_code'), $all_languages)) return settings::get('default_language_code');
 

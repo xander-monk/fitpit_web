@@ -37,7 +37,9 @@
       }
 
       if (empty($_GET['redirect_url'])) {
-        $_GET['redirect_url'] = document::ilink('', array(), null, array(), !empty($_POST['language_code']) ? $_POST['language_code'] : '');
+        $ref = explode('/',$_SERVER['HTTP_REFERER']);
+        $ref = array_slice($ref,3,count($ref));
+        $_GET['redirect_url'] = document::ilink(implode('/',$ref), array(), null, array(), !empty($_POST['language_code']) ? $_POST['language_code'] : '');
       }
 
       notices::add('success', language::translate('success_changes_saved', 'Changes saved'));

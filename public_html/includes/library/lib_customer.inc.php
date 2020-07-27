@@ -246,7 +246,7 @@
     public static function require_wholesale() {
       if (!self::check_wholesale()) {
         //notices::add('warnings', language::translate('warning_must_login_page', 'You must be logged in to view the page.'));
-        header('Location: ' . document::link('login', array('redirect_url' => $_SERVER['REQUEST_URI'])));
+        header('Location: ' . document::link('opt-i-2', array('redirect_url' => $_SERVER['REQUEST_URI'])));
         exit;
       }
     }
