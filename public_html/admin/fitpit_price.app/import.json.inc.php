@@ -257,9 +257,10 @@
               product_id = ". (int)$row['product_id'] ."  limit 1;"))) {
             if($prm == 'size') {
               if($row['base'] > $row['min_base']) {
+                $row_base =(float)$row['base'] - (float)$row['min_base'];
                 database::query(
                   "update ". DB_TABLE_PRODUCTS_OPTIONS ."
-                    set EUR = ". (float)($row['base'] - $row['min_base']) ."
+                    set EUR = ". $row_base ."
                     where product_id = ". (int)$row['product_id'] ."
                     and id = ". (int)$option['id'] ."
                     limit 1;"
@@ -267,6 +268,7 @@
               }
             }
           } else {
+            $row_base =(float)$row['base'] - (float)$row['min_base'];
             database::query(
               "insert into ". DB_TABLE_PRODUCTS_OPTIONS ."
                 (product_id, group_id, value_id, EUR, date_created)
@@ -274,7 +276,7 @@
                   ". (int)$row['product_id'] .",
                   ". (int)$rows[$key]['options'][$prm]['group_id'] .",
                   ". (int)$rows[$key]['options'][$prm]['value_id'] .", 
-                  ". (float)$row['base'] - (float)$row['min_base'] .", 
+                  ". $row_base .", 
                   '". date('Y-m-d H:i:s') ."');"
             );
           }
@@ -378,7 +380,11 @@
   $success = database::query("select * from _excel where mark = 1");
   $errors = database::query("select * from _excel where mark = -1");
   
-  
+  if(database::num_rows($count) === database::num_rows($processed)) {
+    database::query("Delete FROM from ". DB_TABLE_PRODUCTS_OPTIONS_STOCK ."
+    left JOIN _excel on _excel.hash = products_options_stock.hash  
+    where _excel.hash is null");
+  }
 
   $json = [
     'count' => database::num_rows($count),

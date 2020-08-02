@@ -219,11 +219,11 @@
             if($row['category'] === '') continue;
 
             $hash = md5( implode('|', [
-              $row['manufacturer'],$row['category'],$row['name'],$row['size'],$row['flavour']
+              fp_trim($row['manufacturer']),fp_trim($row['category']),fp_trim($row['name']),$row['size'],$row['flavour']
             ]));
 
             $product_hash = md5( implode('|', [
-              $row['manufacturer'],$row['category'],$row['name']
+              fp_trim($row['manufacturer']),fp_trim($row['category']),fp_trim($row['name'])
             ]));
 
             $search_query = database::query("select * from _excel where hash = '".$hash."'");
@@ -252,7 +252,9 @@
   
           }
   
-          
+          database::query(
+            "update _excel set mark = 0"
+          );
         //$spreadsheet = $reader->load($filepath);
         //exit;
         //$show_results = true;
@@ -281,6 +283,10 @@
       } catch (Exception $e) {
         notices::add('errors', $e->getMessage());
       }
+    }
+
+    function fp_trim($str) {
+      return trim(str_replace('  ', '', $str));
     }
 ?>
 <div class="row">
@@ -597,7 +603,7 @@
           processImport();
         }
         if(json.count == json.processed) {
-          $('#res_file').html('<a href="'+json.file+'" target="_blank">'+json.file+'</a>');
+          $('#res_file').html('Done!');
           $('progress').attr('value',100);
         }
       },

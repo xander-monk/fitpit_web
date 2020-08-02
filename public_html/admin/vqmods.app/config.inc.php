@@ -1,9 +1,9 @@
 <?php
 
   return $app_config = array(
-    'name' => language::translate('title_vqmods', 'vQmods'),
+    'name' => language::translate('title_mods', 'Mods'),
     'default' => 'vqmods',
-    'priority' => 0,
+    'priority' => 99,
     'theme' => array(
       'color' => '#77d2cd',
       'icon' => 'fa-plug',

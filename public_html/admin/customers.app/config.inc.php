@@ -15,7 +15,7 @@
         'params' => array(),
       ),
       array(
-        'title' => language::translate('title_customerts_groups', 'Customers groups'),
+        'title' => language::translate('title_customers_groups', 'Customers groups'),
         'doc' => 'groups',
         'params' => array(),
       ),

@@ -3,6 +3,7 @@
   return $app_config = array(
     'name' => 'FitPit price',
     'default' => 'fitpit_price',
+    'priority' => 2,
     'theme' => array(
       'icon' => 'fa-file-excel-o',
       'color' => '#6fc500',

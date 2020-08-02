@@ -3,7 +3,7 @@
   return $app_config = array(
     'name' => language::translate('title_catalog', 'Catalog'),
     'default' => 'catalog',
-    'priority' => 0,
+    'priority' => 1,
     'theme' => array(
       'color' => '#d0cb2b',
       'icon' => 'fa-th',

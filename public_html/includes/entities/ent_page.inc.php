@@ -96,13 +96,16 @@
         );
         $this->data['id'] = database::insert_id();
       }
-
+      // var_dump($this->data);die;
       database::query(
         "update ". DB_TABLE_PAGES ."
         set status = ". (int)$this->data['status'] .",
           parent_id = ". (int)$this->data['parent_id'] .",
           dock = '". (!empty($this->data['dock']) ? implode(',', database::input($this->data['dock'])) : '') ."',
           priority = ". (int)$this->data['priority'] .",
+          media = '". database::input($this->data['media']) ."',
+          date = '". database::input($this->data['date']) ."',
+          type = '". database::input($this->data['type']) ."',
           date_updated = '". ($this->data['date_updated'] = date('Y-m-d H:i:s')) ."'
         where id = ". (int)$this->data['id'] ."
         limit 1;"

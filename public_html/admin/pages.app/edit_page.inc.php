@@ -1,5 +1,6 @@
 <?php
 
+  if (empty($_GET['type'])) $_GET['type'] = 'pages';
   if (!empty($_GET['page_id'])) {
     $page = new ent_page($_GET['page_id']);
   } else {
@@ -12,7 +13,7 @@
     }
   }
 
-  breadcrumbs::add(!empty($page->data['id']) ? language::translate('title_edit_page', 'Edit Page') : language::translate('title_create_new_page', 'Create New Page'));
+  breadcrumbs::add(!empty($page->data['id']) ? language::translate('title_edit_page', 'Edit Page') : language::translate('title_create_new_'.$_GET['type'], 'Create New '.$_GET['type']));
 
   if (isset($_POST['save'])) {
 
@@ -24,6 +25,7 @@
 
       $fields = array(
         'status',
+        'type',
         'parent_id',
         'title',
         'content',
@@ -31,10 +33,15 @@
         'priority',
         'head_title',
         'meta_description',
+        'media',
+        'date',
       );
 
       foreach ($fields as $field) {
         if (isset($_POST[$field])) $page->data[$field] = $_POST[$field];
+      }
+      if($_POST['type'] != 'video') {
+        if (is_uploaded_file($_FILES['media']['tmp_name'])) $page->save_image($_FILES['media']['tmp_name']);
       }
 
       $page->save();
@@ -66,24 +73,33 @@
 ?>
 <div class="panel panel-app">
   <div class="panel-heading">
-    <?php echo $app_icon; ?> <?php echo !empty($page->data['id']) ? language::translate('title_edit_page', 'Edit Page') : language::translate('title_create_new_page', 'Create New Page'); ?>
+    <?php echo $app_icon; ?> <?php echo !empty($page->data['id']) ? language::translate('title_edit_'.$_GET['type'], 'Edit '.$_GET['type']) : language::translate('title_create_new_'.$_GET['type'], 'Create New '.$_GET['type']); ?>
   </div>
 
   <div class="panel-body">
     <?php echo functions::form_draw_form_begin('pages_form', 'post', false, false, 'style="max-width: 640px;"'); ?>
-
+      <?php echo functions::form_draw_hidden_field('type', true); ?>
       <div class="row">
         <div class="form-group col-md-6">
           <label><?php echo language::translate('title_status', 'Status'); ?></label>
           <?php echo functions::form_draw_toggle('status', (isset($_POST['status'])) ? $_POST['status'] : '1', 'e/d'); ?>
         </div>
+        <? if($_GET['type'] == 'pages') { ?>
         <div class="form-group col-md-6">
           <label><?php echo language::translate('title_priority', 'Priority'); ?></label>
           <?php echo functions::form_draw_number_field('priority', true); ?>
         </div>
+        <? } ?>
+        <? if($_GET['type'] == 'blog') { ?>
+        <div class="form-group col-md-6">
+          <label><?php echo language::translate('title_date', 'Date'); ?></label>
+          <?php echo functions::form_draw_datetime_field('date', true); ?>
+        </div>
+        <? } ?>
       </div>
 
       <div class="row">
+        <? if($_GET['type'] == 'pages') { ?>
         <div class="form-group col-md-6">
           <label><?php echo language::translate('title_dock', 'Dock'); ?></label>
           <div class="checkbox">
@@ -97,7 +113,33 @@
           <label><?php echo language::translate('title_parent', 'Parent'); ?></label>
           <?php echo functions::form_draw_pages_list('parent_id', true); ?>
         </div>
+        <? } ?>
       </div>
+      
+      <? if($_GET['type'] != 'video') { ?>
+      <div class="row">
+    
+        <?php if (!empty($page->data['media'])) echo '<p><img src="'. WS_DIR_IMAGES . $page->data['media'] .'" alt="" class="img-responsive" /></p>'; ?>
+
+        <div class="form-group  col-md-12">
+          <label><?php echo language::translate('title_image', 'Image'); ?></label>
+          <?php echo functions::form_draw_file_field('media'); ?>
+          <?php echo (!empty($page->data['media'])) ? '</label>' . $page->data['media'] : ''; ?>
+        </div>
+
+      </div>
+      <? } else { ?>
+        <div class="row">
+    
+          <?php if (!empty($page->data['media'])) echo '<p><a target="_blank" href="'. $page->data['media'] .'" alt="" />'.$page->data['media'].'</a></p>'; ?>
+
+          <div class="form-group  col-md-12">
+            <label><?php echo language::translate('title_link', 'Link'); ?></label>
+            <?php echo functions::form_draw_text_field('media', true); ?>
+          </div>
+
+        </div>
+      <? } ?>
 
       <ul class="nav nav-tabs">
         <?php foreach (language::$languages as $language) { ?>
