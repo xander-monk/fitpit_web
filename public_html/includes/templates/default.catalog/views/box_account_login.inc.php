@@ -1,5 +1,5 @@
 <section id="box-account-login" class="box">
-  <h2><?php echo language::translate('title_sign_in', 'Sign In'); ?></h2>
+  <h2><span><?php echo language::translate('title_sign_in', 'Sign In'); ?></span></h2>
 
   <?php echo functions::form_draw_form_begin('login_form', 'post', document::ilink('login')); ?>
     <?php echo functions::form_draw_hidden_field('redirect_url', !empty($_GET['redirect_url']) ? $_GET['redirect_url'] : document::ilink('')); ?>

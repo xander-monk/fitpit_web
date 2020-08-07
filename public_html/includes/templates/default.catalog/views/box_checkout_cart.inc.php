@@ -1,6 +1,6 @@
 <section id="box-checkout-cart" class="box">
 
-  <h2 class="title"><?php echo language::translate('title_shopping_cart', 'Shopping Cart'); ?></h2>
+  <h2 class="title"><span><?php echo language::translate('title_shopping_cart', 'Shopping Cart'); ?></span></h2>
 
   <div class="table-responsive">
     <table class="items table table-striped table-hover data-table">

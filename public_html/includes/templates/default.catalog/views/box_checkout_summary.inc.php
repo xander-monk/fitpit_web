@@ -1,5 +1,5 @@
 <section id="box-checkout-summary" class="box">
-  <h2 class="title"><?php echo language::translate('title_order_summary', 'Order Summary'); ?></h2>
+  <h2 class="title"><span><?php echo language::translate('title_order_summary', 'Order Summary'); ?></span></h2>
 
   <table class="table table-striped table-bordered data-table">
     <tbody>

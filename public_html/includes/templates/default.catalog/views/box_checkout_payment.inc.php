@@ -1,5 +1,5 @@
 <section id="box-checkout-payment" class="box">
-  <h2 class="title"><?php echo language::translate('title_payment', 'Payment'); ?></h2>
+  <h2 class="title"><span><?php echo language::translate('title_payment', 'Payment'); ?></span></h2>
 
   <div class="options btn-group-vertical">
 

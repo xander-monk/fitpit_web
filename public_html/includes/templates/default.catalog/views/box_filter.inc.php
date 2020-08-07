@@ -3,7 +3,7 @@
 
     <?php if ($manufacturers) { ?>
     <div class="box manufacturers">
-      <h2 class="title"><?php echo language::translate('title_manufacturers', 'Manufacturers'); ?></h2>
+      <h2 class="title"><span><?php echo language::translate('title_manufacturers', 'Manufacturers'); ?></span></h2>
       <div class="form-control">
         <ul class="list-unstyled">
           <?php foreach ($manufacturers as $manufacturer) echo '<li><label>'. functions::form_draw_checkbox('manufacturers[]', $manufacturer['id'], true) .' '. $manufacturer['name'] .'</label></li>' . PHP_EOL; ?>
@@ -16,7 +16,7 @@
     <div class="box attributes">
       <?php foreach ($attributes as $group) { ?>
       <div class="group">
-        <h2><?php echo $group['name']; ?></h2>
+        <h2><span><?php echo $group['name']; ?></span></h2>
         <?php if (!empty($group['select_multiple'])) { ?>
         <div class="form-control">
           <?php foreach ($group['values'] as $value) { ?>

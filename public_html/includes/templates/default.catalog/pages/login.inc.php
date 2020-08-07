@@ -14,7 +14,7 @@
     <div class="col-md-6">
       <section id="box-login" class="box" style="">
 
-        <h2 class="title"><?php echo language::translate('title_sign_in', 'Sign In'); ?></h2>
+        <h2 class="title"><span><?php echo language::translate('title_sign_in', 'Sign In'); ?></span></h2>
 
         <?php echo functions::form_draw_form_begin('login_form', 'post', document::ilink('login'), false, 'style="max-width: 320px;"'); ?>
           <?php echo functions::form_draw_hidden_field('redirect_url', true); ?>
@@ -47,7 +47,7 @@
 
       <section id="box-login-create" class="box">
 
-        <h2 class="title"><?php echo language::translate('title_create_an_account', 'Create an Account'); ?></h2>
+        <h2 class="title"><span><?php echo language::translate('title_create_an_account', 'Create an Account'); ?></span></h2>
 
         <ul>
           <li><?php echo language::translate('description_get_access_to_all_order_history', 'Get access to all your order history.'); ?></li>

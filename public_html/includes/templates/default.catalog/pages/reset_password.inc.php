@@ -8,7 +8,7 @@
 
   <section id="box-reset-password" class="box">
 
-    <h2 class="title"><?php echo language::translate('title_reset_password', 'Reset Password'); ?></h2>
+    <h2 class="title"><span><?php echo language::translate('title_reset_password', 'Reset Password'); ?></span></h2>
 
     <?php echo functions::form_draw_form_begin('reset_password_form', 'post', null, false, 'style="width: 320px;"'); ?>
 

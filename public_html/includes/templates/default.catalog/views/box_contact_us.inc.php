@@ -42,7 +42,7 @@
     </div>
 
     <div class="col-md-6">
-      <h2><?php echo language::translate('title_contact_details', 'Contact Details'); ?></h2>
+      <h2><span><?php echo language::translate('title_contact_details', 'Contact Details'); ?></span></h2>
 
       <p class="address"><?php echo nl2br(settings::get('store_postal_address')); ?></p>
 

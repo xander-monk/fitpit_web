@@ -1,6 +1,6 @@
 <section class="box-login" class="box">
 
-  <h2 class="title"><?php echo language::translate('title_sign_in', 'Sign In'); ?></h2>
+  <h2 class="title"><span><?php echo language::translate('title_sign_in', 'Sign In'); ?></span></h2>
 
   <?php echo functions::form_draw_form_begin('login_form', 'post', document::ilink('login'), false, 'style="width: 320px;"'); ?>
     <?php echo functions::form_draw_hidden_field('redirect_url', true); ?>

@@ -1,5 +1,5 @@
 <section id="box-manufacturer-logotypes" class="box hidden-xs hidden-sm">
-  <h2 class="title"><?php echo language::translate('title_manufacturers', 'Manufacturers'); ?></h2>
+  <h2 class="title"><span><?php echo language::translate('title_manufacturers', 'Manufacturers'); ?></span></h2>
   <ul class="list-inline text-center">
     <?php foreach ($logotypes as $logotype) { ?>
     <li>

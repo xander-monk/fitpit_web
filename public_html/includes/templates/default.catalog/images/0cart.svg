@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+	<style>
+		tspan { white-space:pre }
+		.shp0 { fill: #000000 } 
+		.shp1 { fill: #2a2a28 } 
+		.shp2 { fill: #949494 } 
+		.shp3 { fill: #cecece } 
+		.shp4 { fill: #ed3c32 } 
+		.shp5 { fill: #fbb829 } 
+		.shp6 { fill: #97c000 } 
+		.shp7 { fill: #3ba5c6 } 
+		.shp8 { fill: #ffffff } 
+		.shp9 { fill: none;stroke: #afafaf;stroke-width: 12.317 } 
+	</style>
+	<g id="Folder 1">
+		<path id="Layer" class="shp0" d="M138.45 83.47L448.69 102.41L463.17 439.98L134.79 367.86L138.45 83.47Z" />
+		<path id="Layer" class="shp1" d="M347.27 493.07L464.38 440.98L353.31 418.94L347.27 493.07Z" />
+		<path id="Layer" fill-rule="evenodd" class="shp2" d="M355.73 419.75L355.73 141.28L353.24 114.42L448.68 102.43L464.38 440.9L355.73 419.75ZM138.2 83.56L144.94 96.43L144.94 329.82L138.2 83.56Z" />
+		<path id="Layer" class="shp3" d="M373.8 132.01L353.31 114.23L352.1 420.75L373.8 132.01Z" />
+		<path id="Layer" class="shp0" d="M58.06 96.83L144.99 96.83L124.46 366.27L47.88 374.34L58.06 96.83Z" />
+	</g>
+	<g id="Layer" style="display: none">
+		<path id="Layer" class="shp4" d="M285.02 52.24L383.44 66.6L340.63 198.69L242.22 184.33L285.02 52.24Z" />
+		<path id="Layer" class="shp5" d="M330.3 156.65L260.73 137.54L211.26 182.41L211.66 121.6L144.94 96.43L214.76 77.96L223 17.54L265.76 66.92L337.56 54.75L294.16 103.75L330.3 156.65Z" />
+		<path id="Layer" class="shp6" d="M239.82 212.78C210.94 195.78 211.45 154.15 240.95 119.65C270.46 85.15 317.65 71.01 346.52 88C375.4 105 374.89 146.63 345.39 181.13C315.88 215.63 268.69 229.78 239.82 212.78Z" />
+		<path id="Layer" class="shp7" d="M139.57 39.5L98.65 207.24L232.87 121.6L139.57 39.5Z" />
+	</g>
+	<g id="Layer">
+		<path id="Layer" class="shp0" d="M56.52 97.9L372.83 132.96L349.9 495.57L46.87 375.37L56.52 97.9Z" />
+		<path id="Layer copy 2" class="shp0" d="M55.52 98.9L371.83 133.96L348.9 496.57L45.87 376.37L55.52 98.9Z" />
+		<path id="Layer copy 3" class="shp0" d="M54.52 99.9L370.83 134.96L347.9 497.57L44.87 377.37L54.52 99.9Z" />
+		<path id="Layer copy" class="shp8" d="M57.52 96.9L373.83 131.96L350.9 494.57L47.87 374.37L57.52 96.9Z" />
+		<path id="Layer" class="shp9" d="M148.55 142.83C153.49 151.68 150.74 208.84 196.5 218.58C228.82 225.45 245.43 205.73 268.48 154.02" />
+	</g>
+</svg>
