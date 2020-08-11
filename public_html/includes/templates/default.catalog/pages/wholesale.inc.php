@@ -299,7 +299,7 @@
 			},
 			success: function(json) {
 				if (json['alert']) alert(json['alert']);
-				$('#cart .items').html('');
+				$('.cart-block .items').html('');
 				if (json['items']) {
 					var changes = 0;
 					$.each(json['items'], function(i, item){
@@ -317,19 +317,19 @@
 								row.cart_key = item.key;
 							}
 						});
-						$('#cart .items').append('<li><a href="'+ item.link +'">'+ item.quantity +' x '+ item.name +' - '+ item.formatted_price +'</a></li>');
+						$('.cart-block .items').append('<li><a href="'+ item.link +'">'+ item.quantity +' x '+ item.name +' - '+ item.formatted_price +'</a></li>');
 					});
 					if(changes>0) {
 						wholesale.draw(false);
 					}
-					$('#cart .items').append('<li class="divider"></li>');
+					$('.cart-block .items').append('<li class="divider"></li>');
 				}
-				$('#cart .items').append('<li><a href="' + config.platform.url + 'checkout"><i class="fa fa-shopping-cart"></i> ' + json['text_total'] + ': <span class="formatted-value">'+ json['formatted_value'] +'</a></li>');
-				$('#cart .quantity').html(json['quantity'] ? json['quantity'] : '');
-				$('#cart .formatted_value').html(json['formatted_value']);
+				$('.cart-block .items').append('<li><a href="' + config.platform.url + 'checkout"><i class="fa fa-shopping-cart"></i> ' + json['text_total'] + ': <span class="formatted-value">'+ json['formatted_value'] +'</a></li>');
+				$('.cart-block .quantity').html(json['quantity'] ? json['quantity'] : '');
+				$('.cart-block .formatted_value').html(json['formatted_value']);
 
-				$('#cart .total').html(json['with_discount']);
-				$('#cart .total-eur').html(json['with_discount_eur']);
+				$('.cart-block .total').html(json['with_discount']);
+				$('.cart-block .total-eur').html(json['with_discount_eur']);
 				
 			},
 			complete: function() {

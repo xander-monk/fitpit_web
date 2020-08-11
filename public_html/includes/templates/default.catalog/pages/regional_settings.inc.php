@@ -14,26 +14,26 @@
   {snippet:notices}
 
   <section id="box-regional-settings">
-    <h1 class="title"><?php echo language::translate('title_regional_settings', 'Regional Settings'); ?></h1>
+    <!--<h1 class="title"><?php echo language::translate('title_regional_settings', 'Regional Settings'); ?></h1>-->
 
     <?php echo functions::form_draw_form_begin('region_form', 'post', document::ilink(), false, 'style="max-width: 480px;"'); ?>
 
       <div class="row">
         <?php if (count($languages) > 1) { ?>
-        <div class="form-group col-md-4">
+        <div class="form-group col-md-6">
           <label><?php echo language::translate('title_language', 'Language'); ?></label>
           <?php echo functions::form_draw_select_field('language_code', $language_options, language::$selected['code']); ?>
         </div>
         <?php } ?>
 
         <?php if (count($currencies) > 1) { ?>
-        <div class="form-group col-md-4">
+        <div class="form-group col-md-6">
           <label><?php echo language::translate('title_currency', 'Currency'); ?></label>
           <?php echo functions::form_draw_select_field('currency_code', $currency_options, currency::$selected['code']); ?>
         </div>
         <?php } ?>
 
-        <div class="form-group col-md-4">
+        <div class="form-group col-md-4" style="display:none;">
           <label><?php echo language::translate('title_country', 'Country'); ?></label>
           <?php echo functions::form_draw_countries_list('country_code', customer::$data['country_code']); ?>
         </div>

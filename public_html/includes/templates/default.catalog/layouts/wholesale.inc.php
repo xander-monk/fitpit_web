@@ -56,109 +56,175 @@
 
 </head>
 <body>
+    <? 
+        $EUR = round(1/currency::$currencies['UAH']['value']);
+        // echo var_dump(currency::$currencies); 
+    ?>
 
 <div id="page" class="twelve-eighty">
+<?php include vmod::check(FS_DIR_TEMPLATE . 'views/box_cookie_notice.inc.php'); ?>
+    <div id="ws-header">
+        <div class="hide_below_1200">
+			<div class="navbar-contacts">
+				<div class="box-content phones">
+					<img src="/images/icon_phone.png" alt="">
+					<a href="tel:+380934196469">+38 (093) 419 64 69</a>
+				</div>
+				<a rel="nofollow" class="email" href="mailto:shop@fitpit.com.ua">
+					<img src="/images/icon_mail.png" alt="">
+					<span>Contact us</span>
+				</a>
+			</div>
 
-    <?php include vmod::check(FS_DIR_TEMPLATE . 'views/box_cookie_notice.inc.php'); ?>
+			<div class="nav-out-custom">
+				<a class="logotype" href="<?php echo document::href_ilink(''); ?>">
+					<img src="<?php echo document::href_link('images/logotype.png'); ?>"
+						alt="<?php echo settings::get('store_name'); ?>"
+						title="<?php echo settings::get('store_name'); ?>" />
+					<span>
+						FitPit
+						<span>спортивное питание и аксессуары</span>
+					</span>
+				</a>
 
-
-    <header id="header">
-
-        <div class="nav-out-custom">
-        
-            <a class="logotype" href="<?php echo document::href_ilink(''); ?>">
-                <img src="<?php echo document::href_link('images/logotype.png'); ?>"
-                alt="<?php echo settings::get('store_name'); ?>" title="<?php echo settings::get('store_name'); ?>" />
-
-                <img src="<?php echo document::href_link('images/wholesale_logos.png'); ?>">
-
-            </a>
-
-            <? 
-                $EUR = round(1/currency::$currencies['UAH']['value']);
-                // echo var_dump(currency::$currencies); 
-            ?>
-
-            <div class="nav-out-custom_nav">
-                <?php // include vmod::check(FS_DIR_APP . 'includes/boxes/box_cart.inc.php'); ?>
-                <nav id="site-menu" class="navbar hidden-print">
-                    <div class="navbar-header">
-                    <div id="contacts_header">
-
-                        <div class="box-content">
-                            <div class="phone">
-                                <a href="tel:+380992940566">+38 (099) 294 05 66</a>
+				<div class="nav-out-custom_nav">
+					<div class="navbar-header">
+                        <div id="ws-info">
+                            <div class="row cart-block" style="font-size: 14px;">
+                                <div class="col-md-4">
+                                    <div class="row">
+                                        <div class="col-8 text-right">Знижка</div>
+                                        <div class="col-4 discount" ><?php echo customer::$data['discount'];?>%</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-8 text-right">Курс</div>
+                                        <div class="col-4 eur-currency"><?php echo $EUR;?></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="row">
+                                        <div class="col-8 text-right">Сума замовлення, грн</div>
+                                        <div class="col-4 formatted_value"><?php echo currency::format(cart::$total['value']);?> (<span class="quantity"><?php echo cart::$total['items'];?></span>)</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-8 text-right">До оплати, грн</div>
+                                        <div class="col-4 total"></div>
+                                    </div>
+                                </div>
+                                
                             </div>
-                            <div class="phone">
-                                <a href="tel:+380934196469">+38 (093) 419 64 69</a>
-                            </div>
-                            </div>
-
-                            <div class="icons right">
-                                <a rel="nofollow" class="icon email" href="mailto:shop@fitpit.com.ua">
-                                    <i class="fa fa-envelope-o"></i>
-                                </a>
-                                <a rel="nofollow" class="icon telegram " href="tg://">
-                                    <i class="fa fa-paper-plane-o"></i>
-                                </a>
-                                <a rel="nofollow" class="icon viber " href="viber://chat?number=+38-095-904-42-13">
-                                    <i class="fa fa-phone"></i>
-                                </a>                            
-                            </div>
-                        </div>
-                        <div class="box-account">
+                           
+                            
                             
                         </div>
-                        <div class="box-cart text-right"  id="cart">
-                            <div class="row">
-                                <div class="col-8 text-right">Замовлення, шт</div>
-                                <div class="col-4 quantity" ><?php echo cart::$total['items'];?></div>
+						<div class="text-right user_nav">
+							<div id="cart">
+                                <a href="<?php echo htmlspecialchars($link); ?>">
+                                    <img class="image" src="{snippet:template_path}images/<?php echo !empty($num_items) ? 'cart_filled.svg' : 'cart.svg'; ?>" alt="" />
+                                    
+                                    <div class="badge quantity"><?php echo cart::$total['items'];?></div>
+                                </a>
                             </div>
-                            <div class="row">
-                                <div class="col-8 text-right">Сума замовлення, грн</div>
-                                <div class="col-4 formatted_value"><?php echo currency::format(cart::$total['value']);?></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-8 text-right">Знижка</div>
-                                <div class="col-4 discount" ><?php echo customer::$data['discount'];?>%</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-8 text-right">Курс</div>
-                                <div class="col-4 eur-currency"><?php echo $EUR;?></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-8 text-right">До оплати, грн</div>
-                                <div class="col-4 total"></div>
-                            </div>
-                            <!--<div class="row">
-                                <div class="col-8 text-right">€</div>
-                                <div class="col-4 total-eur"></div>
-                            </div>-->
+							<a href="<?php echo document::href_ilink('order_history'); ?>">
+								<!--<?php echo functions::draw_fonticon('fa-user'); ?>-->
+                                <img src="/images/icon_user.svg" alt="">
+                                
+							</a>
+							
+							
+						</div>
 
-                            <div class=" text-right">
-                                <a href="<?php echo document::href_ilink('order_history'); ?>" class="btn btn-secondary btn-sm">
-                                    <?php echo functions::draw_fonticon('fa-user'); ?> <?php echo customer::$data['company'];?>  
-                                </a>
-                                <a class="btn btn-primary btn-sm" href="<?php echo htmlspecialchars(document::ilink('checkout')); ?>">
-                                    Оформити
-                                </a>
-                            </div>
+						
+
+						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#default-menu">
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+
+		<div class="show_below_1200">
+			<div class="nav_row n0">
+				<div class="navbar-contacts">
+					<div class="box-content phones">
+						<img src="/images/icon_phone.png" alt="">
+						<a href="tel:+380992940566">+38 (099) 294 05 66</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="nav-out-custom">
+				<div class="nav_row n1">
+					<a class="logotype" href="<?php echo document::href_ilink(''); ?>">
+						<img src="<?php echo document::href_link('images/logotype.png'); ?>" alt="<?php echo settings::get('store_name'); ?>" title="<?php echo settings::get('store_name'); ?>" />
+						<span>FitPit</span>
+					</a>
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mobile-menu">
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+					</div>
+				</div>
+                <div  id="mobile-menu" aria-expanded="false" style="height:0">
+                    <div class="site_menu__bottom_row" style="font-size: 12px;">
+						<div class="row">
+                            <div class="col-8 text-right">Знижка:</div>
+                            <div class="col-4 discount" ><?php echo customer::$data['discount'];?>%</div>
                         </div>
-                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#default-menu">
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
+                        <div class="row">
+                            <div class="col-8 text-right">Курс:</div>
+                            <div class="col-4 eur-currency"><?php echo $EUR;?></div>
+                        </div>
+						
+					</div>
+					<div class="site_menu__bottom_row">
+						
+						<a rel="nofollow" class="email" href="mailto:shop@fitpit.com.ua">
+							<img src="/images/icon_mail.png" alt="">
+							<span>Contact us</span>
+						</a>
+						<div class="user_nav">
+							<a href="<?php echo document::href_ilink('order_history'); ?>">
+								<!--<?php echo functions::draw_fonticon('fa-user'); ?>-->
+								<img src="/images/icon_user.svg" alt="">
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="nav_row n2">
+					<div class="cart-block " style="font-size: 12px; width:70%">
+                        <div class="row text-right" style="display: block;">
+                            <span>Сума:</span>&nbsp;
+                            <span class="formatted_value"><?php echo currency::format(cart::$total['value']);?></span>&nbsp;грн
+                        </div>
+                        <div class="row text-right"  style="display: block;">
+                            <span>До оплати:</span>&nbsp;<span class="total"></span>&nbsp;грн
+                        </div>
                     </div>
-                </nav>
-            </div>
+					<?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_cart.inc.php'); ?>
+				</div>
+				
+			</div>
         </div>
-        
-      
-    </header>
+        <style>
+                #mobile-menu[aria-expanded="false"] {
+                    overflow:hidden;
+                }
+        </style>
+    </div>
+    
 
 
-    <main id="main" class="mx-1">
+    
+
+
+    <main id="main" class="mx-1" style="position: relative;  z-index: 99;">
         {snippet:content}
     </main>
 
@@ -167,6 +233,57 @@
 <a id="scroll-up" class="hidden-print" href="#">
   <?php echo functions::draw_fonticon('fa-chevron-circle-up fa-3x', 'style="color: #000;"'); ?>
 </a>
+
+<div id="account-modal" class="account dropdown">
+    <ul class="dropdown-menu account-dropdown">
+            <?php if (!empty(customer::$data['id'])) { ?>
+            <li><a
+                    href="<?php echo document::href_ilink('order_history'); ?>"><?php echo language::translate('title_order_history', 'Order History'); ?></a>
+            </li>
+            <li><a
+                    href="<?php echo document::href_ilink('edit_account'); ?>"><?php echo language::translate('title_edit_account', 'Edit Account'); ?></a>
+            </li>
+            <li><a
+                    href="<?php echo document::href_ilink('logout'); ?>"><?php echo language::translate('title_logout', 'Logout'); ?></a>
+            </li>
+            <?php } else { ?>
+            <li>
+                <?php echo functions::form_draw_form_begin('login_form', 'post', document::ilink('login'), false, 'class="navbar-form"'); ?>
+                <?php echo functions::form_draw_hidden_field('redirect_url', !empty($_GET['redirect_url']) ? $_GET['redirect_url'] : document::link()); ?>
+
+                <div class="form-group">
+                    <?php echo functions::form_draw_email_field('email', true, 'required="required" placeholder="'. language::translate('title_email_address', 'Email Address') .'"'); ?>
+                </div>
+
+                <div class="form-group">
+                    <?php echo functions::form_draw_password_field('password', '', 'placeholder="'. language::translate('title_password', 'Password') .'"'); ?>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label><?php echo functions::form_draw_checkbox('remember_me', '1'); ?>
+                            <?php echo language::translate('title_remember_me', 'Remember Me'); ?></label>
+                    </div>
+                </div>
+
+                <div class="btn-group btn-block">
+                    <?php echo functions::form_draw_button('login', language::translate('title_sign_in', 'Sign In')); ?>
+                </div>
+                <?php echo functions::form_draw_form_end(); ?>
+            </li>
+            <li class="text-center">
+                <a
+                    href="<?php echo document::href_ilink('create_account'); ?>"><?php echo language::translate('text_new_customers_click_here', 'New customers click here'); ?></a>
+            </li>
+
+            <li class="text-center">
+                <a
+                    href="<?php echo document::href_ilink('reset_password'); ?>"><?php echo language::translate('text_lost_your_password', 'Lost your password?'); ?></a>
+            </li>
+            <?php } ?>
+        </ul>
+    </li>
+</div>	
 
 <style> 
     #header {

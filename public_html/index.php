@@ -30,8 +30,8 @@
     }
   }
 
-  file_get_contents('https://new.fitpit.com.ua/handlers/less-scss-compiler-manual.php?file=/includes/templates/default.catalog/css/framework.min.css');
-  file_get_contents('https://new.fitpit.com.ua/handlers/less-scss-compiler-manual.php?file=/includes/templates/default.catalog/css/app.min.css');
+  //file_get_contents('https://new.fitpit.com.ua/handlers/less-scss-compiler-manual.php?file=/includes/templates/default.catalog/css/framework.min.css');
+  //file_get_contents('https://new.fitpit.com.ua/handlers/less-scss-compiler-manual.php?file=/includes/templates/default.catalog/css/app.min.css');
   //file_get_contents('https://new.fitpit.com.ua/handlers/less-scss-compiler-manual.php?file=/includes/templates/default.catalog/css/wholesale.min.css');
 
   //file_get_contents('https://new.fitpit.com.ua/handlers/js-compressor-manual.php?file=/includes/templates/default.catalog/js/app.min.js');

@@ -40,11 +40,20 @@
       foreach ($fields as $field) {
         if (isset($_POST[$field])) $page->data[$field] = $_POST[$field];
       }
+      //var_dump($_FILES);die;
       if($_POST['type'] != 'video') {
-        if (is_uploaded_file($_FILES['media']['tmp_name'])) $page->save_image($_FILES['media']['tmp_name']);
+        if (is_uploaded_file($_FILES['media']['tmp_name'])) {
+          // var_dump($_FILES['media']['tmp_name']);die;
+          $page->save_image($_FILES['media']['tmp_name']);
+        }
+        
       }
 
       $page->save();
+
+      if (!empty($_POST['delete_image'])) $page->delete_image();
+
+      
 
       notices::add('success', language::translate('success_changes_saved', 'Changes saved'));
       header('Location: '. document::link(WS_DIR_ADMIN, array('doc' => 'pages'), true, array('page_id')));
@@ -77,7 +86,7 @@
   </div>
 
   <div class="panel-body">
-    <?php echo functions::form_draw_form_begin('pages_form', 'post', false, false, 'style="max-width: 640px;"'); ?>
+    <?php echo functions::form_draw_form_begin('pages_form', 'post', false, true, 'style="max-width: 640px;"'); ?>
       <?php echo functions::form_draw_hidden_field('type', true); ?>
       <div class="row">
         <div class="form-group col-md-6">
@@ -99,7 +108,7 @@
       </div>
 
       <div class="row">
-        <? if($_GET['type'] == 'pages') { ?>
+        <? if($_GET['type'] == 'pages' || $_GET['type'] == 'icons') { ?>
         <div class="form-group col-md-6">
           <label><?php echo language::translate('title_dock', 'Dock'); ?></label>
           <div class="checkbox">
@@ -118,13 +127,21 @@
       
       <? if($_GET['type'] != 'video') { ?>
       <div class="row">
-    
-        <?php if (!empty($page->data['media'])) echo '<p><img src="'. WS_DIR_IMAGES . $page->data['media'] .'" alt="" class="img-responsive" /></p>'; ?>
 
-        <div class="form-group  col-md-12">
-          <label><?php echo language::translate('title_image', 'Image'); ?></label>
-          <?php echo functions::form_draw_file_field('media'); ?>
-          <?php echo (!empty($page->data['media'])) ? '</label>' . $page->data['media'] : ''; ?>
+        <div id="image" class=" col-md-12">
+          <div class="thumbnail" style="margin-bottom: 15px;">
+            <img src="<?php echo document::href_link(WS_DIR_APP . functions::image_thumbnail(FS_DIR_APP . 'images/' . $page->data['media'], 400, 100)); ?>" alt="" />
+          </div>
+
+          <div class="form-group">
+            <label><?php echo ((isset($page->data['media']) && $page->data['media'] != '') ? language::translate('title_new_image', 'New Image') : language::translate('title_image', 'Image')); ?></label>
+            <?php echo functions::form_draw_file_field('media', ''); ?>
+            <?php if (!empty($page->data['media'])) { ?>
+            <div class="checkbox">
+              <label><?php echo functions::form_draw_checkbox('delete_image', 'true', true); ?> <?php echo language::translate('title_delete', 'Delete'); ?></label>
+            </div>
+            <?php } ?>
+          </div>
         </div>
 
       </div>
