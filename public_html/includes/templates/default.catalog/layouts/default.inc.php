@@ -27,9 +27,7 @@
 			<div class="navbar-contacts">
 				<div class="box-content phones">
 					<img src="/images/icon_phone.png" alt="">
-					<a href="tel:+380992940566">+38 (099) 294 05 66</a>
-					<span> | </span>
-					<a href="tel:+380934196469">+38 (093) 419 64 69</a>
+					<a href="tel:+380501847609">+38 (050) 184 47 09</a>
 				</div>
 				<a rel="nofollow" class="email" href="mailto:shop@fitpit.com.ua">
 					<img src="/images/icon_mail.png" alt="">
@@ -83,9 +81,7 @@
 				<div class="navbar-contacts">
 					<div class="box-content phones">
 						<img src="/images/icon_phone.png" alt="">
-						<a href="tel:+380992940566">+38 (099) 294 05 66</a>
-						<span> | </span>
-						<a href="tel:+380934196469">+38 (093) 419 64 69</a>
+						<a href="tel:+380501847609">+38 (050) 184 47 09</a>
 					</div>
 				</div>
 			</div>

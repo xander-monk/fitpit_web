@@ -1,6 +1,6 @@
 <div id="content" class="twelve-eighty">
   {snippet:notices}
-
+  <?php echo customer::$data['discount'];?>
   <?php echo functions::form_draw_form_begin('checkout_form', 'post', document::ilink('order_process'), false, 'autocomplete="off"'); ?>
 
   <section id="box-checkout" class="box">

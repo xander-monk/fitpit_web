@@ -22,4 +22,6 @@
     'order_success_modules_output' => $order_module->success($order),
   );
 
+  unset(session::$data['order']);
+
   echo $_page->stitch('pages/order_success');

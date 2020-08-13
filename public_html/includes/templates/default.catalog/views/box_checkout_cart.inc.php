@@ -44,9 +44,21 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="3"></td>
-          <td colspan="3" class="subtotal">
-            <?php echo language::translate('title_subtotal', 'Subtotal'); ?>: <strong class="formatted-value"><?php echo !empty(customer::$data['display_prices_including_tax']) ?  currency::format($subtotal + $subtotal_tax) : currency::format($subtotal); ?></strong>
+          <td colspan="4" class="text-right"><?php echo language::translate('title_subtotal', 'Subtotal'); ?>:</td>
+          <td colspan="2" class="subtotal">
+             <strong class="formatted-value"><?php echo !empty(customer::$data['display_prices_including_tax']) ?  currency::format($subtotal + $subtotal_tax) : currency::format($subtotal); ?></strong>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="4" class="text-right"><?php echo language::translate('title_subtotal', 'Subtotal'); ?>:</td>
+          <td colspan="2" class="subtotal">
+             <strong class="formatted-value"><?php echo customer::$data['discount']; ?></strong>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="4" class="text-right"><?php echo language::translate('title_subtotal', 'Subtotal'); ?>:</td>
+          <td colspan="2" class="subtotal">
+             <strong class="formatted-value"><?php echo currency::format($with_discount_eur); ?></strong>
           </td>
         </tr>
       </tfoot>

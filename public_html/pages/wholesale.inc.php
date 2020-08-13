@@ -9,6 +9,8 @@
   // var_dump(customer::require_wholesale()); die;
   customer::require_wholesale();
 
+  functions::draw_lightbox();
+
   if (empty($_GET['page']) || !is_numeric($_GET['page'])) $_GET['page'] = 1;
 
   $_page = new ent_view();
@@ -35,6 +37,7 @@
   $_page->snippets['discount'] = $discount = customer::$data['discount'];
   $query = database::query("select *,
     (select id from products where product_hash = _excel.product_hash ) as product_id,
+    (select image from products where product_hash = _excel.product_hash ) as image,
     '' as cart_key,
     0 as cart1, 
     0 as cart2, 
@@ -49,6 +52,8 @@
       }
       $row['user_price_eur'] =  ceil (( $row['base'] * (1-(int)$salemod/100) ) * (1-(int)$discount/100));;
       $row['user_price'] = ceil (( $row['base'] * (1-(int)$salemod/100) ) * (1-(int)$discount/100) * $eur);
+      $row['link'] = document::ilink('product', array('product_id' => $row['product_id']));
+      $row['image'] = '/' . ltrim($row['image'] ? 'images/' . $row['image'] : '', '/');
       array_push($data, $row);
     }
   }

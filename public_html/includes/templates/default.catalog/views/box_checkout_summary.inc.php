@@ -18,12 +18,26 @@
       </tr>
       <?php } ?>
 
+      <?php if ($discount>0) { ?>
+      <tr>
+        <td class="text-right" style="color: #999999;" colspan="5"><?php echo $incl_excl_tax; ?>:</td>
+        <td class="text-right" style="color: #999999;"><?php echo $discount; ?>%</td>
+      </tr>
+      <?php } ?>
+
     </tbody>
     <tfoot>
+      <?php if ($discount>0) { ?>
+      <tr>
+        <td class="text-right" colspan="5"><?php echo language::translate('title_payment_due', 'Payment Due'); ?>:</td>
+        <td class="text-right" style="width: 25%;"><?php echo currency::format($with_discount_eur);; ?></td>
+      </tr>
+      <?php } else { ?>
       <tr>
         <td class="text-right" colspan="5"><strong><?php echo language::translate('title_payment_due', 'Payment Due'); ?>:</strong></td>
         <td class="text-right" style="width: 25%;"><strong><?php echo currency::format($payment_due, false); ?></strong></td>
       </tr>
+      <?}?>
     </tfoot>
   </table>
 

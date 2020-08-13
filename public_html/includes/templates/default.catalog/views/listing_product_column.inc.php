@@ -13,7 +13,7 @@
         <?php if ($campaign_price) { ?>
         <del class="regular-price"><?php echo currency::format($regular_price); ?></del> <strong class="campaign-price"><?php echo currency::format($campaign_price); ?></strong>
         <?php } else { ?>
-        <span class="price"><?php echo currency::format($regular_price); ?></span>
+        <span class="price"><?php echo currency::format($regular_price); ?> ₴</span>
         <?php } ?>
       </div>
     </div>

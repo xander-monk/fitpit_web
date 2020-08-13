@@ -250,6 +250,7 @@
         $this->data['id'] = database::insert_id();
       }
 
+      //var_dump((float)$this->data['payment_due']);die;
       database::query(
         "update ". DB_TABLE_ORDERS ." set
         starred = ". (int)$this->data['starred'] .",
@@ -494,6 +495,10 @@
     }
 
     public function refresh_total() {
+
+      $discount = (int)customer::$data['discount'];
+      //var_dump($discount);
+
       $this->data['subtotal'] = array('amount' => 0, 'tax' => 0);
       $this->data['payment_due'] = 0;
       $this->data['tax_total'] = 0;
@@ -514,12 +519,24 @@
           break;
         }
       }
-
-      foreach ($this->data['order_total'] as $row) {
-        if (empty($row['calculate'])) continue;
-        $this->data['payment_due'] += ($row['value'] + $row['tax']);
-        $this->data['tax_total'] += $row['tax'];
+      //var_dump($this->data['payment_due']);
+      if($discount > 0) {
+        $this->data['payment_due'] = 0;
+        foreach ($this->data['order_total'] as $row) {
+          //if (empty($row['calculate'])) continue;
+          $total = $row['value'] + $row['tax'];
+          $with_discount = round (($total*(1-(int)$discount/100)), 2);
+          $this->data['payment_due'] += $with_discount;
+          $this->data['tax_total'] += $row['tax'];
+        }
+      } else {
+        foreach ($this->data['order_total'] as $row) {
+          if (empty($row['calculate'])) continue;
+          $this->data['payment_due'] += ($row['value'] + $row['tax']);
+          $this->data['tax_total'] += $row['tax'];
+        }
       }
+      //var_dump($this->data['payment_due']); die;
     }
 
     public function add_item($item) {

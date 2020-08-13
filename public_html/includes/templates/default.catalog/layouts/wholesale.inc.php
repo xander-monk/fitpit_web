@@ -22,7 +22,8 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/scroller/2.0.2/css/scroller.bootstrap4.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/searchpanes/1.1.1/css/searchPanes.bootstrap4.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.1/css/select.bootstrap4.min.css"/>
- 
+
+<link href="//cdn.jsdelivr.net/npm/featherlight@1.7.14/release/featherlight.min.css" type="text/css" rel="stylesheet" />
 
 <link rel="stylesheet" href="{snippet:template_path}css/wholesale.min.css" />
 
@@ -54,6 +55,7 @@
 <script type="text/javascript" src="https://cdn.datatables.net/searchpanes/1.1.1/js/searchPanes.bootstrap4.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
 
+<script src="//cdn.jsdelivr.net/npm/featherlight@1.7.14/release/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
     <? 
@@ -68,7 +70,7 @@
 			<div class="navbar-contacts">
 				<div class="box-content phones">
 					<img src="/images/icon_phone.png" alt="">
-					<a href="tel:+380934196469">+38 (093) 419 64 69</a>
+					<a href="tel:+380997479754">+38 (099) 747-97-54</a>
 				</div>
 				<a rel="nofollow" class="email" href="mailto:shop@fitpit.com.ua">
 					<img src="/images/icon_mail.png" alt="">
@@ -119,7 +121,7 @@
                         </div>
 						<div class="text-right user_nav">
 							<div id="cart">
-                                <a href="<?php echo htmlspecialchars($link); ?>">
+                                <a href="/checkout">
                                     <img class="image" src="{snippet:template_path}images/<?php echo !empty($num_items) ? 'cart_filled.svg' : 'cart.svg'; ?>" alt="" />
                                     
                                     <div class="badge quantity"><?php echo cart::$total['items'];?></div>
@@ -152,7 +154,7 @@
 				<div class="navbar-contacts">
 					<div class="box-content phones">
 						<img src="/images/icon_phone.png" alt="">
-						<a href="tel:+380992940566">+38 (099) 294 05 66</a>
+						<a href="tel:+380997479754">+38 (099) 747-97-54</a>
 					</div>
 				</div>
 			</div>

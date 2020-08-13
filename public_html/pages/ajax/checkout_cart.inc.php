@@ -8,12 +8,18 @@
     return;
   }
 
+  $eur = 29; // round(1/currency::$currencies['UAH']['value']);
+  $discount = customer::$data['discount'];
+
   $box_checkout_cart = new ent_view();
 
   $box_checkout_cart->snippets = array(
     'items' => array(),
     'subtotal' => cart::$total['value'],
     'subtotal_tax' => cart::$total['tax'],
+    'discount' => (int)$discount,
+    'with_discount_eur' => round ((cart::$total['value']*(1-(int)$discount/100)), 2),
+    'with_discount' => currency::format(cart::$total['value']*(1-(int)$discount/100))
   );
 
   foreach (cart::$items as $key => $item) {

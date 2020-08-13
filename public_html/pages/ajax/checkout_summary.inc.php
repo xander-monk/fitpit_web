@@ -10,6 +10,8 @@
   if (!empty(session::$data['order']->data['id'])) {
     $resume_id = session::$data['order']->data['id'];
   }
+  $eur = 29; // round(1/currency::$currencies['UAH']['value']);
+  $discount = customer::$data['discount'];
 
   session::$data['order'] = new ent_order();
 
@@ -39,6 +41,9 @@
   $order->data['language_code'] = language::$selected['code'];
   $order->data['customer'] = customer::$data;
   $order->data['display_prices_including_tax'] = !empty(customer::$data['display_prices_including_tax']) ? true : false;
+  $order->data['discount'] = (int)$discount;
+  $order->data['with_discount_eur'] = round ((cart::$total['value']*(1-(int)$discount/100)), 2);
+  $order->data['with_discount'] = currency::format(cart::$total['value']*(1-(int)$discount/100));
 
   foreach (cart::$items as $item) {
     $order->add_item($item);
@@ -72,6 +77,9 @@
     'selected_payment' => null,
     'consent' => null,
     'confirm' => !empty($payment->data['selected']['confirm']) ? $payment->data['selected']['confirm'] : language::translate('title_confirm_order', 'Confirm Order'),
+    'discount' => $order->data['discount'],
+    'with_discount_eur' => $order->data['with_discount_eur'],
+    'with_discount' => $order->data['with_discount']
   );
 
   foreach ($order->data['items'] as $item) {

@@ -15,6 +15,7 @@
 				<td>flavour</td>
 				<td>base</td>
 				<td>sale</td>
+				<td>additional</td>
 				<td>rrp</td>
 				<td>qty</td>
 				<td>expiration</td>
@@ -55,12 +56,29 @@
 		var wholesale = $('#wholesale-data').DataTable( {
 			//ajax: "/ajax/wholesale_data.json",
 			data: dataSet,
+			responsive: {
+				details: {
+					type: 'column',
+					target: 'tr'
+				}
+			},
 			deferRender: true,
 			processing: true,
 			stateSave:false,
 
+			language: {
+				url: "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Ukranian.json",
+				searchPanes: {
+                	title:{
+						_: 'Вибрано фільтрів - %d',
+						0: 'Фільтр'
+					},
+					clearAll: 'Очистити'
+				}
+			},
+
 			drawCallback: function( settings ) {
-				console.log( 'DataTables has redrawn the table' , settings, changed, dataSet, $('.waddcart[data-row="'+changed+'"]'));
+				// console.log( 'DataTables has redrawn the table' , settings, changed, dataSet, $('.waddcart[data-row="'+changed+'"]'));
 				setTimeout(() => {
 					$('.waddcart[data-row="'+changed+'"]').focus();	
 				}, 200);
@@ -75,7 +93,7 @@
                     alert('in progress');
                 }},
             	{
-                text: 'Фильтр',
+                text: 'Фільтр',
                 action: function ( e, dt, node, config ) {
                     $('.dtsp-panes.dtsp-container').slideToggle();
                 }}
@@ -104,21 +122,35 @@
 			/* 4 */ 	{ data: "flavour" , title: "Смак/колір", className: "col_flavour"},
 			/* 5 */ 	{ data: "expiration" , title: "Термін придатності", className: "col_expiration"},
 			/* 6 */ 	{ data: "base" , title: "Ціна, Євро", className: "col_base"},
-			/* 7 */ 	{ data: "sale" , title: "Уцінка, акція", className: "col_sale"},
-			/* 8 */ 	{ data: "user_price" , title: "Ціна, грн", className: "col_rrp"},
-			/* 9 */ 	{ data: "qty" , title: "Наявність", className: "col_qty"},
-			/* 10 */ 	{ data: "cart1" , title: "Замовлення", className: "col_cart"},
-			/* 11 */ 	{ data: "cart2" , title: "Сума", className: "col_summ"}
+			/* 7 */ 	{ data: "sale" , title: "Уцінка", className: "col_sale"},
+			/* 8 */ 	{ data: "additional" , title: "Акція", className: "col_additional"},
+			/* 9 */ 	{ data: "user_price" , title: "Ціна, грн", className: "col_rrp"},
+			/* 10 */ 	{ data: "qty" , title: "Наявність", className: "col_qty"},
+			/* 11 */ 	{ data: "cart1" , title: "Замовлення", className: "col_cart"},
+			/* 12 */ 	{ data: "cart2" , title: "Сума", className: "col_summ"}
 			],
 			// pageLength: 10,
 			columnDefs:[
+				{ responsivePriority: 2, targets: 0 },
+				{ responsivePriority: 3, targets: 1 },
+				{ responsivePriority: 1, targets: 2 },
+				{ responsivePriority: 1, targets: 3 },
+				{ responsivePriority: 1, targets: 4 },
+				{ responsivePriority: 5, targets: 5 },
+				{ responsivePriority: 1, targets: 6 },
+				{ responsivePriority: 6, targets: 7 },
+				{ responsivePriority: 6, targets: 8 },
+				{ responsivePriority: 1, targets: 9 },
+				{ responsivePriority: 99, targets: 10 },
+				{ responsivePriority: 99, targets: 11 },
+				{ responsivePriority: 99, targets: 12 },
 				{ 
 					width: "30%", 
 					targets: [2] 
 				},
 				{
 					orderable: false,
-					targets: [9,10,11]
+					targets: [10,11,12]
 				},
 				{
 					searchPanes:{
@@ -131,12 +163,12 @@
 					searchPanes:{
 						show: false,
 					},
-					targets: [2,6,7,8,9,10,11],
+					targets: [2,6,7,8,9,10,11,12],
 				},
 				{	
 					render: function ( data, type, row ) {
 							if(data != undefined && data!='') {
-								console.log(data);
+								//console.log(data);
 								return '<div>' +100*parseFloat(data) + ' %</div>';
 							} else {
 								return data;
@@ -146,7 +178,22 @@
 				},
 				{	
 					render: function ( data, type, row ) {
-						return '<div style="background-color:#'+row.bg+'">' + data + '</div>';
+							if(data != undefined && data!='') {
+								//console.log(data);
+								return '<div>' +data + ' </div>';
+							} else {
+								return data;
+							}
+					},
+					targets: 8
+				},
+				{	
+					render: function ( data, type, row ) {
+						var img = '"';
+						if(row.image != '/') {
+							img = 'product-with-image" href="'+row.image+'" data-featherlight="image" ';
+						}
+						return '<div style="background-color:#'+row.bg+'" class="product-name '+img+'  data-link="'+row.link+'">' + data + '</div>';
 					},
 					targets: 2
 				},
@@ -154,13 +201,13 @@
 					render: function ( data, type, row ) {
 						return '<input type="number" class="waddcart" data-row="'+row.id+'" value="'+data+'" >';
 					},
-					targets: 10
+					targets: 11
 				},
 				{	
 					render: function ( data, type, row ) {
 						return row.user_price * row.cart1;
 					},
-					targets: 11
+					targets: 12
 				}
 			]/*,
 			language: {
@@ -177,6 +224,12 @@
 		
 
 		$('.dtsp-panes.dtsp-container').slideUp();
+		setTimeout(() => {
+			$('.dtsp-panes.dtsp-container').slideUp();
+
+			console.log($('.dtsp-clearAll'));
+			$('.dtsp-clearAll').text('Очистити');
+		}, 500);
 		$('td.col_flavour').mouseenter(function(e){
 			$(this).attr('title', $(this).text());
 		});
@@ -249,7 +302,10 @@
 			
 		})
 		
-	
+		$('body').on('click', '.product-name', function(e){
+			console.log($(this).attr('data-link'));
+		});
+		
 
 		console.log(window.config.platform.url);
 		

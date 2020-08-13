@@ -6,6 +6,29 @@ div.dataTables_wrapper {
     div.dataTables_filter input {
         width: calc(~"100% - 62px");
     }
+
+    .dtsp-searchPane {
+        table {
+            tr {
+                td {
+                    cursor: pointer;
+                    &:hover {
+                        background-color: rgba(0, 0, 0, 0.2);
+                    }
+                }
+            }
+        }
+        .input-group-append {
+            button {
+                border-color: #dae0e5;
+            }
+        }
+        .btn-group {
+            button {
+                border-color: #dae0e5;
+            }
+        }
+    }
 }
 
 #wholesale-data {
@@ -46,6 +69,10 @@ div.dataTables_wrapper {
                         height: 100%;
                         width: 100%;
                         padding: 4px;
+                        &.product-with-image {
+                            cursor: pointer;
+
+                        }
                     }
                 }
 
@@ -72,6 +99,20 @@ div.dataTables_wrapper {
                         font-weight: 600;
                     }
                 }
+                &.col_additional {
+                    padding: 0;
+                    text-align: center;
+                    div {
+                        display: inline;
+                        padding: 2px 6px;
+                        height: 100%;
+                        width: 100%;
+                        text-align: center;
+                        background: @fp_green_6;
+                        color: @fp_textWhite;
+                        font-weight: 600;
+                    }
+                }
                 &.col_cart {
                     padding: 0;
                     width: 65px !important;
@@ -79,7 +120,34 @@ div.dataTables_wrapper {
                     input {
                         width: 100%;
                         border: none;
+                        position: relative;
                     }
+                    input[type=number]::-webkit-inner-spin-button { 
+                        position:relative;
+                        right: 10px;
+                        width:16px;
+                        height: 24px;
+                        transform: rotate(90deg);
+                    }  
+                    /*input[type=number]::-webkit-inner-spin-button { 
+                        -webkit-appearance: none;
+                        cursor:pointer;
+                        display:block;
+                        width:8px;
+                        color: #333;
+                        text-align:center;
+                        position:relative;
+                        transform: rotate(90deg);
+                    }    
+                    input[type=number]:hover::-webkit-inner-spin-button { 
+                        background: #eee url('http://i.stack.imgur.com/YYySO.png') no-repeat 50% 50%;  
+                        width: 14px;
+                        height: 14px;
+                        padding: 4px;
+                        position: relative;
+                        right: 4px;
+                        border-radius: 28px;
+                    }*/
                 }
             }
         }

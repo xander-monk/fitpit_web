@@ -263,7 +263,7 @@
 
             if ($value['price_adjust']) {
               $price_adjust_text = currency::format(tax::get_price($value['price_adjust'], $product->tax_class_id));
-              if ($value['price_adjust'] > 0) $price_adjust_text = ' +' . $price_adjust_text;
+              if ($value['price_adjust'] > 0) $price_adjust_text = ' +' . $price_adjust_text .' ₴';
             }
 
             $values .= '<div class="checkbox">' . PHP_EOL
@@ -282,7 +282,7 @@
 
           if ($value['price_adjust']) {
             $price_adjust_text = currency::format(tax::get_price($value['price_adjust'], $product->tax_class_id));
-            if ($value['price_adjust'] > 0) $price_adjust_text = ' +'.$price_adjust_text;
+            if ($value['price_adjust'] > 0) $price_adjust_text = ' +'.$price_adjust_text .' ₴';
           }
 
           $values .= functions::form_draw_text_field('options['.$group['name'].']', isset($_POST['options'][$group['name']]) ? true : $value['value'], 'data-price-adjust="'. (float)$price_adjust .'" data-tax-adjust="'. (float)$tax_adjust .'"' . (!empty($group['required']) ? ' required="required"' : '')) . $price_adjust_text . PHP_EOL;
@@ -298,7 +298,7 @@
 
             if ($value['price_adjust']) {
               $price_adjust_text = currency::format(tax::get_price($value['price_adjust'], $product->tax_class_id));
-              if ($value['price_adjust'] > 0) $price_adjust_text = ' +'.$price_adjust_text;
+              if ($value['price_adjust'] > 0) $price_adjust_text = ' +'.$price_adjust_text .' ₴';
             }
 
             $values .= '<div class="radio">' . PHP_EOL
@@ -318,7 +318,7 @@
 
             if ($value['price_adjust']) {
               $price_adjust_text = currency::format(tax::get_price($value['price_adjust'], $product->tax_class_id));
-              if ($value['price_adjust'] > 0) $price_adjust_text = ' +'.$price_adjust_text;
+              if ($value['price_adjust'] > 0) $price_adjust_text = ' +'.$price_adjust_text .' ₴';
             }
 
             $options[] = array($value['name'] . $price_adjust_text, $value['name'], 'data-price-adjust="'. (float)$price_adjust .'" data-tax-adjust="'. (float)$tax_adjust .'"');

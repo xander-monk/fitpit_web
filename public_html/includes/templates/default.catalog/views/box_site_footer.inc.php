@@ -47,9 +47,7 @@
 
       <p><?php echo nl2br(settings::get('store_postal_address')); ?></p>
 
-      <?php if (settings::get('store_phone')) { ?>
-      <p><?php echo functions::draw_fonticon('fa-phone'); ?> <a href="tel:<?php echo settings::get('store_phone'); ?>"><?php echo settings::get('store_phone'); ?></a><p>
-      <?php } ?>
+      <a href="tel:+380501847609">+38 (050) 184 47 09</a>
 
       <p><?php echo functions::draw_fonticon('fa-envelope'); ?> <a href="mailto:<?php echo settings::get('store_email'); ?>"><?php echo settings::get('store_email'); ?></a></p>
     </section>
@@ -58,7 +56,7 @@
   <section id="copyright">
     <div class="notice twelve-eighty">
       <!-- LiteCart is provided free under license CC BY-ND 4.0 - https://creativecommons.org/licenses/by-nd/4.0/. Removing the link back to litecart.net without permission is a violation - https://www.litecart.net/addons/172/removal-of-attribution-link -->
-      Copyright &copy; <?php echo date('Y'); ?> <?php echo settings::get('store_name'); ?>. All rights reserved &middot; Powered by <a href="https://www.litecart.net" target="_blank" title="Free e-commerce platform">LiteCart®</a>
+      Copyright &copy; 2012 - <?php echo date('Y'); ?> <?php echo settings::get('store_name'); ?>. All rights reserved<span style="opacity:0">Powered by <a href="https://www.litecart.net" target="_blank" title="Free e-commerce platform">LiteCart®</a></span>
     </div>
   </section>
 </footer>

@@ -109,7 +109,7 @@
 
         <?php if ($options) { ?>
           <?php foreach ($options as $option) { ?>
-          <div class="form-group">
+          <div class="form-group" <? if($option['name'] === 'Expiration') echo 'style="display:none"'; ?>>
             <label><?php echo $option['name']; ?></label>
             <div class="flex-form-row">
               <?php echo $option['description'] ? '<div>' . $option['description'] . '</div>' : ''; ?>
@@ -121,13 +121,13 @@
 
         <div class="price-wrapper">
           <?php if ($campaign_price) { ?>
-          <del class="regular-price"><?php echo currency::format($regular_price); ?></del> <strong class="campaign-price"><?php echo currency::format($campaign_price); ?></strong>
+          <del class="regular-price"><?php echo currency::format($regular_price); ?> ₴</del> <strong class="campaign-price"><?php echo currency::format($campaign_price); ?> ₴</strong>
           <?php } else { ?>
-          <span class="price"><?php echo currency::format($regular_price); ?></span>
+          <span class="price"><?php echo currency::format($regular_price); ?></span> ₴
           <?php } ?>
         </div>
 
-        <div class="tax" style="margin: 0 0 1em 0;">
+        <div class="tax" style="margin: 0 0 1em 0; display:none;">
          <?php if ($tax_rates) { ?>
           <?php echo $including_tax ? language::translate('title_including_tax', 'Including Tax') : language::translate('title_excluding_tax', 'Excluding Tax'); ?>: <span class="total-tax"><?php echo currency::format($total_tax); ?></span>
          <?php } else { ?>
