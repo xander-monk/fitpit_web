@@ -20,7 +20,7 @@
 
       <?php if ($discount>0) { ?>
       <tr>
-        <td class="text-right" style="color: #999999;" colspan="5"><?php echo $incl_excl_tax; ?>:</td>
+        <td class="text-right" style="color: #999999;" colspan="5"><?php echo language::translate('title_order_discount', 'Order Discount'); ?>:</td>
         <td class="text-right" style="color: #999999;"><?php echo $discount; ?>%</td>
       </tr>
       <?php } ?>

@@ -121,7 +121,7 @@
 			/* 3 */ 	{ data: "size" , title: "Вага/об'єм/розмір", className: "col_size"},
 			/* 4 */ 	{ data: "flavour" , title: "Смак/колір", className: "col_flavour"},
 			/* 5 */ 	{ data: "expiration" , title: "Термін придатності", className: "col_expiration"},
-			/* 6 */ 	{ data: "base" , title: "Ціна, Євро", className: "col_base"},
+			/* 6 */ 	{ data: "base" , title: "Ціна", className: "col_base"},
 			/* 7 */ 	{ data: "sale" , title: "Уцінка", className: "col_sale"},
 			/* 8 */ 	{ data: "additional" , title: "Акція", className: "col_additional"},
 			/* 9 */ 	{ data: "user_price" , title: "Ціна, грн", className: "col_rrp"},
@@ -150,7 +150,7 @@
 				},
 				{
 					orderable: false,
-					targets: [10,11,12]
+					targets: [10,12]
 				},
 				{
 					searchPanes:{
@@ -164,6 +164,17 @@
 						show: false,
 					},
 					targets: [2,6,7,8,9,10,11,12],
+				},
+				{	
+					render: function ( data, type, row ) {
+							if(data != undefined && data!='') {
+								//console.log(data);
+								return '<div>' +data + '' + row.currency + '</div>';
+							} else {
+								return data;
+							}
+					},
+					targets: 6
 				},
 				{	
 					render: function ( data, type, row ) {
@@ -310,9 +321,10 @@
 		console.log(window.config.platform.url);
 		
 		window.updateCart = function(row, oldval = 0) {
-			console.log(row);
 			if (row) $('*').css('cursor', 'wait');
 			if (row) {
+				console.log('updateCart', row);
+				console.log('updateCart', row.base,  ( 1 - parseFloat(row.sale) * -1 ), row.base * ( 1 - parseFloat(row.sale) * -1 ));
 				var data = {
 					token: $('[name="token"]').val(),
 					product_id: row.product_id,
@@ -321,7 +333,7 @@
 					'options[Flavour]': row.flavour,
 					quantity: row.cart1,
 					
-					price: row.user_price_eur,
+					price: row.base * ( 1 - parseFloat(row.sale) * -1 ),
 					product_hash: row.product_hash,
 					hash:  row.hash,
 

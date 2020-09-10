@@ -155,11 +155,30 @@
         move_uploaded_file( $_FILES['file']['tmp_name'], $file);
   
         $size = $_FILES['file']['tmp_name'];
+
         // read
           $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
           $spreadsheet = $reader->load($file);
           $worksheet = $spreadsheet->getActiveSheet();
-  
+
+          $eur = $worksheet->getCell($config_cols['expiration'] . '3')->getValue();
+          $uah_val = 1 / (float)$eur;
+          database::query(
+            "update ". DB_TABLE_CURRENCIES ."
+            set value = '". $uah_val ."'
+            where code = 'UAH'
+            limit 1;"
+          );
+
+          $usd = $worksheet->getCell($config_cols['expiration'] . '4')->getValue();
+          $usd_val = (float)$usd / (float)$eur;
+          database::query(
+            "update ". DB_TABLE_CURRENCIES ."
+            set value = '". $usd_val ."'
+            where code = 'USD'
+            limit 1;"
+          );
+
           $rows = []; $started =  false; $ended = false;
           foreach ($worksheet->getRowIterator() as $r => $row) {
             //var_dump($r);
@@ -190,6 +209,25 @@
                       break;
                     case 'expiration':
                       $data[$field] = $worksheet->getCell($config_cols[$field] . $r)->getFormattedValue();
+                      break;
+
+                    case 'base':
+                      $data[$field] = $worksheet->getCell($config_cols[$field] . $r)->getValue();
+                      
+
+                      $data['currency'] = preg_replace('/[0-9]+/', '', $worksheet->getCell($config_cols[$field] . $r)->getFormattedValue());
+                      
+                      $data['currency'] = trim(str_replace('.','',$data['currency']));
+                      if($data['currency'] == '') {
+                        $data['currency'] = '€';
+                      }
+                      switch($data['currency']) {
+                        case '€': $data['base_eur'] = $data[$field]; break;
+                        case '$': $data['base_eur'] = $data[$field] * $usd_val; break;
+                        case '₴': $data['base_eur'] = $data[$field] * $uah_val; break;
+                      }
+                      //$data['base_eur'] = $data[$field];
+
                       break;
                     
                     default:
@@ -240,13 +278,15 @@
             foreach($fields as $field) {
               array_push($query, $field . " = '". database::input($row[$field]) ."'");
             }
-
+          
             database::query(
               "update _excel set ".implode(',', $query).", 
+                currency  = '". database::input($row['currency']) ."',
+                base_eur  = '". database::input($row['base_eur']) ."',
                 product_hash = '".$product_hash."', 
                 ord = ".$row['ord'].", 
                 bg = '".$row['bg']."', 
-                updated = '".date('Y-m-d H:i:s')."' 
+                updated = '".$now."' 
                where  hash = '".$hash."'"
             );
   
@@ -254,6 +294,9 @@
   
           database::query(
             "update _excel set mark = 0"
+          );
+          database::query(
+            "update _excel set history = 1 where updated != '".$now."'"
           );
         //$spreadsheet = $reader->load($filepath);
         //exit;
@@ -491,7 +534,10 @@
                     <?
                   break;
                 default:
-                  ?><td id="cell<?=$row['id'];?><?=$k;?>" class="cell-<?=$k;?>"><?=$cell;?></td><?
+                  $show_fields = ['history','manufacturer','category','name','size','flavour','expiration','created','updated'];
+                  if(in_array($k,$show_fields)) {
+                    ?><td id="cell<?=$row['id'];?><?=$k;?>" class="cell-<?=$k;?>"><?=$cell;?></td><?
+                  }
             }?>
             
           <? } ?>

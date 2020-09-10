@@ -59,7 +59,17 @@
 </head>
 <body>
     <? 
-        $EUR = round(1/currency::$currencies['UAH']['value']);
+        $query = database::query("SELECT * FROM `currencies`");
+        $db_currencies = [];
+        if (database::num_rows($query) > 0) {
+        while ($row = database::fetch($query)) {
+            $db_currencies[$row['code']] = $row;
+        }  
+        }
+    
+        $EUR = 1/$db_currencies['UAH']['value']; // round(1/currency::$currencies['UAH']['value']);
+        $USD = $EUR*$db_currencies['USD']['value']; // round(1/currency::$currencies['UAH']['value']);
+        // $EUR = round(1/currency::$currencies['UAH']['value']);
         // echo var_dump(currency::$currencies); 
     ?>
 
@@ -94,19 +104,24 @@
                         <div id="ws-info">
                             <div class="row cart-block" style="font-size: 14px;">
                                 <div class="col-md-4">
+                                    
                                     <div class="row">
-                                        <div class="col-8 text-right">Знижка</div>
-                                        <div class="col-4 discount" ><?php echo customer::$data['discount'];?>%</div>
+                                        <div class="col-8 text-right">Курс €:</div>
+                                        <div class="col-4 eur-currency"><?php echo number_format($EUR,2);?></div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-8 text-right">Курс</div>
-                                        <div class="col-4 eur-currency"><?php echo $EUR;?></div>
+                                        <div class="col-8 text-right">Курс $:</div>
+                                        <div class="col-4 eur-currency"><?php echo number_format($USD,2);?></div>
                                     </div>
                                 </div>
                                 <div class="col-md-8">
                                     <div class="row">
                                         <div class="col-8 text-right">Сума замовлення, грн</div>
                                         <div class="col-4 formatted_value"><?php echo currency::format(cart::$total['value']);?> (<span class="quantity"><?php echo cart::$total['items'];?></span>)</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-8 text-right">Знижка</div>
+                                        <div class="col-4 discount" ><?php echo customer::$data['discount'];?>%</div>
                                     </div>
                                     <div class="row">
                                         <div class="col-8 text-right">До оплати, грн</div>

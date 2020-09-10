@@ -8,7 +8,15 @@
     return;
   }
 
-  $eur = 29; // round(1/currency::$currencies['UAH']['value']);
+  $query = database::query("SELECT * FROM `currencies`");
+  $db_currencies = [];
+  if (database::num_rows($query) > 0) {
+    while ($row = database::fetch($query)) {
+      $db_currencies[$row['code']] = $row;
+    }  
+  }
+
+  $eur = 1/$db_currencies['UAH']['value'];
   $discount = customer::$data['discount'];
 
   $box_checkout_cart = new ent_view();

@@ -33,7 +33,16 @@
     $_page->snippets['cart_total'] = currency::format(cart::$total['value']);
   }
 
-  $_page->snippets['EUR'] = $eur = 29; // round(1/currency::$currencies['UAH']['value']);
+  $query = database::query("SELECT * FROM `currencies`");
+  $db_currencies = [];
+  if (database::num_rows($query) > 0) {
+    while ($row = database::fetch($query)) {
+      $db_currencies[$row['code']] = $row;
+    }  
+  }
+
+  $_page->snippets['EUR'] = $eur = 1/$db_currencies['UAH']['value']; // round(1/currency::$currencies['UAH']['value']);
+  $_page->snippets['USD'] = $usd = $eur/$db_currencies['USD']['value']; // round(1/currency::$currencies['UAH']['value']);
   $_page->snippets['discount'] = $discount = customer::$data['discount'];
   $query = database::query("select *,
     (select id from products where product_hash = _excel.product_hash ) as product_id,
@@ -50,8 +59,8 @@
       if(!empty($row['sale']) && $row['sale'] != '') {
         $salemod = (float)$row['sale'] * 100 * -1;
       }
-      $row['user_price_eur'] =  ceil (( $row['base'] * (1-(int)$salemod/100) ) * (1-(int)$discount/100));;
-      $row['user_price'] = ceil (( $row['base'] * (1-(int)$salemod/100) ) * (1-(int)$discount/100) * $eur);
+      $row['user_price_eur'] =  ceil (( $row['base_eur'] * (1-(int)$salemod/100) ) * (1-(int)$discount/100));;
+      $row['user_price'] = ceil (( $row['base_eur'] * (1-(int)$salemod/100) ) * (1-(int)$discount/100) * $eur);
       $row['link'] = document::ilink('product', array('product_id' => $row['product_id']));
       $row['image'] = '/' . ltrim($row['image'] ? 'images/' . $row['image'] : '', '/');
       array_push($data, $row);

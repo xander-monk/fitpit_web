@@ -5,7 +5,15 @@
   header('Content-type: application/json; charset='. language::$selected['charset']);
 
 
-  $eur = 29; // round(1/currency::$currencies['UAH']['value']);
+  $query = database::query("SELECT * FROM `currencies`");
+  $db_currencies = [];
+  if (database::num_rows($query) > 0) {
+    while ($row = database::fetch($query)) {
+      $db_currencies[$row['code']] = $row;
+    }  
+  }
+
+  $eur = 1/$db_currencies['UAH']['value'];
   $discount = customer::$data['discount'];
 
   $query = database::query("select *, 0 as cart1, 0 as cart2, 0 as user_price  from _excel limit 10");//  limit 200

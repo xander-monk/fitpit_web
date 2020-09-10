@@ -50,13 +50,13 @@
           </td>
         </tr>
         <tr>
-          <td colspan="4" class="text-right"><?php echo language::translate('title_subtotal', 'Subtotal'); ?>:</td>
+          <td colspan="4" class="text-right"><?php echo language::translate('title_order_discount', 'Order Discount'); ?>:</td>
           <td colspan="2" class="subtotal">
-             <strong class="formatted-value"><?php echo customer::$data['discount']; ?></strong>
+             <strong class="formatted-value"><?php echo customer::$data['discount']; ?>%</strong>
           </td>
         </tr>
         <tr>
-          <td colspan="4" class="text-right"><?php echo language::translate('title_subtotal', 'Subtotal'); ?>:</td>
+          <td colspan="4" class="text-right"><?php echo language::translate('title_payment_due', 'Payment Due'); ?>:</td>
           <td colspan="2" class="subtotal">
              <strong class="formatted-value"><?php echo currency::format($with_discount_eur); ?></strong>
           </td>

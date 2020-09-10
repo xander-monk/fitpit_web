@@ -3,7 +3,7 @@
 
   
   $log = [];
-  $res = database::query("select * from _excel where mark = 0 limit 80");
+  $res = database::query("select * from _excel where mark = 0 and history = 0 limit 80");
   $prods = [];
   if (database::num_rows($res) > 0) {
     while ($r = database::fetch($res)) {
@@ -375,16 +375,17 @@
     );
   }
 
-  $count = database::query("select * from _excel order by manufacturer");
-  $processed = database::query("select * from _excel where mark != 0");
-  $success = database::query("select * from _excel where mark = 1");
-  $errors = database::query("select * from _excel where mark = -1");
+  $count = database::query("select * from _excel where history = 0 order by manufacturer");
+  $processed = database::query("select * from _excel where mark != 0 and history = 0");
+  $success = database::query("select * from _excel where mark = 1 and history = 0");
+  $errors = database::query("select * from _excel where mark = -1 and history = 0");
   
   if(database::num_rows($count) === database::num_rows($processed)) {
-    database::query("Delete FROM from ". DB_TABLE_PRODUCTS_OPTIONS_STOCK ."
-    left JOIN _excel on _excel.hash = products_options_stock.hash  
-    where _excel.hash is null");
+    database::query("delete from products_options_stock where hash in (select hash from _excel where history = 1)");
   }
+  /*delete from products_options_stock where id in (
+    select products_options_stock.id FROM products_options_stock left JOIN _excel on _excel.hash = products_options_stock.hash  
+  where _excel.hash is null)*/
 
   $json = [
     'count' => database::num_rows($count),

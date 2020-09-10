@@ -10,7 +10,15 @@
   if (!empty(session::$data['order']->data['id'])) {
     $resume_id = session::$data['order']->data['id'];
   }
-  $eur = 29; // round(1/currency::$currencies['UAH']['value']);
+  $query = database::query("SELECT * FROM `currencies`");
+  $db_currencies = [];
+  if (database::num_rows($query) > 0) {
+    while ($row = database::fetch($query)) {
+      $db_currencies[$row['code']] = $row;
+    }  
+  }
+
+  $eur = 1/$db_currencies['UAH']['value'];
   $discount = customer::$data['discount'];
 
   session::$data['order'] = new ent_order();
