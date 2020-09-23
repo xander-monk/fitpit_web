@@ -8,7 +8,7 @@
       where status
       and featured
       and image != ''
-      order by rand();"
+      order by priority limit 8;"
     );
 
     if (database::num_rows($manufacturers_query)) {

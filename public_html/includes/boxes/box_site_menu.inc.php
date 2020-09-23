@@ -44,7 +44,7 @@
       "select id, name from ". DB_TABLE_MANUFACTURERS ."
       where status
       and featured
-      order by name;"
+      order by priority;"
     );
 
     while ($manufacturer = database::fetch($pages_query)) {

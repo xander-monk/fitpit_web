@@ -136,7 +136,7 @@
 
 
 
-<main id="page" class="container"  style="max-width:80%; margin: 0 auto;">
+<main id="page" class="container"  style="position: relative; max-width:80%; margin: 0 auto;">
   {snippet:content}
 </main>
 

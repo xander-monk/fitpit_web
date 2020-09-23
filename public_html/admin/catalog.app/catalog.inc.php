@@ -378,6 +378,7 @@
                  . '  <td></td>' . PHP_EOL
                  . '  <td></td>' . PHP_EOL
                  . '  <td></td>' . PHP_EOL
+                 . '  <td></td>' . PHP_EOL
                  . '</tr>' . PHP_EOL;
       }
 
@@ -418,6 +419,7 @@
         }
         $output .= '  <td title="without images">'.$without_images['q'].'</td>' . PHP_EOL
                  . '  <td title="without description">'.$without_dsc['q'].'</td>' . PHP_EOL
+                 . '  <td></td>' . PHP_EOL
                  . '  <td class="text-right"><a href="'. document::href_link('', array('app' => $_GET['app'], 'doc' => 'edit_category', 'category_id' => $category['id'])) .'" title="'. language::translate('title_edit', 'Edit') .'">'. functions::draw_fonticon('fa-pencil').'</a></td>' . PHP_EOL
                  . '</tr>' . PHP_EOL;
 
@@ -438,6 +440,7 @@
                      . '  <td>&nbsp;</td>' . PHP_EOL
                      . '  <td>&nbsp;</td>' . PHP_EOL
                      . '  <td><em style="margin-left: '. (($depth+1)*16) .'px;">'. language::translate('title_empty', 'Empty') .'</em></td>' . PHP_EOL
+                     . '  <td>&nbsp;</td>' . PHP_EOL
                      . '  <td>&nbsp;</td>' . PHP_EOL
                      . '  <td>&nbsp;</td>' . PHP_EOL
                      . '  <td>&nbsp;</td>' . PHP_EOL
@@ -509,8 +512,9 @@
         }
 
         $output .= '  <td class="warning">'. (!empty($warning) ? functions::draw_fonticon('fa-exclamation-triangle', 'title="'. htmlspecialchars($warning) .'"') : '') .'</td>' . PHP_EOL
-                 . '  <td><a href="'. document::href_ilink('product', array('product_id' => $product['id'])) .'" title="'. language::translate('title_view', 'View') .'" target="_blank">'. functions::draw_fonticon('fa-external-link') .'</a></td>' . PHP_EOL
-                 . '  <td class="text-right"><a href="'. document::href_link('', array('app' => $_GET['app'], 'doc' => 'edit_product', 'category_id' => $category_id, 'product_id' => $product['id'])) .'" title="'. language::translate('title_edit', 'Edit') .'">'. functions::draw_fonticon('fa-pencil').'</a></td>' . PHP_EOL
+                . '  <td><a href="'. document::href_ilink('product', array('product_id' => $product['id'])) .'" title="'. language::translate('title_view', 'View') .'" target="_blank">'. functions::draw_fonticon('fa-external-link') .'</a></td>' . PHP_EOL
+                . '  <td><a onClick="moveTo('. $product['id'] .')" title="'. language::translate('title_move', 'Move') .'">'. $product['id'] .'</a></td>' . PHP_EOL
+                . '  <td class="text-right"><a href="'. document::href_link('', array('app' => $_GET['app'], 'doc' => 'edit_product', 'category_id' => $category_id, 'product_id' => $product['id'])) .'" title="'. language::translate('title_edit', 'Edit') .'">'. functions::draw_fonticon('fa-pencil').'</a></td>' . PHP_EOL
                  . '</tr>' . PHP_EOL;
       }
       database::free($products_query);
@@ -568,3 +572,13 @@
     <?php echo functions::form_draw_form_end(); ?>
   </div>
 </div>
+
+<script>
+  function moveTo(id) {
+    newId = prompt('current id' + id + ' -> to id?', 0);
+    console.log('moveTo', newId)
+    //if(newId) {
+      // console.log()
+    // }
+  }
+</script>

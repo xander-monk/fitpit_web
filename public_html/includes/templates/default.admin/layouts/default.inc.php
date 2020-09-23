@@ -19,9 +19,12 @@
   <div id="sidebar" class="hidden-print">
 
     <div id="logotype">
+      <!-- 
       <a href="<?php echo document::href_link(WS_DIR_ADMIN); ?>">
         <img class="center-block img-responsive" src="<?php echo WS_DIR_TEMPLATE; ?>images/logotype.svg" alt="<?php echo settings::get('store_name'); ?>" />
       </a>
+      -->
+      <br>
     </div>
 
     <div id="search" class="container-fluid">
@@ -31,11 +34,12 @@
 
     {snippet:box_apps_menu}
 
-    <div id="platform" class="text-center"><?php echo PLATFORM_NAME; ?>® <?php echo PLATFORM_VERSION; ?></div>
-
+    <div id="platform" class="text-center">v<?php echo PLATFORM_VERSION; ?></div>
+    <!-- <?php echo PLATFORM_NAME; ?>®
     <div id="copyright" class="text-center">Copyright &copy; <?php echo date('2012-Y'); ?><br />
       <a href="http://www.litecart.net" target="_blank">www.litecart.net</a>
     </div>
+    -->
   </div>
 
   <main id="main">
@@ -102,19 +106,20 @@
 
       <li>
         <a href="<?php echo document::href_ilink(''); ?>" title="<?php echo language::translate('title_frontend', 'Frontend'); ?>">
-          <?php echo functions::draw_fonticon('fa-desktop'); ?> <?php echo language::translate('title_frontend', 'Frontend'); ?>
+          <?php echo functions::draw_fonticon('fa-desktop'); ?><!-- <?php echo language::translate('title_frontend', 'Frontend'); ?>-->
         </a>
       </li>
-
+      <!--
       <li>
         <a class="help" href="https://wiki.litecart.net/" target="_blank" title="<?php echo language::translate('title_help', 'Help'); ?>">
           <?php echo functions::draw_fonticon('fa-question-circle'); ?> <?php echo language::translate('title_help', 'Help'); ?>
         </a>
       </li>
+      -->
 
       <li>
         <a href="<?php echo document::href_link(WS_DIR_ADMIN . 'logout.php'); ?>" title="<?php echo language::translate('text_logout', 'Logout'); ?>">
-          <?php echo functions::draw_fonticon('fa-sign-out'); ?> <?php echo language::translate('title_sign_out', 'Sign Out'); ?>
+          <?php echo functions::draw_fonticon('fa-sign-out'); ?> <!-- <?php echo language::translate('title_sign_out', 'Sign Out'); ?>-->
         </a>
       </li>
 

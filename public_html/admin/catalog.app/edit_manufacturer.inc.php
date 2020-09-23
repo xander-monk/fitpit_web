@@ -34,6 +34,7 @@
         'h1_title',
         'meta_description',
         'link',
+        'priority'
       );
 
       foreach ($fields as $field) {
@@ -100,6 +101,11 @@
               <div class="form-group">
                 <label><?php echo language::translate('title_featured', 'Featured'); ?></label>
                 <?php echo functions::form_draw_toggle('featured', isset($_POST['featured']) ? $_POST['featured'] : '1', 'y/n'); ?>
+              </div>
+
+              <div class="form-group">
+                <label><?php echo language::translate('title_priority', 'Priority'); ?></label>
+                <?php echo functions::form_draw_number_field('priority', true); ?>
               </div>
 
               <div class="form-group">

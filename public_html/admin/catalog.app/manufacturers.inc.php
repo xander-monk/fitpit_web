@@ -28,7 +28,7 @@
 
   $manufacturers_query = database::query(
     "select * from ". DB_TABLE_MANUFACTURERS ."
-    order by name asc;"
+    order by priority asc;"
   );
 
   if ($_GET['page'] > 1) database::seek($manufacturers_query, (settings::get('data_table_rows_per_page') * ($_GET['page']-1)));
@@ -74,6 +74,7 @@
             <th>&nbsp;</th>
             <th>&nbsp;</th>
             <th class="main"><?php echo language::translate('title_name', 'Name'); ?></th>
+            <th><?php echo language::translate('title_priority', 'Priority'); ?></th>
             <th><?php echo language::translate('title_products', 'Products'); ?></th>
             <th>&nbsp;</th>
           </tr>
@@ -86,7 +87,8 @@
             <td><?php echo functions::draw_fonticon('fa-circle', 'style="color: '. (!empty($manufacturer['status']) ? '#88cc44' : '#ff6644') .';"'); ?></td>
             <td><?php echo $manufacturer['featured'] ? functions::draw_fonticon('fa-star', 'style="color: #ffd700;"') : ''; ?></td>
             <td><img src="<?php echo document::href_link($manufacturer['image'] ? WS_DIR_APP . functions::image_thumbnail(FS_DIR_APP . 'images/' . $manufacturer['image'], 16, 16, 'FIT_USE_WHITESPACING') : 'images/no_image.png'); ?>" alt="" style="width: 16px; height: 16px; vertical-align: bottom;" /> <a href="<?php echo document::href_link('', array('doc' => 'edit_manufacturer', 'manufacturer_id' => $manufacturer['id']), array('app')); ?>"><?php echo $manufacturer['name']; ?></a></td>
-            <td class="text-center"><?php echo (int)$manufacturer['num_products']; ?></td>
+            <td class="text-center"><?php echo (int)$manufacturer['priority']; ?></td>
+            <td class="text-center"><?php echo (int)$manufacturer['num_products']; ?></td>            
             <td class="text-right"><a href="<?php echo document::href_link('', array('app' => $_GET['app'], 'doc' => 'edit_manufacturer', 'manufacturer_id' => $manufacturer['id'])); ?>" title="<?php echo language::translate('title_edit', 'Edit'); ?>"><?php echo functions::draw_fonticon('fa-pencil'); ?></a></td>
           </tr>
           <?php } ?>

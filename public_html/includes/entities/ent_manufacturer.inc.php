@@ -93,6 +93,7 @@
         "update ". DB_TABLE_MANUFACTURERS ." set
         status = ". (int)$this->data['status'] .",
         featured = ". (int)$this->data['featured'] .",
+        priority = ". (int)$this->data['priority'] .",
         code = '". database::input($this->data['code']) ."',
         name = '". database::input($this->data['name']) ."',
         image = '". database::input($this->data['image']) ."',

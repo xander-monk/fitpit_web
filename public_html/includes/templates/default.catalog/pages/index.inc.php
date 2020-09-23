@@ -58,7 +58,7 @@
 					<p class="qt">“</p>
 					<div style="max-width: 60%;"><?=$item['content'];?></div>
 					<div class="review-author">
-						<div class="pic"><img src="/images/<?=$item['media'];?>" alt=""></div>
+						<!--<div class="pic"><img src="/images/<?=$item['media'];?>" alt=""></div>-->
 						<div>
 							<span class="name"><?=$item['title'];?></span>
 						</div>

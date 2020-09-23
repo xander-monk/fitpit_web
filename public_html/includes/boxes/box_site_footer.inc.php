@@ -44,7 +44,7 @@
       from ". DB_TABLE_MANUFACTURERS ." m
       where status
       and featured
-      order by m.name asc;"
+      order by m.priority asc;"
     );
 
     $i = 0;
