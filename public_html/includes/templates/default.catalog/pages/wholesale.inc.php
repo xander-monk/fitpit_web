@@ -8,6 +8,7 @@
   	<table id="wholesale-data" class="table table-striped table-bordered" style="width:100%">
 	  	<thead>
             <tr>
+				<!--<td>ord</td>-->
 				<td>manufacturer</td>
 				<td>category</td>
 				<td>name</td>
@@ -21,6 +22,7 @@
 				<td>expiration</td>
 				<td>cart1</td>
 				<td>cart2</td>
+				<td>ord</td>
 			</tr>
 		</thead>
 		
@@ -65,6 +67,9 @@
 			deferRender: true,
 			processing: true,
 			stateSave:false,
+			//scrollY: 300,
+
+			order: [[ 13, 'asc' ]],
 
 			language: {
 				url: "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Ukranian.json",
@@ -80,7 +85,8 @@
 			drawCallback: function( settings ) {
 				// console.log( 'DataTables has redrawn the table' , settings, changed, dataSet, $('.waddcart[data-row="'+changed+'"]'));
 				setTimeout(() => {
-					$('.waddcart[data-row="'+changed+'"]').focus();	
+					$('.waddcart[data-row="'+changed+'"]').focus();
+					$('[data-toggle="tooltip"]').tooltip()	
 				}, 200);
 				$('.waddcart[data-row="'+changed+'"]').focus();
 				// changed = -1;
@@ -98,7 +104,7 @@
                     $('.dtsp-panes.dtsp-container').slideToggle();
                 }}
 			],
-			dom: 'BfPrtip', // 'Bfrtip', // 'Pfrtip'
+			dom: '<"dtsp-header"BfP>rt<"dtsp-footer"lip>', // 'Bfrtip', // 'Pfrtip'
 			//dom: '<"dtsp-verticalContainer"<"dtsp-verticalPanes"P><"dtsp-dataTable"frtilp>>',
 			searchPanes:{
 				columns:[0,1,3,4],
@@ -112,7 +118,7 @@
 				}
 				
 			},
-			pageLength: 50,
+			pageLength: 25,
 			lengthMenu: [ 25, 50, 75, 100 ],
 			columns: [
 			/* 0 */ 	{ data: "manufacturer" , title: "Виробник", className: "col_manufacturer" },
@@ -127,7 +133,9 @@
 			/* 9 */ 	{ data: "user_price" , title: "Ціна, грн", className: "col_rrp"},
 			/* 10 */ 	{ data: "qty" , title: "Наявність", className: "col_qty"},
 			/* 11 */ 	{ data: "cart1" , title: "Замовлення", className: "col_cart"},
-			/* 12 */ 	{ data: "cart2" , title: "Сума", className: "col_summ"}
+			/* 12 */ 	{ data: "cart2" , title: "Сума", className: "col_summ"},
+
+			/* 13 */ 	{ data: "ord" , title: "-", className: "col_ord"}
 			],
 			// pageLength: 10,
 			columnDefs:[
@@ -167,6 +175,28 @@
 				},
 				{	
 					render: function ( data, type, row ) {
+						var img = '';
+						if(row.image != '/') {
+							img = '<i class="fa fa-picture-o pull-right product-with-image" href="'+row.image+'" data-featherlight="image">';
+						}
+						var btn = '<span class="preview pull-right" data-featherlight="ajax" href="'+row.link+'" data-require-window-width="768" data-max-width="980" tabindex="-1"><i class="fa fa-info-circle"></i>  </span>';
+						return '<div style="background-color:#'+row.bg+'" class="product-name"   data-link="'+row.link+'">' + data + btn +  '</div>';
+					},
+					targets: 2
+				},
+				{	
+					render: function ( data, type, row ) {
+							if(data != undefined && data!='') {
+								//console.log(data);
+								return '<span data-toggle="tooltip" data-placement="top" title="' +data + '">'+data+'</span>';
+							} else {
+								return data;
+							}
+					},
+					targets: 4
+				},
+				{	
+					render: function ( data, type, row ) {
 							if(data != undefined && data!='') {
 								//console.log(data);
 								return '<div>' +data + '' + row.currency + '</div>';
@@ -191,7 +221,7 @@
 					render: function ( data, type, row ) {
 							if(data != undefined && data!='') {
 								//console.log(data);
-								return '<div>' +data + ' </div>';
+								return '<div data-toggle="tooltip" data-placement="top" title="' +data + '"><i class="fa fa-gift"></i></div>';
 							} else {
 								return data;
 							}
@@ -200,14 +230,16 @@
 				},
 				{	
 					render: function ( data, type, row ) {
-						var img = '"';
-						if(row.image != '/') {
-							img = 'product-with-image" href="'+row.image+'" data-featherlight="image" ';
+						// console.log(data);
+						if(data === 50 || data === '50' ) {
+							console.log(data);
+							return data + '+'
+						} else {
+							return data;
 						}
-						return '<div style="background-color:#'+row.bg+'" class="product-name '+img+'  data-link="'+row.link+'">' + data + '</div>';
 					},
-					targets: 2
-				},
+					targets: 10
+				},				
 				{	
 					render: function ( data, type, row ) {
 						return '<input type="number" class="waddcart" data-row="'+row.id+'" value="'+data+'" >';
@@ -219,6 +251,11 @@
 						return row.user_price * row.cart1;
 					},
 					targets: 12
+				},
+
+				{ 
+					visible: false, 
+					targets: 13 
 				}
 			]/*,
 			language: {
@@ -317,8 +354,9 @@
 			console.log($(this).attr('data-link'));
 		});
 		
+		$('[data-toggle="tooltip"]').tooltip()
 
-		console.log(window.config.platform.url);
+		// console.log(window.config.platform.url);
 		
 		window.updateCart = function(row, oldval = 0) {
 			if (row) $('*').css('cursor', 'wait');
@@ -406,7 +444,7 @@
 			});
 		}
 		updateCart()
-		var timerCart = setInterval("updateCart()", 60000);
+		var timerCart = setInterval("updateCart()", 30000);
 	});
 
 </script>

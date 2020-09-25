@@ -205,7 +205,7 @@
 	}
 
 	.dropdown-menu {
-		background: @fp_green_8 url('../../../../../images/bg-02.jpg') center no-repeat;
+		background: #000 url('../../../../../images/bg/07.jpg') center no-repeat;
 		background-size: cover;
 		min-width: 100%;
 		margin-top: 0;
@@ -213,6 +213,15 @@
 		border-radius: 0;
 		border-bottom: 2px solid @success-color;
 		padding: 25px;
+
+		//position: relative;
+		&::before {
+			content:'';
+			background: #000;
+			opacity: 0.7;
+			position: absolute;
+			top:0; bottom:0; left:0; right:0;
+		}
 
 		@media (max-width: @media-breakpoint-sm) {
 			background-image: none;

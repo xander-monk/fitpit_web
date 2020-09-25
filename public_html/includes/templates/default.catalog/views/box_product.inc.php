@@ -23,148 +23,171 @@
     </div>
 
     <div class="col-sm-8 col-md-6">
-      <h1 class="title"><?php echo $name; ?></h1>
+      <div class="common-content">
+        <h1 class="title"><?php echo $name; ?></h1>
 
-      <?php if ($short_description) { ?>
-      <p class="short-description">
-        <?php echo $short_description; ?>
-      </p>
-      <?php } ?>
+        <?php if ($short_description) { ?>
+        <p class="short-description">
+          <?php echo $short_description; ?>
+        </p>
+        <?php } ?>
 
-      <?php if (!empty($manufacturer)) { ?>
-      <div class="manufacturer">
-        <a href="<?php echo htmlspecialchars($manufacturer['link']); ?>">
-          <?php if ($manufacturer['image']) { ?>
-          <img src="<?php echo document::href_link(WS_DIR_APP . $manufacturer['image']['thumbnail']); ?>" srcset="<?php echo document::href_link(WS_DIR_APP . $manufacturer['image']['thumbnail']); ?> 1x, <?php echo document::href_link(WS_DIR_APP . $manufacturer['image']['thumbnail_2x']); ?> 2x" alt="<?php echo htmlspecialchars($manufacturer['name']); ?>" title="<?php echo htmlspecialchars($manufacturer['name']); ?>" />
-          <?php } else { ?>
-          <h3><?php echo $manufacturer['name']; ?></h3>
-          <?php } ?>
-        </a>
-      </div>
-      <?php } ?>
-
-      <?php if ($cheapest_shipping_fee !== null) { ?>
-      <div class="cheapest-shipping" style="margin: 1em 0;">
-        <?php echo functions::draw_fonticon('fa-truck'); ?> <?php echo strtr(language::translate('text_cheapest_shipping_from_price', 'Cheapest shipping from <strong class="value">%price</strong>'), array('%price' => currency::format($cheapest_shipping_fee))); ?>
-      </div>
-      <?php } ?>
-
-      <?php if ($sku || $mpn || $gtin) { ?>
-      <div class="codes" style="margin: 1em 0;">
-        <?php if ($sku) { ?>
-        <div class="sku">
-          <?php echo language::translate('title_sku', 'SKU'); ?>:
-          <span class="value"><?php echo $sku; ?></span>
+        <?php if (!empty($manufacturer)) { ?>
+        <div class="manufacturer">
+          <a href="<?php echo htmlspecialchars($manufacturer['link']); ?>">
+            <?php if ($manufacturer['image']) { ?>
+            <img src="<?php echo document::href_link(WS_DIR_APP . $manufacturer['image']['thumbnail']); ?>" srcset="<?php echo document::href_link(WS_DIR_APP . $manufacturer['image']['thumbnail']); ?> 1x, <?php echo document::href_link(WS_DIR_APP . $manufacturer['image']['thumbnail_2x']); ?> 2x" alt="<?php echo htmlspecialchars($manufacturer['name']); ?>" title="<?php echo htmlspecialchars($manufacturer['name']); ?>" />
+            <?php } else { ?>
+            <h3><?php echo $manufacturer['name']; ?></h3>
+            <?php } ?>
+          </a>
         </div>
         <?php } ?>
 
-        <?php if ($mpn) { ?>
-        <div class="mpn">
-          <?php echo language::translate('title_mpn', 'MPN'); ?>:
-          <span class="value"><?php echo $mpn; ?></span>
+        <?php if ($cheapest_shipping_fee !== null) { ?>
+        <div class="cheapest-shipping" style="margin: 1em 0;">
+          <?php echo functions::draw_fonticon('fa-truck'); ?> <?php echo strtr(language::translate('text_cheapest_shipping_from_price', 'Cheapest shipping from <strong class="value">%price</strong>'), array('%price' => currency::format($cheapest_shipping_fee))); ?>
         </div>
         <?php } ?>
 
-        <?php if ($gtin) { ?>
-        <div class="gtin">
-          <?php echo language::translate('title_gtin', 'GTIN'); ?>:
-          <span class="value"><?php echo $gtin; ?></span>
-        </div>
-        <?php } ?>
-      </div>
-      <?php } ?>
-
-      <div class="stock-status" style="margin: 1em 0;">
-       <?php if ($quantity > 0) { ?>
-        <div class="stock-available">
-          <?php echo language::translate('title_stock_status', 'Stock Status'); ?>:
-          <span class="value"><?php echo $stock_status; ?></span>
-        </div>
-        <?php if ($delivery_status) { ?>
-        <div class="stock-delivery">
-          <?php echo language::translate('title_delivery_status', 'Delivery Status'); ?>:
-          <span class="value"><?php echo $delivery_status; ?></span>
-        </div>
-        <?php } ?>
-       <?php } else { ?>
-        <?php if ($sold_out_status) { ?>
-          <div class="<?php echo $orderable ? 'stock-partly-available' : 'stock-unavailable'; ?>">
-            <?php echo language::translate('title_stock_status', 'Stock Status'); ?>:
-            <span class="value"><?php echo $sold_out_status; ?></span>
+        <?php if ($sku || $mpn || $gtin) { ?>
+        <div class="codes" style="margin: 1em 0;">
+          <?php if ($sku) { ?>
+          <div class="sku">
+            <?php echo language::translate('title_sku', 'SKU'); ?>:
+            <span class="value"><?php echo $sku; ?></span>
           </div>
+          <?php } ?>
+
+          <?php if ($mpn) { ?>
+          <div class="mpn">
+            <?php echo language::translate('title_mpn', 'MPN'); ?>:
+            <span class="value"><?php echo $mpn; ?></span>
+          </div>
+          <?php } ?>
+
+          <?php if ($gtin) { ?>
+          <div class="gtin">
+            <?php echo language::translate('title_gtin', 'GTIN'); ?>:
+            <span class="value"><?php echo $gtin; ?></span>
+          </div>
+          <?php } ?>
+        </div>
+        <?php } ?>
+
+        <div class="stock-status" style="margin: 1em 0;">
+        <?php if ($quantity > 0) { ?>
+          <div class="stock-available">
+            <?php echo language::translate('title_stock_status', 'Stock Status'); ?>:
+            <span class="value"><?php echo $stock_status; ?></span>
+          </div>
+          <?php if ($delivery_status) { ?>
+          <div class="stock-delivery">
+            <?php echo language::translate('title_delivery_status', 'Delivery Status'); ?>:
+            <span class="value"><?php echo $delivery_status; ?></span>
+          </div>
+          <?php } ?>
         <?php } else { ?>
-          <div class="stock-unavailable">
-            <?php echo language::translate('title_stock_status', 'Stock Status'); ?>:
-            <span class="value"><?php echo language::translate('title_sold_out', 'Sold Out'); ?></span>
-          </div>
-        <?php } ?>
-       <?php } ?>
-      </div>
-
-      <hr />
-
-      <div class="buy_now" style="margin: 1em 0;">
-        <?php echo functions::form_draw_form_begin('buy_now_form', 'post'); ?>
-        <?php echo functions::form_draw_hidden_field('product_id', $product_id); ?>
-
-        <?php if ($options) { ?>
-          <?php foreach ($options as $option) { ?>
-          <div class="form-group" <? if($option['name'] === 'Expiration') echo 'style="display:none"'; ?>>
-            <label><?php echo $option['name']; ?></label>
-            <div class="flex-form-row">
-              <?php echo $option['description'] ? '<div>' . $option['description'] . '</div>' : ''; ?>
-              <?php echo $option['values']; ?>
+          <?php if ($sold_out_status) { ?>
+            <div class="<?php echo $orderable ? 'stock-partly-available' : 'stock-unavailable'; ?>">
+              <?php echo language::translate('title_stock_status', 'Stock Status'); ?>:
+              <span class="value"><?php echo $sold_out_status; ?></span>
             </div>
-          </div>
-          <?php } ?>
-        <?php } ?>
-
-        <div class="price-wrapper">
-          <?php if ($campaign_price) { ?>
-          <del class="regular-price"><?php echo currency::format($regular_price); ?> ₴</del> <strong class="campaign-price"><?php echo currency::format($campaign_price); ?> ₴</strong>
           <?php } else { ?>
-          <span class="price"><?php echo currency::format($regular_price); ?></span> ₴
-          <?php } ?>
-        </div>
-
-        <div class="tax" style="margin: 0 0 1em 0; display:none;">
-         <?php if ($tax_rates) { ?>
-          <?php echo $including_tax ? language::translate('title_including_tax', 'Including Tax') : language::translate('title_excluding_tax', 'Excluding Tax'); ?>: <span class="total-tax"><?php echo currency::format($total_tax); ?></span>
-         <?php } else { ?>
-          <?php echo language::translate('title_excluding_tax', 'Excluding Tax'); ?>
-         <?php } ?>
-        </div>
-
-        <?php if (!$catalog_only_mode) { ?>
-        <div class="form-group">
-          <label><?php echo language::translate('title_quantity', 'Quantity'); ?></label>
-          <div style="display: flex">
-            <div class="input-group" style="flex: 0 1 150px;">
-              <?php echo (!empty($quantity_unit['decimals'])) ? functions::form_draw_decimal_field('quantity', isset($_POST['quantity']) ? true : 1, $quantity_unit['decimals'], 1, null) : (functions::form_draw_number_field('quantity', isset($_POST['quantity']) ? true : 1, 1)); ?>
-              <?php echo !empty($quantity_unit['name']) ? '<div class="input-group-addon">'. $quantity_unit['name'] .'</div>' : ''; ?>
+            <div class="stock-unavailable">
+              <?php echo language::translate('title_stock_status', 'Stock Status'); ?>:
+              <span class="value"><?php echo language::translate('title_sold_out', 'Sold Out'); ?></span>
             </div>
+          <?php } ?>
+        <?php } ?>
+        </div>
 
-            <div style="flex: 1 0 auto; padding-left: 1em;">
-              <?php echo '<button class="btn btn-success" name="add_cart_product" value="true" type="submit"'. (($quantity <= 0 && !$orderable) ? ' disabled="disabled"' : '') .'>'. language::translate('title_add_to_cart', 'Add To Cart') .'</button>'; ?>
+        <hr />
+
+        <div class="buy_now" style="margin: 1em 0;">
+          <?php echo functions::form_draw_form_begin('buy_now_form', 'post'); ?>
+          <?php echo functions::form_draw_hidden_field('product_id', $product_id); ?>
+
+          <?php if ($options) { ?>
+            <?php foreach ($options as $option) { ?>
+            <div class="form-group" <? if($option['name'] === 'Expiration') echo 'style="display:none"'; ?>>
+              <label><?php echo $option['name']; ?></label>
+              <div class="flex-form-row">
+                <?php echo $option['description'] ? '<div>' . $option['description'] . '</div>' : ''; ?>
+                <?php echo $option['values']; ?>
+              </div>
+            </div>
+            <?php } ?>
+          <?php } ?>
+
+          <div class="price-wrapper">
+            <?php if ($campaign_price) { ?>
+            <del class="regular-price"><?php echo currency::format($regular_price); ?> ₴</del> <strong class="campaign-price"><?php echo currency::format($campaign_price); ?> ₴</strong>
+            <?php } else { ?>
+            <span class="price"><?php echo currency::format($regular_price); ?></span> ₴
+            <?php } ?>
+          </div>
+
+          <div class="tax" style="margin: 0 0 1em 0; display:none;">
+          <?php if ($tax_rates) { ?>
+            <?php echo $including_tax ? language::translate('title_including_tax', 'Including Tax') : language::translate('title_excluding_tax', 'Excluding Tax'); ?>: <span class="total-tax"><?php echo currency::format($total_tax); ?></span>
+          <?php } else { ?>
+            <?php echo language::translate('title_excluding_tax', 'Excluding Tax'); ?>
+          <?php } ?>
+          </div>
+
+          <?php if (!$catalog_only_mode) { ?>
+          <div class="form-group">
+            <label><?php echo language::translate('title_quantity', 'Quantity'); ?></label>
+            <div style="display: flex">
+              <div class="input-group" style="flex: 0 1 150px;">
+                <?php echo (!empty($quantity_unit['decimals'])) ? functions::form_draw_decimal_field('quantity', isset($_POST['quantity']) ? true : 1, $quantity_unit['decimals'], 1, null) : (functions::form_draw_number_field('quantity', isset($_POST['quantity']) ? true : 1, 1)); ?>
+                <?php echo !empty($quantity_unit['name']) ? '<div class="input-group-addon">'. $quantity_unit['name'] .'</div>' : ''; ?>
+              </div>
+
+              <div style="flex: 1 0 auto; padding-left: 1em;">
+                <?php echo '<button class="btn btn-success" name="add_cart_product" value="true" type="submit"'. (($quantity <= 0 && !$orderable) ? ' disabled="disabled"' : '') .'>'. language::translate('title_add_to_cart', 'Add To Cart') .'</button>'; ?>
+              </div>
             </div>
           </div>
+          <?php } ?>
+
+          <?php echo functions::form_draw_form_end(); ?>
+        </div>
+
+        <hr />
+
+        <div class="social-bookmarks text-center">
+          <a class="link" href="#"><?php echo functions::draw_fonticon('fa-link', 'style="color: #333;"'); ?></a>
+          <a class="twitter" href="<?php echo document::href_link('http://twitter.com/home/', array('status' => $name .' - '. $link)); ?>" target="_blank" title="<?php echo sprintf(language::translate('text_share_on_s', 'Share on %s'), 'Twitter'); ?>"><?php echo functions::draw_fonticon('fa-twitter-square fa-lg', 'style="color: #55acee;"'); ?></a>
+          <a class="facebook" href="<?php echo document::href_link('http://www.facebook.com/sharer.php', array('u' => $link)); ?>" target="_blank" title="<?php echo sprintf(language::translate('text_share_on_s', 'Share on %s'), 'Facebook'); ?>"><?php echo functions::draw_fonticon('fa-facebook-square fa-lg', 'style="color: #3b5998;"'); ?></a>
+          <a class="googleplus" href="<?php echo document::href_link('https://plus.google.com/share', array('url' => $link)); ?>" target="_blank" title="<?php echo sprintf(language::translate('text_share_on_s', 'Share on %s'), 'Google+'); ?>"><?php echo functions::draw_fonticon('fa-google-plus-square fa-lg', 'style="color: #dd4b39;"'); ?></a>
+          <a class="pinterest" href="<?php echo document::href_link('http://pinterest.com/pin/create/button/', array('url' => $link)); ?>" target="_blank" title="<?php echo sprintf(language::translate('text_share_on_s', 'Share on %s'), 'Pinterest'); ?>"><?php echo functions::draw_fonticon('fa-pinterest-square fa-lg', 'style="color: #bd081c;"'); ?></a>
+        </div>
+      </div>
+      <?php if (!empty($_SERVER['HTTP_X_REQUESTED_WITH'])) { ?>
+      <div class="wholesale-content" style="display:none">
+        <h2 class="title"><?php echo $name; ?></h2>
+
+
+
+        <?php if (!empty($manufacturer)) { ?>
+        <div class="manufacturer">
+          <a href="<?php echo htmlspecialchars($manufacturer['link']); ?>">
+            <?php if ($manufacturer['image']) { ?>
+            <img src="<?php echo document::href_link(WS_DIR_APP . $manufacturer['image']['thumbnail']); ?>" srcset="<?php echo document::href_link(WS_DIR_APP . $manufacturer['image']['thumbnail']); ?> 1x, <?php echo document::href_link(WS_DIR_APP . $manufacturer['image']['thumbnail_2x']); ?> 2x" alt="<?php echo htmlspecialchars($manufacturer['name']); ?>" title="<?php echo htmlspecialchars($manufacturer['name']); ?>" />
+            <?php } else { ?>
+            <h3><?php echo $manufacturer['name']; ?></h3>
+            <?php } ?>
+          </a>
         </div>
         <?php } ?>
-
-        <?php echo functions::form_draw_form_end(); ?>
+        <div class="ajax-dsc"><?= $description;?></div>
       </div>
-
-      <hr />
-
-      <div class="social-bookmarks text-center">
-        <a class="link" href="#"><?php echo functions::draw_fonticon('fa-link', 'style="color: #333;"'); ?></a>
-        <a class="twitter" href="<?php echo document::href_link('http://twitter.com/home/', array('status' => $name .' - '. $link)); ?>" target="_blank" title="<?php echo sprintf(language::translate('text_share_on_s', 'Share on %s'), 'Twitter'); ?>"><?php echo functions::draw_fonticon('fa-twitter-square fa-lg', 'style="color: #55acee;"'); ?></a>
-        <a class="facebook" href="<?php echo document::href_link('http://www.facebook.com/sharer.php', array('u' => $link)); ?>" target="_blank" title="<?php echo sprintf(language::translate('text_share_on_s', 'Share on %s'), 'Facebook'); ?>"><?php echo functions::draw_fonticon('fa-facebook-square fa-lg', 'style="color: #3b5998;"'); ?></a>
-        <a class="googleplus" href="<?php echo document::href_link('https://plus.google.com/share', array('url' => $link)); ?>" target="_blank" title="<?php echo sprintf(language::translate('text_share_on_s', 'Share on %s'), 'Google+'); ?>"><?php echo functions::draw_fonticon('fa-google-plus-square fa-lg', 'style="color: #dd4b39;"'); ?></a>
-        <a class="pinterest" href="<?php echo document::href_link('http://pinterest.com/pin/create/button/', array('url' => $link)); ?>" target="_blank" title="<?php echo sprintf(language::translate('text_share_on_s', 'Share on %s'), 'Pinterest'); ?>"><?php echo functions::draw_fonticon('fa-pinterest-square fa-lg', 'style="color: #bd081c;"'); ?></a>
-      </div>
-
+      <? }?>
     </div>
+
+    
   </div>
 
   <?php if (empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest') { ?>

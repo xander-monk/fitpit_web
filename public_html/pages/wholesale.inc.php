@@ -47,11 +47,12 @@
   $query = database::query("select *,
     (select id from products where product_hash = _excel.product_hash ) as product_id,
     (select image from products where product_hash = _excel.product_hash ) as image,
+    
     '' as cart_key,
     0 as cart1, 
     0 as cart2, 
     0 as user_price 
-  from _excel");//  limit 200
+  from _excel order by ord");//  limit 200
   $data = [];
   if (database::num_rows($query) > 0) {
     while ($row = database::fetch($query)) {

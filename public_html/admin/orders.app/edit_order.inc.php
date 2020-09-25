@@ -254,22 +254,22 @@
           <h2><?php echo language::translate('title_order_information', 'Order Information'); ?></h2>
 
           <div class="row">
-            <div class="form-group col-md-3">
+            <div class="form-group col-md-6">
               <label><?php echo language::translate('title_date', 'Date'); ?></label>
               <div class="form-control-static"><?php echo date(language::$selected['raw_datetime'], strtotime($order->data['date_created'])); ?></div>
             </div>
 
-            <div class="form-group col-md-3">
+            <div class="form-group col-md-6">
               <label><?php echo language::translate('title_ip_address', 'IP Address'); ?></label>
               <div class="form-control-static"><?php echo $order->data['client_ip']; ?> <a href="https://geoiptool.com/en/?ip=<?php echo $order->data['client_ip']; ?>" target="_blank"><?php echo functions::draw_fonticon('fa-external-link'); ?></a></div>
             </div>
 
-            <div class="form-group col-md-3">
+            <div class="form-group col-md-3" style="display: none;">
               <label><?php echo language::translate('title_reference', 'Reference'); ?></label>
               <?php echo functions::form_draw_text_field('reference', true); ?>
             </div>
 
-            <div class="form-group col-md-3">
+            <div class="form-group col-md-3" style="display: none;">
               <label><?php echo language::translate('title_order_copy', 'Order Copy'); ?></label>
               <div class="btn-group btn-block" data-toggle="buttons">
                 <label class="btn btn-default<?php echo !empty($_POST['display_prices_including_tax']) ? ' active' : ''; ?>"><input type="radio" name="display_prices_including_tax" value="1"<?php echo !empty($_POST['display_prices_including_tax']) ? ' checked="checked"' : ''; ?> /><?php echo language::translate('title_incl_tax', 'Incl. Tax'); ?></label>
@@ -307,8 +307,8 @@
 
             <div class="panel-body">
               <div class="row">
-                <div class="col-md-6 customer-details">
-                  <h3><?php echo language::translate('title_billing_address', 'Billing Address'); ?></h3>
+                <div class="col-md-12 customer-details">
+                  <!--<h3><?php echo language::translate('title_billing_address', 'Billing Address'); ?></h3>-->
 
                   <div class="form-group">
                     <div class="input-group">
@@ -321,12 +321,12 @@
                   </div>
 
                   <div class="row">
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-6"  style="display: none;">
                       <label><?php echo language::translate('title_tax_id', 'Tax ID / VATIN'); ?></label>
                       <?php echo functions::form_draw_text_field('customer[tax_id]', true); ?>
                     </div>
 
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-12">
                       <label><?php echo language::translate('title_company', 'Company'); ?></label>
                       <?php echo functions::form_draw_text_field('customer[company]', true); ?>
                     </div>
@@ -345,36 +345,39 @@
                   </div>
 
                   <div class="row">
+
+                    <div class="form-group col-md-6">
+                      <label><?php echo language::translate('title_city', 'City'); ?></label>
+                      <?php echo functions::form_draw_text_field('customer[city]', true); ?>
+                    </div>
+
                     <div class="form-group col-md-6">
                       <label><?php echo language::translate('title_address1', 'Address 1'); ?></label>
                       <?php echo functions::form_draw_text_field('customer[address1]', true); ?>
                     </div>
 
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-6"  style="display: none;">
                       <label><?php echo language::translate('title_address2', 'Address 2'); ?></label>
                       <?php echo functions::form_draw_text_field('customer[address2]', true); ?>
                     </div>
                   </div>
 
                   <div class="row">
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-6"  style="display: none;">
                       <label><?php echo language::translate('title_postcode', 'Postal Code'); ?></label>
                       <?php echo functions::form_draw_text_field('customer[postcode]', true); ?>
                     </div>
 
-                    <div class="form-group col-md-6">
-                      <label><?php echo language::translate('title_city', 'City'); ?></label>
-                      <?php echo functions::form_draw_text_field('customer[city]', true); ?>
-                    </div>
+                    
                   </div>
 
-                  <div class="row">
-                    <div class="form-group col-md-6">
+                  <div class="row"  style="display: none;">
+                    <div class="form-group col-md-6"  style="display: none;">
                       <label><?php echo language::translate('title_country', 'Country'); ?></label>
                       <?php echo functions::form_draw_countries_list('customer[country_code]', true); ?>
                     </div>
 
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-6"  style="display: none;">
                       <label><?php echo language::translate('title_zone_state_province', 'Zone/State/Province'); ?></label>
                       <?php echo form_draw_zones_list(isset($_POST['customer']['country_code']) ? $_POST['customer']['country_code'] : null, 'customer[zone_code]', true); ?>
                     </div>
@@ -393,7 +396,7 @@
                   </div>
                 </div>
 
-                <div class="form-group col-md-6 shipping-address">
+                <div class="form-group col-md-6 shipping-address" style="display:none;">
                   <h3><?php echo language::translate('title_shipping_address', 'Shipping Address'); ?></h3>
 
                   <div class="form-group">
@@ -467,7 +470,7 @@
           </div>
 
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6"  style="display: none;">
               <div class="panel panel-default">
                 <div class="panel-heading">
                   <h2 class="panel-title"><?php echo language::translate('title_payment_information', 'Payment Information'); ?></h2>
@@ -494,7 +497,7 @@
               </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-12">
               <div class="panel panel-default">
                 <div class="panel-heading">
                   <h2 class="panel-title"><?php echo language::translate('title_shipping_information', 'Shipping Information'); ?></h2>
@@ -588,12 +591,19 @@
             <thead>
               <tr>
                 <th><?php echo language::translate('title_item', 'Item'); ?></th>
+                <? /* var_dump($_POST['items']);die; */?>
+                <? if (!empty($_POST['items'][array_keys($_POST['items'])[0]]['options'])) {
+                foreach (array_keys($_POST['items'][array_keys($_POST['items'])[0]]['options']) as $field) {
+                  echo '<th>' . $field .'</th>';
+                }}?>
+                <!--
                 <th style="width: 200px;"><?php echo language::translate('title_sku', 'SKU'); ?></th>
                 <th style="width: 175px;"><?php echo language::translate('title_weight', 'Weight'); ?></th>
                 <th style="width: 420px;"><?php echo language::translate('title_dimensions', 'Dimensions'); ?></th>
+                -->
                 <th style="width: 115px;"><?php echo language::translate('title_qty', 'Qty'); ?></th>
                 <th style="min-width: 200px;"><?php echo language::translate('title_unit_price', 'Unit Price'); ?></th>
-                <th style="min-width: 200px;"><?php echo language::translate('title_tax', 'Tax'); ?></th>
+                <!--<th style="min-width: 200px;"><?php echo language::translate('title_tax', 'Tax'); ?></th>-->
                 <th style="width: 30px;">&nbsp;</th>
               </tr>
             </thead>
@@ -618,8 +628,7 @@
 <?php
       if (!empty($_POST['items'][$key]['options'])) {
         foreach (array_keys($_POST['items'][$key]['options']) as $field) {
-          echo '<div>' . PHP_EOL
-             . ' - '. $field .': ' . PHP_EOL;
+          echo '<td>';
           if (is_array($_POST['items'][$key]['options'][$field])) {
             $use_coma = false;
             foreach (array_keys($_POST['items'][$key]['options'][$field]) as $k) {
@@ -630,13 +639,14 @@
           } else {
             echo '  ' . functions::form_draw_hidden_field('items['.$key.'][options]['.$field.']', true) . $_POST['items'][$key]['options'][$field];
           }
-          echo '</div>' . PHP_EOL;
+          echo '</td>' . PHP_EOL;
         }
       } else {
         echo functions::form_draw_hidden_field('items['.$key.'][options]', '');
       }
 ?>
               </td>
+              <!--
               <td class="sku"><?php echo $_POST['items'][$key]['sku']; ?></td>
               <td>
                 <span class="weight"><?php echo (float)$_POST['items'][$key]['weight']; ?></span> <span class="weight_class"><?php echo $_POST['items'][$key]['weight_class']; ?></span>
@@ -644,9 +654,10 @@
               <td>
                 <span class="dim_x"><?php echo (float)$_POST['items'][$key]['dim_x']; ?></span> x <span class="dim_y"><?php echo (float)$_POST['items'][$key]['dim_y']; ?></span> x <span class="dim_z"><?php echo (float)$_POST['items'][$key]['dim_z']; ?></span> <span class="dim_class"><?php echo $_POST['items'][$key]['dim_class']; ?></span>
               </td>
+              -->
               <td><?php echo functions::form_draw_decimal_field('items['. $key .'][quantity]', true, 2); ?></td>
               <td><?php echo functions::form_draw_currency_field($_POST['currency_code'], 'items['. $key .'][price]', true); ?></td>
-              <td><?php echo functions::form_draw_currency_field($_POST['currency_code'], 'items['. $key .'][tax]', true); ?></td>
+              <!--<td><?php echo functions::form_draw_currency_field($_POST['currency_code'], 'items['. $key .'][tax]', true); ?></td>-->
               <td>
                 <a class="edit" href="#" title="<?php echo language::translate('title_edit', 'Edit'); ?>"><?php echo functions::draw_fonticon('fa-pencil fa-fw'); ?></a>
                 <a class="remove" href="#" title="<?php echo language::translate('title_remove', 'Remove'); ?>"><?php echo functions::draw_fonticon('fa-times-circle fa-fw', 'style="color: #cc3333;"'); ?></a>

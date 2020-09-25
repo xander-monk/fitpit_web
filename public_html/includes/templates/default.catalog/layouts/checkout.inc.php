@@ -23,7 +23,7 @@
 				</div>
 				<a rel="nofollow" class="email" href="mailto:shop@fitpit.com.ua">
 					<img src="/images/icon_mail.png" alt="">
-					<span>Contact us</span>
+					<span><? echo language::translate('title_contact_us', 'Contact us');?></span>
 				</a>
 			</div>
 
@@ -34,7 +34,7 @@
 						title="<?php echo settings::get('store_name'); ?>" />
 					<span>
 						FitPit
-						<span>спортивное питание и аксессуары</span>
+						<span><? echo language::translate('store_slogan', 'sports nutrition and accessories');?></span>
 					</span>
 				</a>
 
@@ -102,7 +102,7 @@
 						
 						<a rel="nofollow" class="email" href="mailto:shop@fitpit.com.ua">
 							<img src="/images/icon_mail.png" alt="">
-							<span>Contact us</span>
+							<span><? echo language::translate('title_contact_us', 'Contact us');?></span>
 						</a>
 						<div class="user_nav">
 							<a href="#"  data-toggle="lightbox" data-target="#account-modal" class="dropdown-toggle">
