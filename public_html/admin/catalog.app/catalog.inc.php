@@ -3,6 +3,49 @@
 
   if (empty($_GET['category_id'])) $_GET['category_id'] = 0;
 
+  if (isset($_POST['mode']) && $_POST['mode'] === 'move') {
+    var_dump($_POST['from'],$_POST['to']);
+
+    $product = new ent_product($_POST['from']);
+
+    //var_dump($product->data['image']);die;
+
+    database::query(
+      "update ". DB_TABLE_PRODUCTS ." set
+        image = '". $product->data['image'] ."'
+        where id = ". (int)$_POST['to'] ."
+        limit 1;"
+    );
+    database::query(
+      "update ". DB_TABLE_PRODUCTS ." set
+        image = ''
+        where id = ". (int)$_POST['from'] ."
+        limit 1;"
+    );
+
+    database::query(
+      "delete from ". DB_TABLE_PRODUCTS_IMAGES ." 
+        where product_id = ". (int)$_POST['to'] .";"
+    );
+    database::query(
+      "update ". DB_TABLE_PRODUCTS_IMAGES ." set
+        product_id = ". (int)$_POST['to'] ."
+        where product_id = ". (int)$_POST['from'] .";"
+    );
+
+    database::query(
+      "delete from ". DB_TABLE_PRODUCTS_INFO ." 
+        where product_id = ". (int)$_POST['to'] .";"
+    );
+    database::query(
+      "update ". DB_TABLE_PRODUCTS_INFO ." set
+        product_id = ". (int)$_POST['to'] ."
+        where product_id = ". (int)$_POST['from'] .";"
+    );
+
+    die;
+  }
+
   if (isset($_POST['enable']) || isset($_POST['disable'])) {
 
     try {
@@ -420,6 +463,7 @@
         $output .= '  <td title="without images">'.$without_images['q'].'</td>' . PHP_EOL
                  . '  <td title="without description">'.$without_dsc['q'].'</td>' . PHP_EOL
                  . '  <td></td>' . PHP_EOL
+                 . '  <td></td>' . PHP_EOL
                  . '  <td class="text-right"><a href="'. document::href_link('', array('app' => $_GET['app'], 'doc' => 'edit_category', 'category_id' => $category['id'])) .'" title="'. language::translate('title_edit', 'Edit') .'">'. functions::draw_fonticon('fa-pencil').'</a></td>' . PHP_EOL
                  . '</tr>' . PHP_EOL;
 
@@ -440,6 +484,7 @@
                      . '  <td>&nbsp;</td>' . PHP_EOL
                      . '  <td>&nbsp;</td>' . PHP_EOL
                      . '  <td><em style="margin-left: '. (($depth+1)*16) .'px;">'. language::translate('title_empty', 'Empty') .'</em></td>' . PHP_EOL
+                     . '  <td>&nbsp;</td>' . PHP_EOL
                      . '  <td>&nbsp;</td>' . PHP_EOL
                      . '  <td>&nbsp;</td>' . PHP_EOL
                      . '  <td>&nbsp;</td>' . PHP_EOL
@@ -465,7 +510,10 @@
       $output = '';
 
       $products_query = database::query(
-        "select p.id, p.status, p.new, p.sold_out_status_id, p.image, p.quantity, pi.name, p.date_valid_from, p.date_valid_to, p2c.category_id from ". DB_TABLE_PRODUCTS ." p
+        "select p.id, p.status, p.new, p.sold_out_status_id, p.image, p.quantity, pi.name, p.date_valid_from, p.date_valid_to, p2c.category_id,
+        (select count(hash) from _excel where product_hash = p.product_hash) h_count,
+        (select name from ". DB_TABLE_MANUFACTURERS ." where id = p.manufacturer_id) as manufacturer
+        from ". DB_TABLE_PRODUCTS ." p
         left join ". DB_TABLE_PRODUCTS_INFO ." pi on (pi.product_id = p.id and pi.language_code = '". language::$selected['code'] ."')
         left join ". DB_TABLE_PRODUCTS_TO_CATEGORIES ." p2c on (p2c.product_id = p.id)
         where ". (!empty($category_id) ? "p2c.category_id = ". (int)$category_id : "(p2c.category_id is null or p2c.category_id = 0)") ."
@@ -474,7 +522,7 @@
       );
 
       $display_images = true;
-      if (database::num_rows($products_query) > 100) {
+      if (database::num_rows($products_query) > 1000) {
         $display_images = false;
       }
 
@@ -506,12 +554,14 @@
                  '. functions::draw_fonticon('fa-circle', 'style="color: '. (!empty($product['new']) ? '#eae640' : '#F9F9F9') .';"') .'</td>' . PHP_EOL;
 
         if ($display_images) {
-          $output .= '  <td><img src="'. document::href_link(WS_DIR_APP . functions::image_thumbnail(FS_DIR_APP . 'images/' . $product['image'], 16, 16, 'FIT_USE_WHITESPACING')) .'" style="margin-left: '. ($depth*16) .'px; width: 16px; height: 16px; vertical-align: bottom;" /> <a href="'. document::href_link('', array('app' => $_GET['app'], 'doc' => 'edit_product', 'category_id' => $category_id, 'product_id' => $product['id'])) .'">'. ($product['name'] ? $product['name'] : '[untitled]') .'</a></td>' . PHP_EOL;
+          $output .= '  <td><img src="'. document::href_link(WS_DIR_APP . functions::image_thumbnail(FS_DIR_APP . 'images/' . $product['image'], 16, 16, 'FIT_USE_WHITESPACING')) .'" style="margin-left: '. ($depth*16) .'px; width: 16px; height: 16px; vertical-align: bottom;" /> <a href="'. document::href_link('', array('app' => $_GET['app'], 'doc' => 'edit_product', 'category_id' => $category_id, 'product_id' => $product['id'])) .'">'. ($product['name'] ? $product['name'] : '[untitled]') .'</a>&nbsp; <sup>'.$product['h_count'].'</sup></td>' . PHP_EOL;
         } else {
           $output .= '  <td><span style="margin-left: '. (($depth+1)*16) .'px;">&nbsp;<a href="'. document::href_link('', array('app' => $_GET['app'], 'doc' => 'edit_product', 'category_id' => $category_id, 'product_id' => $product['id'])) .'">'. $product['name'] .'</a></span></td>' . PHP_EOL;
         }
 
-        $output .= '  <td class="warning">'. (!empty($warning) ? functions::draw_fonticon('fa-exclamation-triangle', 'title="'. htmlspecialchars($warning) .'"') : '') .'</td>' . PHP_EOL
+        $output .= 
+                '  <td><em style="font-size:12px;">'. $product['manufacturer'] .'</em></td>' . PHP_EOL
+                . '  <td class="warning">'. (!empty($warning) ? functions::draw_fonticon('fa-exclamation-triangle', 'title="'. htmlspecialchars($warning) .'"') : '') .'</td>' . PHP_EOL
                 . '  <td><a href="'. document::href_ilink('product', array('product_id' => $product['id'])) .'" title="'. language::translate('title_view', 'View') .'" target="_blank">'. functions::draw_fonticon('fa-external-link') .'</a></td>' . PHP_EOL
                 . '  <td><a onClick="moveTo('. $product['id'] .')" title="'. language::translate('title_move', 'Move') .'">'. $product['id'] .'</a></td>' . PHP_EOL
                 . '  <td class="text-right"><a href="'. document::href_link('', array('app' => $_GET['app'], 'doc' => 'edit_product', 'category_id' => $category_id, 'product_id' => $product['id'])) .'" title="'. language::translate('title_edit', 'Edit') .'">'. functions::draw_fonticon('fa-pencil').'</a></td>' . PHP_EOL
@@ -575,10 +625,14 @@
 
 <script>
   function moveTo(id) {
-    newId = prompt('current id' + id + ' -> to id?', 0);
-    console.log('moveTo', newId)
-    //if(newId) {
+    newId = prompt('current id: ' + id + ' -> to id?', 0);
+    console.log('moveTo', newId, window.location);
+    if(newId != null) {
       // console.log()
-    // }
+      $.post(window.location.href,{mode: 'move',from:id,to:newId},function() {
+        //window.location.reload();
+      })
+    }
+    
   }
 </script>

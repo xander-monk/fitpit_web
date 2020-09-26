@@ -87,3 +87,27 @@
     }
   }
 }
+
+.buttonbox {
+  display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: space-between;
+	align-items: stretch;
+  align-content: stretch;
+  
+  background: @fp_bgLGray1;
+  padding: 8px;
+  border-radius: 4px;
+  &:hover {
+    background: @success-color;
+  }
+  &:after {
+    content: none !important; 
+  }
+}
+
+input[type="radio"]:checked + label.buttonbox {
+  background: @fp_green_10;
+  font-style: normal;
+} 

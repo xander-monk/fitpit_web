@@ -250,7 +250,10 @@
 // Options
   if (count($product->options) > 0) {
     foreach ($product->options as $group) {
-      $values = '';
+      $values = ''; 
+      /*echo '<pre>';
+      var_dump($group);
+      die;*/
       switch ($group['function']) {
 
         case 'checkbox':
@@ -289,20 +292,38 @@
           break;
 
         case 'radio':
-
+          $checked = false;
           foreach ($group['values'] as $value) {
 
-            $price_adjust_text = '';
+            $price_adjust_text = '';//$product->price + 
             $price_adjust = currency::format_raw(tax::get_price($value['price_adjust'], $product->tax_class_id));
             $tax_adjust = currency::format_raw(tax::get_tax($value['price_adjust'], $product->tax_class_id));
 
+            $selected = "";
             if ($value['price_adjust']) {
-              $price_adjust_text = currency::format(tax::get_price($value['price_adjust'], $product->tax_class_id));
-              if ($value['price_adjust'] > 0) $price_adjust_text = ' +'.$price_adjust_text .' ₴';
+              //$price_adjust_text = currency::format(tax::get_price($product->price + $value['price_adjust'], $product->tax_class_id));
+              // if ($value['price_adjust'] > 0) 
+              //$price_adjust_text = $price_adjust_text .' ₴';
+            } else {
+              if($checked == false) {
+                $selected = 'checked';
+                $checked = true;
+              }
+            }
+            if($group['name']=='Size') {
+              $price_adjust_text = currency::format(tax::get_price($product->price + $value['price_adjust'], $product->tax_class_id));
+              $price_adjust_text = '<div class="bb-price">'.$price_adjust_text .' ₴</div>';
             }
 
+
             $values .= '<div class="radio">' . PHP_EOL
-                     . '  <label>'. functions::form_draw_radio_button('options['.$group['name'].']', $value['name'], true, 'data-price-adjust="'. (float)$price_adjust .'" data-tax-adjust="'. (float)$tax_adjust .'"' . (!empty($group['required']) ? ' required="required"' : '')) .' '. $value['name'] . $price_adjust_text . '</label>' . PHP_EOL
+                     . functions::form_draw_radio_button('options['.$group['name'].']', $value['name'], true, ' '.$selected. '  style="display:none" id="o'.$value['id'].'" data-price-adjust="'. (float)$price_adjust .'" data-tax-adjust="'. (float)$tax_adjust .'"' . (!empty($group['required']) ? ' required="required"' : ''))
+                     . '
+                          <label for="o'.$value['id'].'" class="buttonbox"> 
+                              <div class="bb-val">'. $value['name'] . '</div>' . $price_adjust_text . '
+                              
+                          </label>
+                          ' . PHP_EOL
                      . '</div>';
           }
           break;

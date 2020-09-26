@@ -46,8 +46,8 @@ body {
   background: #fff;
 
   text-align: center;
-
-  border-radius: 0px 25px 0px 25px;
+  border-radius:5px;
+  //border-radius: 0px 25px 0px 25px;
 
   box-shadow: 0px 0px 60px rgba(0,0,0,0.25);
 }
@@ -72,7 +72,8 @@ body {
   background: #f6f6f6;
   padding: 10px;
   text-align: right;
-  border-radius: 0px 0px 0px 25px;
+  border-radius: 0px 0px 5px 5px;
+  // border-radius: 0px 0px 0px 25px;
 }
 </style>
 
@@ -263,7 +264,7 @@ body {
   <div id="box-login" class="">
 
     <div class="header">
-      <a href="<?php echo document::href_ilink(''); ?>"><img src="<?php echo document::href_link(WS_DIR_TEMPLATE . 'images/logotype.svg'); ?>" alt="<?php echo settings::get('store_name'); ?>" /></a>
+        <br>
     </div>
 
     <?php echo functions::form_draw_form_begin('login_form', 'post'); ?>

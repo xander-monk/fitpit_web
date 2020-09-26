@@ -10,11 +10,15 @@
         <search position="after"><![CDATA[<?php echo functions::form_draw_form_end(); ?>]]></search>
         <add><![CDATA[
   <div class="box-price-slider">
-    <h2 class="title"><?php echo language::translate('title_price', 'Price'); ?></h2>
+    <h2 class="title"><span><?php echo language::translate('title_price', 'Price'); ?></span></h2>
     <div id="price-slider-min"><?php echo currency::format(0); ?></div>
     <div id="price-slider-max"><?php echo currency::format(5000); ?></div>
     <div id="price-slider"></div>
-    <div id="price-range"><input type="number" id="minprice" min="0"> - <input type="number" id="maxprice" min="1"></div>
+    <div id="price-range" class="row">
+      <div class="col-md-6"><div class="input-group"><input style="width:100%" class="form-control" type="number" id="minprice" min="0"></div></div>
+      
+      <div class="col-md-6"><div class="input-group"><input style="width:100%" class="form-control" type="number" id="maxprice" min="1"></div></div>
+    </div>
   </div>
   <script>
 

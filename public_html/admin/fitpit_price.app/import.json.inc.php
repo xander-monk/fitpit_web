@@ -313,10 +313,11 @@
             'quantity' => $row['qty'],
             'price' => $row['base']
           ]);
+        } else {
+          $quantity_sum = $row['qty'];
         }
       }
     }
-      
       
     foreach($stock as $opt) {
       if ($stock_opt = database::fetch(database::query("select id from ". DB_TABLE_PRODUCTS_OPTIONS_STOCK ." where hash = '". $opt['hash'] ."' limit 1;"))) {
