@@ -7,6 +7,15 @@
     {snippet:notices}
 
     <section id="box-information" class="box">
+
+      <?php if(isset($extra['price'])) {
+        echo $extra['price']. '&nbsp;&nbsp;';
+      }?>
+
+      <?php if(isset($extra['enter'])) {
+        echo $extra['enter']. '<br><hr>';
+      }?>
+
       <?php echo $content; ?>
     </section>
 

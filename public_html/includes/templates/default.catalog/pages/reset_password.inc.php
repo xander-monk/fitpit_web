@@ -2,7 +2,7 @@
     <?php include vmod::check(FS_DIR_APP . 'includes/boxes/box_customer_service_links.inc.php'); ?>
 </div>
 
-<div id="content">
+<div id="content" style="    position: relative;">
   {snippet:notices}
   {snippet:breadcrumbs}
 

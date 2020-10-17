@@ -51,9 +51,9 @@
 // Database
   define('DB_TYPE', 'mysql');
   define('DB_SERVER', 'webbrain.mysql.tools');
-  define('DB_USERNAME', 'webbrain_bb2');
-  define('DB_PASSWORD', 's%76G%iRx2');
-  define('DB_DATABASE', 'webbrain_bb2');
+  define('DB_USERNAME', 'webbrain_fpdev');
+  define('DB_PASSWORD', '7p(9V2E&yu');
+  define('DB_DATABASE', 'webbrain_fpdev');
   define('DB_TABLE_PREFIX', 'lc_');
   define('DB_CONNECTION_CHARSET', 'utf8');
   define('DB_PERSISTENT_CONNECTIONS', 'false');

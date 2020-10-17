@@ -24,7 +24,26 @@
     $_page->snippets = array(
       'title' => $page->title,
       'content' => $page->content,
+      'extra' => array()
     );
+
+    
+    if($_GET['page_id'] === '2') {
+
+      $filesdir = FS_DIR_HTTP_ROOT . '/excel/';
+      $filelist = scandir($filesdir, 1);
+
+      $link = ''; $i = 0;
+      foreach ($filelist as $key => $file) { 
+        if($file == '.' || $file == '..' || $file == 'bak' || $file == 'template.xlsx') continue;
+        $i++; 
+        $link = $file; 
+        if($i == 1) break;
+      }
+
+      $_page->snippets['extra']['price'] = '<a class="btn" href="/excel/'.$link.'" target="_blank">Прайс</a>';
+      $_page->snippets['extra']['enter'] = '<a class="btn"  href="#"  data-toggle="lightbox" data-target="#account-modal">Онлайн база</a>';
+    }
 
     echo $_page->stitch('pages/information');
 

@@ -170,6 +170,13 @@
             limit 1;"
           );
 
+          database::query(
+            "update _misc
+            set val  = '". $eur ."'
+            where var = 'eur'
+            limit 1;"
+          );
+
           $usd = $worksheet->getCell($config_cols['expiration'] . '4')->getValue();
           $usd_val = (float)$usd / (float)$eur;
           database::query(
